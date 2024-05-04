@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "core.api",
 ]
 
 MIDDLEWARE = [
@@ -102,6 +103,8 @@ else:
             "PORT": DB_PORT,
         }
     }
+
+AUTH_USER_MODEL = "api.User"
 
 AUTH_PASSWORD_VALIDATORS = [
     {
