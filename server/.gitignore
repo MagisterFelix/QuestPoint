@@ -60,6 +60,22 @@ cover/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
+db*.json
+**/migrations/*
+!**/migrations/__init__.py
+
+# Media files
+media/
+
+# Assets
+assets/
+
+# Scripts
+*.sh
+*.bat
+
+# Backup files
+*.bak
 
 # Flask stuff:
 instance/
