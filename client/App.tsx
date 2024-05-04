@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
 
-import QuestMap from './components/Quests/QuestMap';
+import Map from '@/components/Map/Map';
 
 const styles = StyleSheet.create({
   container: {
@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
 const App = () => {
   return (
     <View style={styles.container}>
-      <QuestMap />
+      <Map />
       <StatusBar style="auto" />
     </View>
   );

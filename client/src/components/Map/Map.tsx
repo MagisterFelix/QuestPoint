@@ -1,6 +1,6 @@
 import * as Location from 'expo-location';
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 
 const styles = StyleSheet.create({
@@ -24,8 +24,10 @@ const styles = StyleSheet.create({
   }
 });
 
-const QuestMap = () => {
-  const [location, setLocation]: any = useState(null);
+const Map = () => {
+  const [location, setLocation] = useState<Location.LocationObject | null>(
+    null
+  );
 
   useEffect(() => {
     (async () => {
@@ -37,7 +39,7 @@ const QuestMap = () => {
             timeInterval: 300,
             distanceInterval: 2
           },
-          (loc) => {
+          (loc: Location.LocationObject) => {
             setLocation(loc);
           }
         );
@@ -66,7 +68,9 @@ const QuestMap = () => {
               latitude: location.coords.latitude,
               longitude: location.coords.longitude
             }}
-            rotation={location.coords.heading}
+            rotation={
+              location.coords.heading ? location.coords.heading : undefined
+            }
             anchor={{ x: 0.5, y: 0.5 }}
             title="It's you. Try start looking for QuestPoints"
           >
@@ -92,4 +96,4 @@ const QuestMap = () => {
   );
 };
 
-export default QuestMap;
+export default Map;
