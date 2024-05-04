@@ -38,8 +38,8 @@ class UserAdmin(UserAdmin):
             None,
             {
                 "classes": ("wide",),
-                "fields": ("username", "email", "password1", "password2")
+                "fields": ("username", "email", "password1", "password2",)
             }
         ),
     )
-    readonly_fields = ("avatar", "last_login", "date_joined", "balance", "xp")
+    readonly_fields = ("avatar", "last_login", "date_joined", "balance", "xp",)
