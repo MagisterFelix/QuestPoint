@@ -15,7 +15,7 @@ class UserManager(BaseUserManager, BaseManager):
         except self.model.DoesNotExist:
             return None
 
-    def create_user(self, username: str, email: str, password: str, **extra_fields) -> models.Model:
+    def create_user(self, username: str, email: str, password: str, **extra_fields) -> AbstractUser:
         if username is None or username == "":
             raise ValueError("User must have an username.")
 
@@ -35,7 +35,7 @@ class UserManager(BaseUserManager, BaseManager):
 
         return user
 
-    def create_superuser(self, username: str, email: str, password: str, **extra_fields) -> models.Model:
+    def create_superuser(self, username: str, email: str, password: str, **extra_fields) -> AbstractUser:
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
 
