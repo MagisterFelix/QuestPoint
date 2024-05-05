@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { Button, Image, Modal, StyleSheet, Text, View } from 'react-native';
 import MapView, { Marker, Region } from 'react-native-maps';
 
-import { MarkerData } from '@/components/Map/MarkerData';
 import Menu from '@/components/Map/Menu';
 import { getDistance } from '@/components/Map/Utils';
 import useLocationTracker from '@/components/Map/useLocationTracker';
+import { MarkerData } from '@/types/Map/MarkerData';
 
 const styles = StyleSheet.create({
   container: {
