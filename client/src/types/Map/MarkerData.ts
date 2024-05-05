@@ -3,7 +3,7 @@ export interface MarkerData {
   title: string;
   description: string;
   category: string;
-  reward: string;
+  reward: number;
   latitude: number;
   longitude: number;
   creator: string;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Image, Modal, StyleSheet, Text, View } from 'react-native';
 import MapView, { Marker, Region } from 'react-native-maps';
 
@@ -34,44 +34,24 @@ const styles = StyleSheet.create({
 
 const Map = () => {
   let mapView: MapView | null;
+  const [markers, setMarkers] = useState<MarkerData[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Temporary sol
-  const markers: MarkerData[] = [
-    {
-      id: 1,
-      title: 'Потрібно купити їжи',
-      description: '1 кг картоплі, 3 кг рису',
-      category: 'Доставка',
-      reward: '400 QP',
-      latitude: 48.78825,
-      longitude: 34.4324,
-      creator: 'Антон П.',
-      created_at: '4 Травня 21.00'
-    },
-    {
-      id: 2,
-      title: 'Потрібна допомога у дворі',
-      description: 'Збери 10 ресурсів у дворі',
-      category: 'Збір',
-      reward: '100 QP',
-      latitude: 50.78825,
-      longitude: 30.4324,
-      creator: 'Володимир З.',
-      created_at: '3 Травня 08.00'
-    },
-    {
-      id: 3,
-      title: 'Вигуляй собаку',
-      description: 'Фото звіт з 3-х місць, і щоб не менше 1км відстані',
-      category: 'Вигул',
-      reward: '1000 QP',
-      latitude: 48.4801,
-      longitude: 34.0212,
-      creator: 'Жанна Д.',
-      created_at: '3 Травня 16.00'
-    }
-  ];
+  useEffect(() => {
+    const fetchMarkers = async () => {
+      try {
+        const response = await fetch('http://url/api/quests/48/34');
+        const data = await response.json();
+        setMarkers(data.data);
+      } catch (error) {
+        console.error('Failed to fetch data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchMarkers();
+  }, []);
   const location = useLocationTracker();
   const [selectedMarker, setSelectedMarker] = useState<MarkerData | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
