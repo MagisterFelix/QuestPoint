@@ -9,6 +9,12 @@ from .base import BaseManager
 
 class UserManager(BaseUserManager, BaseManager):
 
+    def get_or_none(self, *args, **kwargs) -> AbstractUser | None:
+        try:
+            return self.get(*args, **kwargs)
+        except self.model.DoesNotExist:
+            return None
+
     def create_user(self, username: str, email: str, password: str, **extra_fields) -> models.Model:
         if username is None or username == "":
             raise ValueError("User must have an username.")
