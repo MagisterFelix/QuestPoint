@@ -1,10 +1,11 @@
 from django.db import models
 
+from .base import BaseModel
 from .quest import Quest
 from .user import User
 
 
-class Message(models.Model):
+class Message(BaseModel):
 
     class ContentType(models.IntegerChoices):
         TEXT = 0, "Text"

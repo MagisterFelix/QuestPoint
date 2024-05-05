@@ -2,11 +2,12 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.template.defaultfilters import truncatechars
 
+from .base import BaseModel
 from .category import Category
 from .user import User
 
 
-class Quest(models.Model):
+class Quest(BaseModel):
 
     title = models.CharField(max_length=64)
     description = models.TextField(max_length=256)

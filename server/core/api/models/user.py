@@ -4,8 +4,10 @@ from django.utils import timezone
 
 from core.api.utils import ImageUtils
 
+from .base import BaseManager
 
-class UserManager(BaseUserManager):
+
+class UserManager(BaseUserManager, BaseManager):
 
     def create_user(self, username: str, email: str, password: str, **extra_fields) -> models.Model:
         if username is None or username == "":
@@ -63,7 +65,7 @@ class User(AbstractUser, PermissionsMixin):
     balance = models.PositiveIntegerField(default=0)
     xp = models.FloatField(default=0.0)
 
-    objects = UserManager()
+    objects: UserManager = UserManager()
 
     def delete(self, *args, **kwargs) -> tuple[int, dict]:
         self.remove_image()

@@ -2,10 +2,11 @@ from django.core import signing
 from django.core.exceptions import ValidationError
 from django.db import models
 
+from .base import BaseModel
 from .user import User
 
 
-class Transaction(models.Model):
+class Transaction(BaseModel):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     value = models.PositiveIntegerField()

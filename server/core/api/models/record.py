@@ -1,11 +1,12 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 
+from .base import BaseModel
 from .quest import Quest
 from .user import User
 
 
-class Record(models.Model):
+class Record(BaseModel):
 
     class Status(models.IntegerChoices):
         HAS_OFFER = 0, "Has an offer"
