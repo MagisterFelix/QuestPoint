@@ -12,10 +12,10 @@ import {
 
 import { styles } from '@/common/styles';
 import { useAuth } from '@/providers/AuthProvider';
-import { LoginRequestData } from '@/types/auth';
+import { AuthorizationRequestData } from '@/types/request';
 import { ScreenProps } from '@/types/screen';
 
-const Authorization = ({ navigation }: ScreenProps) => {
+const AuthorizationScreen = ({ navigation }: ScreenProps) => {
   const { loading, login } = useAuth();
 
   const validation = {
@@ -30,7 +30,7 @@ const Authorization = ({ navigation }: ScreenProps) => {
   const [error, setError] = useState('');
   const hideError = () => setError('');
   const { control, handleSubmit, setError: setFieldError } = useForm();
-  const handleOnSubmit = async (data: LoginRequestData) => {
+  const handleOnSubmit = async (data: AuthorizationRequestData) => {
     Keyboard.dismiss();
     const errorHandler = {
       validation,
@@ -118,7 +118,7 @@ const Authorization = ({ navigation }: ScreenProps) => {
         loading={loading}
         style={styles.formButton}
         onPress={handleSubmit((data: object) =>
-          handleOnSubmit(data as LoginRequestData)
+          handleOnSubmit(data as AuthorizationRequestData)
         )}
       >
         Sign In
@@ -143,4 +143,4 @@ const Authorization = ({ navigation }: ScreenProps) => {
   );
 };
 
-export default Authorization;
+export default AuthorizationScreen;
