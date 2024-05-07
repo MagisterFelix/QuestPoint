@@ -44,7 +44,7 @@ const AuthorizationScreen = ({ navigation }: ScreenProps) => {
   const togglePassword = () => setShowPassword((show) => !show);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, styles.centerVertical]}>
       <Controller
         name="username"
         control={control}
