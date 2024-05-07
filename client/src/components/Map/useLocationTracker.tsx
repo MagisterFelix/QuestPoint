@@ -13,8 +13,8 @@ const useLocationTracker = () => {
         Location.watchPositionAsync(
           {
             accuracy: Location.Accuracy.High,
-            timeInterval: 300,
-            distanceInterval: 2
+            timeInterval: 5000,
+            distanceInterval: 20
           },
           (loc: Location.LocationObject) => {
             setLocation(loc);

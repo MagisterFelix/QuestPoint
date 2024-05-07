@@ -1,3 +1,5 @@
+import { MarkerData } from '@/types/Map/MarkerData';
+
 export interface ResponseData {
   details: string;
 }
@@ -15,4 +17,8 @@ export interface RegistrationResponseData extends ResponseData {
     username: string;
     email: string;
   };
+}
+
+export interface MarkerResponseData extends ResponseData {
+  data: MarkerData[];
 }

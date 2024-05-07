@@ -8,3 +8,8 @@ export interface RegistrationRequestData {
   email: string;
   password: string;
 }
+
+export interface MarkerRequestData {
+  lat: number;
+  lon: number;
+}
