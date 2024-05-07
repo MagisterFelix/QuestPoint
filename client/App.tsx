@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
 
-import Map from '@/components/Map/Map';
+import Map from '@/screens/map/Map';
 
 const styles = StyleSheet.create({
   container: {
