@@ -5,16 +5,17 @@ import { createContext, useContext, useState } from 'react';
 import { useAxios } from '@/api/axios';
 import { ENDPOINTS } from '@/api/endpoints';
 import { handleErrors } from '@/api/errors';
-import {
-  AuthContextProps,
-  AuthProps,
-  LoginRequestData,
-  LoginResponseData,
-  RegisterRequestData,
-  RegisterResponseData
-} from '@/types/auth';
+import { AuthContextProps, AuthProps } from '@/types/auth';
 import { ErrorHandler } from '@/types/errors';
-import { ResponseErrorData } from '@/types/response';
+import {
+  AuthorizationRequestData,
+  RegistrationRequestData
+} from '@/types/request';
+import {
+  AuthorizationResponseData,
+  RegistrationResponseData,
+  ResponseErrorData
+} from '@/types/response';
 
 const AuthContext = createContext<AuthContextProps>({});
 
@@ -34,9 +35,12 @@ const AuthProvider = ({ children }: AuthProps) => {
     }
   );
 
-  const login = async (data: LoginRequestData, handler: ErrorHandler) => {
+  const login = async (
+    data: AuthorizationRequestData,
+    errorHandler: ErrorHandler
+  ) => {
     try {
-      const response: AxiosResponse<LoginResponseData> = await request({
+      const response: AxiosResponse<AuthorizationResponseData> = await request({
         url: ENDPOINTS.authorization,
         method: 'POST',
         data
@@ -50,13 +54,16 @@ const AuthProvider = ({ children }: AuthProps) => {
         return;
       }
       const error = axiosError.response?.data as ResponseErrorData;
-      handleErrors(error.details, handler);
+      handleErrors(error.details, errorHandler);
     }
   };
 
-  const register = async (data: RegisterRequestData, handler: ErrorHandler) => {
+  const register = async (
+    data: RegistrationRequestData,
+    errorHandler: ErrorHandler
+  ) => {
     try {
-      const response: AxiosResponse<RegisterResponseData> = await request({
+      const response: AxiosResponse<RegistrationResponseData> = await request({
         url: ENDPOINTS.registration,
         method: 'POST',
         data
@@ -65,7 +72,7 @@ const AuthProvider = ({ children }: AuthProps) => {
         username: response.data.user.username,
         password: data.password
       };
-      await login(loginData, handler);
+      await login(loginData, errorHandler);
     } catch (err) {
       const axiosError = err as AxiosError;
       if (axiosError.code === AxiosError.ERR_NETWORK) {
@@ -73,7 +80,7 @@ const AuthProvider = ({ children }: AuthProps) => {
         return;
       }
       const error = axiosError.response?.data as ResponseErrorData;
-      handleErrors(error.details, handler);
+      handleErrors(error.details, errorHandler);
     }
   };
 

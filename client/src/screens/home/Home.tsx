@@ -4,7 +4,7 @@ import { Button } from 'react-native-paper';
 import { styles } from '@/common/styles';
 import { useAuth } from '@/providers/AuthProvider';
 
-const Home = () => {
+const HomeScreen = () => {
   const { logout } = useAuth();
 
   return (
@@ -16,4 +16,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default HomeScreen;

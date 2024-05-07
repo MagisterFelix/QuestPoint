@@ -12,10 +12,10 @@ import {
 
 import { styles } from '@/common/styles';
 import { useAuth } from '@/providers/AuthProvider';
-import { RegisterRequestData } from '@/types/auth';
+import { RegistrationRequestData } from '@/types/request';
 import { ScreenProps } from '@/types/screen';
 
-const Registration = ({ navigation }: ScreenProps) => {
+const RegistrationScreen = ({ navigation }: ScreenProps) => {
   const { loading, register } = useAuth();
 
   const validation = {
@@ -44,7 +44,7 @@ const Registration = ({ navigation }: ScreenProps) => {
   const [error, setError] = useState('');
   const hideError = () => setError('');
   const { control, handleSubmit, setError: setFieldError, watch } = useForm();
-  const handleOnSubmit = async (data: RegisterRequestData) => {
+  const handleOnSubmit = async (data: RegistrationRequestData) => {
     Keyboard.dismiss();
     const errorHandler = {
       validation,
@@ -208,7 +208,7 @@ const Registration = ({ navigation }: ScreenProps) => {
         loading={loading}
         style={styles.formButton}
         onPress={handleSubmit((data: object) =>
-          handleOnSubmit(data as RegisterRequestData)
+          handleOnSubmit(data as RegistrationRequestData)
         )}
       >
         Sign Up
@@ -233,4 +233,4 @@ const Registration = ({ navigation }: ScreenProps) => {
   );
 };
 
-export default Registration;
+export default RegistrationScreen;
