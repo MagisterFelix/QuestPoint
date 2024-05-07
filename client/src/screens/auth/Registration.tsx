@@ -79,10 +79,12 @@ const RegistrationScreen = ({ navigation }: ScreenProps) => {
               autoCapitalize="none"
               value={value}
               onChangeText={onChange}
+              error={fieldError !== undefined}
+              style={styles.formField}
               right={<TextInput.Icon icon="account" />}
             />
             {fieldError !== undefined && (
-              <HelperText type="error" style={styles.noGap}>
+              <HelperText type="error" style={styles.formHelperText}>
                 {fieldError
                   ? fieldError.message ||
                     validation.username[
@@ -114,10 +116,12 @@ const RegistrationScreen = ({ navigation }: ScreenProps) => {
               autoCapitalize="none"
               value={value}
               onChangeText={onChange}
+              error={fieldError !== undefined}
+              style={styles.formField}
               right={<TextInput.Icon icon="email" />}
             />
             {fieldError !== undefined && (
-              <HelperText type="error" style={styles.noGap}>
+              <HelperText type="error" style={styles.formHelperText}>
                 {fieldError
                   ? fieldError.message ||
                     validation.email[
@@ -152,10 +156,12 @@ const RegistrationScreen = ({ navigation }: ScreenProps) => {
               autoCapitalize="none"
               value={value}
               onChangeText={onChange}
+              error={fieldError !== undefined}
+              style={styles.formField}
               right={<TextInput.Icon icon="eye" onPress={togglePassword} />}
             />
             {fieldError !== undefined && (
-              <HelperText type="error" style={styles.noGap}>
+              <HelperText type="error" style={styles.formHelperText}>
                 {fieldError
                   ? fieldError.message ||
                     validation.password[
@@ -188,10 +194,12 @@ const RegistrationScreen = ({ navigation }: ScreenProps) => {
               autoCapitalize="none"
               value={value}
               onChangeText={onChange}
+              error={fieldError !== undefined}
+              style={styles.formField}
               right={<TextInput.Icon icon="key" />}
             />
             {fieldError !== undefined && (
-              <HelperText type="error" style={styles.noGap}>
+              <HelperText type="error" style={styles.formHelperText}>
                 {fieldError
                   ? fieldError.message ||
                     validation.confirm_password[
@@ -213,7 +221,7 @@ const RegistrationScreen = ({ navigation }: ScreenProps) => {
       >
         Sign Up
       </Button>
-      <View style={styles.row}>
+      <View style={styles.rowCenter}>
         <Text>Already have an account?</Text>
         <TouchableOpacity onPress={() => navigation.navigate('Sign In')}>
           <Text style={styles.link}>Sign in</Text>

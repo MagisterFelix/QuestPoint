@@ -2,14 +2,14 @@ import { StyleSheet } from 'react-native';
 import { DefaultTheme } from 'react-native-paper';
 
 export const theme = {
-  ...DefaultTheme
+  ...DefaultTheme,
+  roundness: 1
 };
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
-    gap: 10,
     width: '100%',
     padding: 20
   },
@@ -19,32 +19,23 @@ export const styles = StyleSheet.create({
   centerHorizontal: {
     alignItems: 'center'
   },
-  noGap: {
-    marginTop: -10,
-    marginBottom: -10
-  },
-  row: {
+  rowCenter: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 10
-  },
-  col: {
-    flex: 1,
-    flexDirection: 'column',
-    gap: 10
+    gap: 5
   },
   link: {
     fontWeight: 'bold',
     color: theme.colors.primary
   },
-  button: {
-    borderRadius: 5
+  formField: {
+    marginVertical: 5
+  },
+  formHelperText: {
+    marginTop: -5,
+    marginBottom: -5
   },
   formButton: {
-    borderRadius: 5,
-    marginTop: 10
-  },
-  required: {
-    color: 'red'
+    marginVertical: 10
   }
 });
