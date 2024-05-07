@@ -73,6 +73,10 @@ class User(AbstractUser, PermissionsMixin):
 
     objects: UserManager = UserManager()
 
+    @property
+    def level(self) -> float:
+        return self.xp // 100 + 1
+
     def delete(self, *args, **kwargs) -> tuple[int, dict]:
         self.remove_image()
         return super().delete(*args, **kwargs)
