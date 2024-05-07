@@ -9,9 +9,15 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
-    justifyContent: 'center',
     gap: 10,
-    marginHorizontal: 20
+    width: '100%',
+    padding: 20
+  },
+  centerVertical: {
+    justifyContent: 'center'
+  },
+  centerHorizontal: {
+    alignItems: 'center'
   },
   noGap: {
     marginTop: -10,

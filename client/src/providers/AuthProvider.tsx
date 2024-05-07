@@ -1,6 +1,6 @@
 import { AxiosError, AxiosResponse } from 'axios';
 import * as SecureStore from 'expo-secure-store';
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 import { useAxios } from '@/api/axios';
 import { ENDPOINTS } from '@/api/endpoints';
@@ -25,6 +25,16 @@ export const useAuth = () => {
 
 const AuthProvider = ({ children }: AuthProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+
+  useEffect(() => {
+    const checkAuthentication = async () => {
+      const token = await SecureStore.getItemAsync('access');
+      if (token) {
+        setIsAuthenticated(true);
+      }
+    };
+    checkAuthentication();
+  }, []);
 
   const [{ loading }, request] = useAxios(
     {
