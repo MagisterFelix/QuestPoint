@@ -27,13 +27,8 @@ class AuthorizationSerializer(TokenObtainPairSerializer):
 
         return super().validate(attrs)
 
-    def to_representation(self, tokens: dict):
-        data = OrderedDict()
-
-        data["tokens"] = tokens
-
-        data["details"] = "User has been authorized."
-
+    def to_representation(self, tokens: dict) -> OrderedDict:
+        data = OrderedDict(tokens)
         return data
 
 
@@ -52,11 +47,6 @@ class RegistrationSerializer(ModelSerializer):
         user = User.objects.create_user(**validated_data)
         return user
 
-    def to_representation(self, user: User):
-        data = OrderedDict()
-
-        data["user"] = super().to_representation(user)
-
-        data["details"] = "User has been registered."
-
+    def to_representation(self, user: User) -> OrderedDict:
+        data = OrderedDict(super().to_representation(user))
         return data

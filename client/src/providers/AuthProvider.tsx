@@ -6,15 +6,14 @@ import { useAxios } from '@/api/axios';
 import { ENDPOINTS } from '@/api/endpoints';
 import { handleErrors } from '@/api/errors';
 import { AuthContextProps, AuthProps } from '@/types/auth';
-import { ErrorHandler } from '@/types/errors';
+import { ErrorData, ErrorHandler } from '@/types/errors';
 import {
   AuthorizationRequestData,
   RegistrationRequestData
 } from '@/types/request';
 import {
   AuthorizationResponseData,
-  RegistrationResponseData,
-  ResponseErrorData
+  RegistrationResponseData
 } from '@/types/response';
 
 const AuthContext = createContext<AuthContextProps>({});
@@ -55,7 +54,7 @@ const AuthProvider = ({ children }: AuthProps) => {
         method: 'POST',
         data
       });
-      await SecureStore.setItemAsync('access', response.data.tokens.access);
+      await SecureStore.setItemAsync('access', response.data.access);
       setIsAuthenticated(true);
     } catch (err) {
       const axiosError = err as AxiosError;
@@ -63,7 +62,7 @@ const AuthProvider = ({ children }: AuthProps) => {
         alert('Timeout!');
         return;
       }
-      const error = axiosError.response?.data as ResponseErrorData;
+      const error = axiosError.response?.data as ErrorData;
       handleErrors(error.details, errorHandler);
     }
   };
@@ -79,7 +78,7 @@ const AuthProvider = ({ children }: AuthProps) => {
         data
       });
       const loginData = {
-        username: response.data.user.username,
+        username: response.data.username,
         password: data.password
       };
       await login(loginData, errorHandler);
@@ -89,7 +88,7 @@ const AuthProvider = ({ children }: AuthProps) => {
         alert('Timeout!');
         return;
       }
-      const error = axiosError.response?.data as ResponseErrorData;
+      const error = axiosError.response?.data as ErrorData;
       handleErrors(error.details, errorHandler);
     }
   };
