@@ -22,7 +22,12 @@ export const styles = StyleSheet.create({
   rowCenter: {
     flexDirection: 'row',
     justifyContent: 'center',
+    alignItems: 'center',
     gap: 5
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold'
   },
   link: {
     fontWeight: 'bold',

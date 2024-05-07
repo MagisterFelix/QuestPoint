@@ -1,10 +1,11 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Icon, PaperProvider } from 'react-native-paper';
+import { View } from 'react-native';
+import { Icon, PaperProvider, Text } from 'react-native-paper';
 
 import { AxiosInterceptor } from '@/api/axios';
-import { theme } from '@/common/styles';
+import { styles, theme } from '@/common/styles';
 import AuthProvider, { useAuth } from '@/providers/AuthProvider';
 import AuthorizationScreen from '@/screens/auth/Authorization';
 import RegistrationScreen from '@/screens/auth/Registration';
@@ -28,6 +29,12 @@ const HomeStackScreen = () => {
         name="Quests"
         component={QuestListScreen}
         options={{
+          headerTitle: ({ children }) => (
+            <View style={styles.rowCenter}>
+              <Icon source="clipboard-list" size={30} />
+              <Text style={styles.headerTitle}>{children}</Text>
+            </View>
+          ),
           tabBarIcon: ({ focused, color, size }) => (
             <Icon
               source={focused ? 'clipboard-list' : 'clipboard-list-outline'}
@@ -41,6 +48,12 @@ const HomeStackScreen = () => {
         name="Map"
         component={MapScreen}
         options={{
+          headerTitle: ({ children }) => (
+            <View style={styles.rowCenter}>
+              <Icon source="map" size={30} />
+              <Text style={styles.headerTitle}>{children}</Text>
+            </View>
+          ),
           tabBarIcon: ({ focused, color, size }) => (
             <Icon
               source={focused ? 'map' : 'map-outline'}
@@ -54,6 +67,12 @@ const HomeStackScreen = () => {
         name="Profile"
         component={ProfileScreen}
         options={{
+          headerTitle: ({ children }) => (
+            <View style={styles.rowCenter}>
+              <Icon source="badge-account" size={30} />
+              <Text style={styles.headerTitle}>{children}</Text>
+            </View>
+          ),
           tabBarIcon: ({ focused, color, size }) => (
             <Icon
               source={focused ? 'badge-account' : 'badge-account-outline'}
