@@ -18,12 +18,12 @@ class QuestView(APIView):
         if not ((-90 <= float(lat) <= 90) and (-180 <= float(lon) <= 180)):
             success = False
             status_code = status.HTTP_400_BAD_REQUEST
-            message = 'Invalid coordinates'
+            message = "Invalid coordinates"
             response = {
-                'success': success,
-                'status code': status_code,
-                'message': message,
-                'data': []
+                "success": success,
+                "status code": status_code,
+                "message": message,
+                "data": []
             }
         else:
             quests = Quest.objects.annotate(distance=RawSQL(
@@ -35,13 +35,13 @@ class QuestView(APIView):
 
             success = True
             status_code = status.HTTP_200_OK
-            message = 'Submissions received successfully.'
+            message = "Submissions received successfully."
 
             response = {
-                'success': success,
-                'status code': status_code,
-                'message': message,
-                'data': serializer.data
+                "success": success,
+                "status code": status_code,
+                "message": message,
+                "data": serializer.data
             }
 
         return Response(response, status=status_code)
