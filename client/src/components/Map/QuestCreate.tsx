@@ -1,4 +1,9 @@
-import React, { useState } from 'react';
+import { useAxios } from '@/api/axios';
+import { ENDPOINTS } from '@/api/endpoints';
+import { CategoryData } from '@/types/Map/CategoryData';
+import { CategoriesResponseData } from '@/types/response';
+import { AxiosError, AxiosResponse } from 'axios';
+import React, { useEffect, useState } from 'react';
 import {
   Modal,
   ScrollView,
@@ -15,13 +20,37 @@ import {
   TextInput
 } from 'react-native-paper';
 const QuestCreate = () => {
-  const categories = [
-    'Adventure',
-    'Puzzle',
-    'Strategy',
-    'Role-playing',
-    'Arcade'
-  ];
+  const [categories, setCategories] = useState<CategoryData[]>([]);
+  const [{ loading }, request] = useAxios(
+    {
+      timeout: 10000
+    },
+    {
+      manual: true
+    }
+  );
+
+  useEffect(() => {
+    const getCategories = async () => {
+      try {
+        const response: AxiosResponse<CategoriesResponseData> = await request({
+          url: ENDPOINTS.categories,
+          method: 'GET'
+        });
+
+        setCategories(response.data.data);
+      } catch (err) {
+        const axiosError = err as AxiosError;
+        if (axiosError.code === AxiosError.ERR_NETWORK) {
+          alert('Timeout!');
+          return;
+        }
+      }
+    };
+
+    getCategories();
+  }, []);
+
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(categories[1]);
   const [reward, setReward] = useState(0);
@@ -132,7 +161,7 @@ const QuestCreate = () => {
                   ]}
                   onPress={() => setSelectedCategory(category)}
                 >
-                  <Text style={styles.categoryText}>{category}</Text>
+                  <Text style={styles.categoryText}>{category.title}</Text>
                 </TouchableOpacity>
               ))}
             </ScrollView>

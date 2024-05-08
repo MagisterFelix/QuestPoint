@@ -1,3 +1,4 @@
+import { CategoryData } from '@/types/Map/CategoryData';
 import { MarkerData } from '@/types/Map/MarkerData';
 
 export interface ResponseData {
@@ -21,4 +22,8 @@ export interface RegistrationResponseData extends ResponseData {
 
 export interface MarkerResponseData extends ResponseData {
   data: MarkerData[];
+}
+
+export interface CategoriesResponseData extends ResponseData {
+  data: CategoryData[];
 }
