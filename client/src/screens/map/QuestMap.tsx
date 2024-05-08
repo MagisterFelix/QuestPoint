@@ -1,6 +1,6 @@
 import { useAxios } from '@/api/axios';
 import { ENDPOINTS } from '@/api/endpoints';
-import Menu from '@/components/Map/Menu';
+import QuestCreate from '@/components/Map/QuestCreate';
 import { getDistance } from '@/components/Map/Utils';
 import useLocationTracker from '@/components/Map/useLocationTracker';
 import { MarkerData } from '@/types/Map/MarkerData';
@@ -8,15 +8,23 @@ import { MarkerRequestData } from '@/types/request';
 import { MarkerResponseData } from '@/types/response';
 import { AxiosError, AxiosResponse } from 'axios';
 import React, { useEffect, useState } from 'react';
-import { Button, Image, Modal, StyleSheet, Text, View } from 'react-native';
+import {
+  Button,
+  Image,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native';
 import MapView, { Marker, Region } from 'react-native-maps';
+import { Icon } from 'react-native-paper';
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    flexDirection: 'column'
+    flex: 1
   },
   mapContainer: {
-    flex: 2
+    flex: 3
   },
   modalContainer: {
     marginTop: 50,
@@ -32,6 +40,19 @@ const styles = StyleSheet.create({
   questMarker: {
     width: 45,
     height: 50
+  },
+  modalButton: {
+    position: 'absolute',
+    bottom: 0,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  center: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    paddingBottom: 10
   }
 });
 
@@ -202,20 +223,10 @@ const Map = () => {
               </Marker>
             ))}
       </MapView>
-      <View>
-        {selectedMarker && showDetailsButton === selectedMarker.id && (
-          <Button
-            title="Детальніше"
-            onPress={() => {
-              setModalVisible(true);
-              setShowDetailsButton(null);
-            }}
-          />
-        )}
-      </View>
+
       <Modal
         animationType="slide"
-        transparent
+        transparent={false}
         visible={modalVisible}
         onRequestClose={() => {
           setModalVisible(!modalVisible);
@@ -247,7 +258,22 @@ const Map = () => {
           )}
         </View>
       </Modal>
-      <Menu />
+
+      <View style={styles.modalButton}>
+        {selectedMarker && showDetailsButton === selectedMarker.id ? (
+          <TouchableOpacity
+            style={styles.center}
+            onPress={() => {
+              setModalVisible(true);
+              setShowDetailsButton(null);
+            }}
+          >
+            <Icon source={'help-circle'} size={42} color={'white'} />
+          </TouchableOpacity>
+        ) : (
+          <QuestCreate />
+        )}
+      </View>
     </View>
   );
 };
