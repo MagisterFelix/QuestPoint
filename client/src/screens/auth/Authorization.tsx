@@ -3,7 +3,6 @@ import { Controller, useForm } from 'react-hook-form';
 import { Keyboard, TouchableOpacity, View } from 'react-native';
 import {
   Button,
-  Dialog,
   HelperText,
   Portal,
   Text,
@@ -11,9 +10,10 @@ import {
 } from 'react-native-paper';
 
 import { styles } from '@/common/styles';
+import DialogError from '@/components/DialogError';
 import { useAuth } from '@/providers/AuthProvider';
+import { ScreenProps } from '@/types/props';
 import { AuthorizationRequestData } from '@/types/request';
-import { ScreenProps } from '@/types/screen';
 
 const AuthorizationScreen = ({ navigation }: ScreenProps) => {
   const { loading, login } = useAuth();
@@ -27,7 +27,7 @@ const AuthorizationScreen = ({ navigation }: ScreenProps) => {
     }
   };
 
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string>('');
   const hideError = () => setError('');
   const { control, handleSubmit, setError: setFieldError } = useForm();
   const handleOnSubmit = async (data: AuthorizationRequestData) => {
@@ -134,14 +134,13 @@ const AuthorizationScreen = ({ navigation }: ScreenProps) => {
         </TouchableOpacity>
       </View>
       <Portal>
-        <Dialog visible={error !== ''} onDismiss={hideError}>
-          <Dialog.Content>
-            <Text>{error}</Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={hideError}>Done</Button>
-          </Dialog.Actions>
-        </Dialog>
+        <DialogError
+          title="Attention!"
+          error={error}
+          button="OK"
+          onDismiss={hideError}
+          onAgreePress={hideError}
+        />
       </Portal>
     </View>
   );

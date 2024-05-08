@@ -14,7 +14,7 @@ class AuthorizationView(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request: Request) -> Response:
-        serializer = self.serializer_class(data=request.data)
+        serializer = self.serializer_class(data=request.data, context={"request": self.request})
         serializer.is_valid(raise_exception=True)
 
         rotate_token(request._request)

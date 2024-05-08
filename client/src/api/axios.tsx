@@ -8,7 +8,7 @@ import { makeUseAxios } from 'axios-hooks';
 import * as SecureStore from 'expo-secure-store';
 import { useEffect } from 'react';
 
-import { AxiosProps } from '@/types/axios';
+import { AxiosProps } from '@/types/props';
 
 const instance = axios.create({
   baseURL: process.env.API_URL,
@@ -16,7 +16,8 @@ const instance = axios.create({
     Accept: 'application/json',
     'Content-Type': 'multipart/form-data'
   },
-  withCredentials: true
+  withCredentials: true,
+  timeout: 10000
 });
 
 export const AxiosInterceptor = ({ children, logout }: AxiosProps) => {
@@ -34,6 +35,9 @@ export const AxiosInterceptor = ({ children, logout }: AxiosProps) => {
     const responseInterceptor = instance.interceptors.response.use(
       async (response: AxiosResponse) => response,
       async (error: AxiosError) => {
+        if (error.code === AxiosError.ERR_NETWORK) {
+          alert('Timeout!');
+        }
         if (error.response?.status === HttpStatusCode.Unauthorized) {
           await logout();
           alert('Session has expired!');

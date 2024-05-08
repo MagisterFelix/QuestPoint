@@ -1,34 +1,27 @@
+import { AxiosError } from 'axios';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Keyboard, TouchableOpacity, View } from 'react-native';
-import {
-  Button,
-  HelperText,
-  Portal,
-  Text,
-  TextInput
-} from 'react-native-paper';
+import { Keyboard, View } from 'react-native';
+import { Button, HelperText, Portal, TextInput } from 'react-native-paper';
 
+import { useAxios } from '@/api/axios';
+import { ENDPOINTS } from '@/api/endpoints';
+import { handleErrors } from '@/api/errors';
 import { styles } from '@/common/styles';
 import DialogError from '@/components/DialogError';
-import { useAuth } from '@/providers/AuthProvider';
-import { ScreenProps } from '@/types/props';
-import { RegistrationRequestData } from '@/types/request';
+import DialogSuccess from '@/components/DialogSuccess';
+import { ErrorData } from '@/types/errors';
+import { ChangePasswordRequestData } from '@/types/request';
 
-const RegistrationScreen = ({ navigation }: ScreenProps) => {
-  const { loading, register } = useAuth();
+const PrivacySettingsScreen = () => {
+  const [{ loading }, request] = useAxios(
+    {},
+    {
+      manual: true
+    }
+  );
 
   const validation = {
-    username: {
-      required: 'This field may not be blank.',
-      maxLength: 'No more than 150 characters.',
-      pattern: 'Provide the valid username.'
-    },
-    email: {
-      required: 'This field may not be blank.',
-      maxLength: 'No more than 150 characters.',
-      pattern: 'Provide the valid email.'
-    },
     password: {
       required: 'This field may not be blank.',
       minLength: 'At least 8 characters.',
@@ -41,17 +34,29 @@ const RegistrationScreen = ({ navigation }: ScreenProps) => {
     }
   };
 
+  const [message, setMessage] = useState<string>('');
+  const hideMessage = () => setMessage('');
   const [error, setError] = useState<string>('');
   const hideError = () => setError('');
   const { control, handleSubmit, setError: setFieldError, watch } = useForm();
-  const handleOnSubmit = async (data: RegistrationRequestData) => {
+  const handleOnSubmit = async (data: ChangePasswordRequestData) => {
     Keyboard.dismiss();
     const errorHandler = {
       validation,
       setError,
       setFieldError
     };
-    await register!(data, errorHandler);
+    try {
+      await request({
+        url: ENDPOINTS.profile,
+        method: 'PATCH',
+        data
+      });
+      setMessage('Password has been changed successfully!');
+    } catch (err) {
+      const error = (err as AxiosError).response?.data as ErrorData;
+      handleErrors(error.details, errorHandler);
+    }
   };
 
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -60,81 +65,44 @@ const RegistrationScreen = ({ navigation }: ScreenProps) => {
   return (
     <View style={[styles.container, styles.centerVertical]}>
       <Controller
-        name="username"
-        control={control}
-        defaultValue=""
-        rules={{
-          required: true,
-          maxLength: 150,
-          pattern: /^[\w]+$/
-        }}
-        render={({
-          field: { onChange, value },
-          fieldState: { error: fieldError }
-        }) => (
-          <>
-            <TextInput
-              label="Username *"
-              mode="outlined"
-              autoCapitalize="none"
-              value={value}
-              onChangeText={onChange}
-              error={fieldError !== undefined}
-              style={styles.formField}
-              right={<TextInput.Icon icon="account" />}
-            />
-            {fieldError !== undefined && (
-              <HelperText type="error" style={styles.formHelperText}>
-                {fieldError
-                  ? fieldError.message ||
-                    validation.username[
-                      fieldError.type as keyof typeof validation.username
-                    ]
-                  : ''}
-              </HelperText>
-            )}
-          </>
-        )}
-      />
-      <Controller
-        name="email"
-        control={control}
-        defaultValue=""
-        rules={{
-          required: true,
-          maxLength: 150,
-          pattern: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/
-        }}
-        render={({
-          field: { onChange, value },
-          fieldState: { error: fieldError }
-        }) => (
-          <>
-            <TextInput
-              label="Email *"
-              mode="outlined"
-              autoCapitalize="none"
-              value={value}
-              onChangeText={onChange}
-              error={fieldError !== undefined}
-              style={styles.formField}
-              right={<TextInput.Icon icon="email" />}
-            />
-            {fieldError !== undefined && (
-              <HelperText type="error" style={styles.formHelperText}>
-                {fieldError
-                  ? fieldError.message ||
-                    validation.email[
-                      fieldError.type as keyof typeof validation.email
-                    ]
-                  : ''}
-              </HelperText>
-            )}
-          </>
-        )}
-      />
-      <Controller
         name="password"
+        control={control}
+        defaultValue=""
+        rules={{
+          required: true
+        }}
+        render={({
+          field: { onChange, value },
+          fieldState: { error: fieldError }
+        }) => (
+          <>
+            <TextInput
+              label="Old password *"
+              mode="outlined"
+              secureTextEntry={!showPassword}
+              textContentType="password"
+              autoCapitalize="none"
+              value={value}
+              onChangeText={onChange}
+              error={fieldError !== undefined}
+              style={styles.formField}
+              right={<TextInput.Icon icon="shield-key" />}
+            />
+            {fieldError !== undefined && (
+              <HelperText type="error" style={styles.formHelperText}>
+                {fieldError
+                  ? fieldError.message ||
+                    validation.password[
+                      fieldError.type as keyof typeof validation.password
+                    ]
+                  : ''}
+              </HelperText>
+            )}
+          </>
+        )}
+      />
+      <Controller
+        name="new_password"
         control={control}
         defaultValue=""
         rules={{
@@ -149,10 +117,10 @@ const RegistrationScreen = ({ navigation }: ScreenProps) => {
         }) => (
           <>
             <TextInput
-              label="Password *"
+              label="New password *"
               mode="outlined"
-              textContentType="password"
               secureTextEntry={!showPassword}
+              textContentType="password"
               autoCapitalize="none"
               value={value}
               onChangeText={onChange}
@@ -179,7 +147,7 @@ const RegistrationScreen = ({ navigation }: ScreenProps) => {
         defaultValue=""
         rules={{
           required: true,
-          validate: (password) => password === watch('password')
+          validate: (password) => password === watch('new_password')
         }}
         render={({
           field: { onChange, value },
@@ -187,7 +155,7 @@ const RegistrationScreen = ({ navigation }: ScreenProps) => {
         }) => (
           <>
             <TextInput
-              label="Confirm password *"
+              label="Confirm new password *"
               mode="outlined"
               textContentType="password"
               secureTextEntry={!showPassword}
@@ -216,18 +184,19 @@ const RegistrationScreen = ({ navigation }: ScreenProps) => {
         loading={loading}
         style={styles.formButton}
         onPress={handleSubmit((data: object) =>
-          handleOnSubmit(data as RegistrationRequestData)
+          handleOnSubmit(data as ChangePasswordRequestData)
         )}
       >
-        Sign Up
+        Change
       </Button>
-      <View style={styles.rowCenter}>
-        <Text>Already have an account?</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Sign In')}>
-          <Text style={styles.link}>Sign in</Text>
-        </TouchableOpacity>
-      </View>
       <Portal>
+        <DialogSuccess
+          title="Congratulations!"
+          message={message}
+          button="OK"
+          onDismiss={hideMessage}
+          onAgreePress={hideMessage}
+        />
         <DialogError
           title="Attention!"
           error={error}
@@ -240,4 +209,4 @@ const RegistrationScreen = ({ navigation }: ScreenProps) => {
   );
 };
 
-export default RegistrationScreen;
+export default PrivacySettingsScreen;

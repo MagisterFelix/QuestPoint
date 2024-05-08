@@ -1,21 +1,10 @@
-import { View } from 'react-native';
-import { Button } from 'react-native-paper';
-
-import { styles } from '@/common/styles';
+import UserProfile from '@/components/UserProfile';
 import { useAuth } from '@/providers/AuthProvider';
 
 const ProfileScreen = () => {
-  const { logout } = useAuth();
+  const { user } = useAuth();
 
-  return (
-    <View
-      style={[styles.container, styles.centerVertical, styles.centerHorizontal]}
-    >
-      <Button mode="outlined" onPress={logout}>
-        Logout
-      </Button>
-    </View>
-  );
+  return <UserProfile loading={false} data={user!} />;
 };
 
 export default ProfileScreen;

@@ -8,7 +8,7 @@ class ImageUtils:
 
     @staticmethod
     def validate_image_file_extension(file) -> None:
-        valid_extensions = [".jpg", ".jpeg", ".png", ".svg"]
+        valid_extensions = [".jpg", ".jpeg", ".png"]
         extension = os.path.splitext(file.name)[1]
 
         if not extension.lower() in valid_extensions:

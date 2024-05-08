@@ -1,24 +1,43 @@
+import { AxiosError, AxiosResponse } from 'axios';
+import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Keyboard, TouchableOpacity, View } from 'react-native';
+import { Keyboard, View } from 'react-native';
 import {
+  Avatar,
   Button,
   HelperText,
   Portal,
-  Text,
-  TextInput
+  TextInput,
+  TouchableRipple
 } from 'react-native-paper';
 
+import { useAxios } from '@/api/axios';
+import { ENDPOINTS } from '@/api/endpoints';
+import { handleErrors } from '@/api/errors';
 import { styles } from '@/common/styles';
 import DialogError from '@/components/DialogError';
+import DialogInfo from '@/components/DialogInfo';
+import DialogSuccess from '@/components/DialogSuccess';
 import { useAuth } from '@/providers/AuthProvider';
-import { ScreenProps } from '@/types/props';
-import { RegistrationRequestData } from '@/types/request';
+import { ErrorData } from '@/types/errors';
+import { UpdateAccountRequestData } from '@/types/request';
+import { ProfileResponseData } from '@/types/response';
 
-const RegistrationScreen = ({ navigation }: ScreenProps) => {
-  const { loading, register } = useAuth();
+const AccountSettingsScreen = () => {
+  const { user, updateUser } = useAuth();
+
+  const [{ loading }, request] = useAxios(
+    {},
+    {
+      manual: true
+    }
+  );
 
   const validation = {
+    image: {
+      validate: 'Invalid image or size greater than 10 MB.'
+    },
     username: {
       required: 'This field may not be blank.',
       maxLength: 'No more than 150 characters.',
@@ -29,40 +48,104 @@ const RegistrationScreen = ({ navigation }: ScreenProps) => {
       maxLength: 'No more than 150 characters.',
       pattern: 'Provide the valid email.'
     },
-    password: {
-      required: 'This field may not be blank.',
-      minLength: 'At least 8 characters.',
-      maxLength: 'No more than 128 characters.',
-      pattern: 'Provide the valid password.'
+    first_name: {
+      maxLength: 'No more than 150 characters.'
     },
-    confirm_password: {
-      required: 'This field may not be blank.',
-      validate: 'Password mismatch.'
+    last_name: {
+      maxLength: 'No more than 150 characters.'
     }
   };
 
-  const [error, setError] = useState<string>('');
+  const [message, setMessage] = useState<string>('');
+  const hideMessage = () => setMessage('');
+  const [info, setInfo] = useState<string>('');
+  const hideInfo = () => setInfo('');
+  const [error, setError] = useState('');
   const hideError = () => setError('');
-  const { control, handleSubmit, setError: setFieldError, watch } = useForm();
-  const handleOnSubmit = async (data: RegistrationRequestData) => {
+  const { control, handleSubmit, setError: setFieldError, reset } = useForm();
+  const handleOnSubmit = async (data: UpdateAccountRequestData) => {
     Keyboard.dismiss();
     const errorHandler = {
       validation,
       setError,
       setFieldError
     };
-    await register!(data, errorHandler);
+    const filtered = Object.entries(data).filter(
+      (entry: [string, any]) =>
+        user && user[entry[0] as keyof ProfileResponseData] !== entry[1]
+    );
+    if (filtered.length === 0) {
+      setInfo('Nothing to update!');
+    } else {
+      const formData = new FormData();
+      filtered.forEach((entry: [string, any]) =>
+        formData.append(entry[0], entry[1])
+      );
+      try {
+        const response: AxiosResponse<ProfileResponseData> = await request({
+          url: ENDPOINTS.profile,
+          method: 'PATCH',
+          data: formData
+        });
+        updateUser!(response.data);
+        reset(response.data);
+        setMessage('Account has been updated successfully!');
+      } catch (err) {
+        const error = (err as AxiosError).response?.data as ErrorData;
+        handleErrors(error.details, errorHandler);
+      }
+    }
   };
 
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-  const togglePassword = () => setShowPassword((show) => !show);
+  const pickImage = async (onChange: (...event: any[]) => void) => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1
+    });
+    if (!result.canceled) {
+      const image = result.assets[0];
+      const uri = image.uri;
+      const name = uri.substring(uri.lastIndexOf('/') + 1, uri.length);
+      const type = image.mimeType;
+      const file = {
+        uri,
+        type,
+        name
+      };
+      onChange(file);
+    }
+  };
 
   return (
     <View style={[styles.container, styles.centerVertical]}>
+      <View style={[styles.centerHorizontal, styles.formField]}>
+        <Controller
+          name="image"
+          control={control}
+          defaultValue={user?.image}
+          render={({ field: { onChange, value } }) => (
+            <TouchableRipple
+              onPress={() => pickImage(onChange)}
+              borderless
+              style={[styles.formField, styles.imageRipple]}
+            >
+              <Avatar.Image
+                source={{
+                  uri: value?.uri ? value.uri : user?.image
+                }}
+                size={128}
+                style={styles.avatar}
+              />
+            </TouchableRipple>
+          )}
+        />
+      </View>
       <Controller
         name="username"
         control={control}
-        defaultValue=""
+        defaultValue={user?.username}
         rules={{
           required: true,
           maxLength: 150,
@@ -99,7 +182,7 @@ const RegistrationScreen = ({ navigation }: ScreenProps) => {
       <Controller
         name="email"
         control={control}
-        defaultValue=""
+        defaultValue={user?.email}
         rules={{
           required: true,
           maxLength: 150,
@@ -134,14 +217,11 @@ const RegistrationScreen = ({ navigation }: ScreenProps) => {
         )}
       />
       <Controller
-        name="password"
+        name="first_name"
         control={control}
-        defaultValue=""
+        defaultValue={user?.first_name}
         rules={{
-          required: true,
-          minLength: 8,
-          maxLength: 128,
-          pattern: /^(?=.*\d)(?=.*[A-Za-z]).{8,128}$/
+          maxLength: 150
         }}
         render={({
           field: { onChange, value },
@@ -149,23 +229,21 @@ const RegistrationScreen = ({ navigation }: ScreenProps) => {
         }) => (
           <>
             <TextInput
-              label="Password *"
+              label="First name"
               mode="outlined"
-              textContentType="password"
-              secureTextEntry={!showPassword}
               autoCapitalize="none"
               value={value}
               onChangeText={onChange}
               error={fieldError !== undefined}
               style={styles.formField}
-              right={<TextInput.Icon icon="eye" onPress={togglePassword} />}
+              right={<TextInput.Icon icon="card-account-details" />}
             />
             {fieldError !== undefined && (
               <HelperText type="error" style={styles.formHelperText}>
                 {fieldError
                   ? fieldError.message ||
-                    validation.password[
-                      fieldError.type as keyof typeof validation.password
+                    validation.first_name[
+                      fieldError.type as keyof typeof validation.first_name
                     ]
                   : ''}
               </HelperText>
@@ -174,12 +252,11 @@ const RegistrationScreen = ({ navigation }: ScreenProps) => {
         )}
       />
       <Controller
-        name="confirm_password"
+        name="last_name"
         control={control}
-        defaultValue=""
+        defaultValue={user?.last_name}
         rules={{
-          required: true,
-          validate: (password) => password === watch('password')
+          maxLength: 150
         }}
         render={({
           field: { onChange, value },
@@ -187,23 +264,21 @@ const RegistrationScreen = ({ navigation }: ScreenProps) => {
         }) => (
           <>
             <TextInput
-              label="Confirm password *"
+              label="Last name"
               mode="outlined"
-              textContentType="password"
-              secureTextEntry={!showPassword}
               autoCapitalize="none"
               value={value}
               onChangeText={onChange}
               error={fieldError !== undefined}
               style={styles.formField}
-              right={<TextInput.Icon icon="key" />}
+              right={<TextInput.Icon icon="card-account-details" />}
             />
             {fieldError !== undefined && (
               <HelperText type="error" style={styles.formHelperText}>
                 {fieldError
                   ? fieldError.message ||
-                    validation.confirm_password[
-                      fieldError.type as keyof typeof validation.confirm_password
+                    validation.last_name[
+                      fieldError.type as keyof typeof validation.last_name
                     ]
                   : ''}
               </HelperText>
@@ -216,18 +291,26 @@ const RegistrationScreen = ({ navigation }: ScreenProps) => {
         loading={loading}
         style={styles.formButton}
         onPress={handleSubmit((data: object) =>
-          handleOnSubmit(data as RegistrationRequestData)
+          handleOnSubmit(data as UpdateAccountRequestData)
         )}
       >
-        Sign Up
+        Update
       </Button>
-      <View style={styles.rowCenter}>
-        <Text>Already have an account?</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Sign In')}>
-          <Text style={styles.link}>Sign in</Text>
-        </TouchableOpacity>
-      </View>
       <Portal>
+        <DialogSuccess
+          title="Congratulations!"
+          message={message}
+          button="OK"
+          onDismiss={hideMessage}
+          onAgreePress={hideMessage}
+        />
+        <DialogInfo
+          title="Oops..."
+          info={info}
+          button="OK"
+          onDismiss={hideInfo}
+          onAgreePress={hideInfo}
+        />
         <DialogError
           title="Attention!"
           error={error}
@@ -240,4 +323,4 @@ const RegistrationScreen = ({ navigation }: ScreenProps) => {
   );
 };
 
-export default RegistrationScreen;
+export default AccountSettingsScreen;

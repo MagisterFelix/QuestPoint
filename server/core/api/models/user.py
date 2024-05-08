@@ -44,7 +44,7 @@ class UserManager(BaseUserManager, BaseManager):
 
 class User(AbstractUser, PermissionsMixin):
 
-    DEFAULT_AVATAR_PATH = "../static/avatar-default.svg"
+    DEFAULT_AVATAR_PATH = "../static/avatar-default.png"
 
     def upload_image_to(self, filename: str) -> str:
         name = self.username

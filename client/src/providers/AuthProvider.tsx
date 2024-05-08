@@ -5,44 +5,55 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { useAxios } from '@/api/axios';
 import { ENDPOINTS } from '@/api/endpoints';
 import { handleErrors } from '@/api/errors';
-import { AuthContextProps, AuthProps } from '@/types/auth';
 import { ErrorData, ErrorHandler } from '@/types/errors';
+import { AuthContextProps, AuthProps } from '@/types/props';
 import {
   AuthorizationRequestData,
   RegistrationRequestData
 } from '@/types/request';
 import {
   AuthorizationResponseData,
+  ProfileResponseData,
   RegistrationResponseData
 } from '@/types/response';
 
-const AuthContext = createContext<AuthContextProps>({});
+const AuthContext = createContext<AuthContextProps>({
+  user: null,
+  checking: false
+});
 
 export const useAuth = () => {
   return useContext(AuthContext);
 };
 
 const AuthProvider = ({ children }: AuthProps) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [user, setUser] = useState<ProfileResponseData | null>(null);
+  const [checking, setChecking] = useState<boolean>(false);
 
   useEffect(() => {
     const checkAuthentication = async () => {
+      setChecking(true);
       const token = await SecureStore.getItemAsync('access');
-      if (token) {
-        setIsAuthenticated(true);
+      const user = await SecureStore.getItemAsync('user');
+      if (token && user) {
+        setUser(JSON.parse(user));
       }
+      setChecking(false);
     };
     checkAuthentication();
   }, []);
 
   const [{ loading }, request] = useAxios(
-    {
-      timeout: 10000
-    },
+    {},
     {
       manual: true
     }
   );
+
+  const updateUser = async (user: ProfileResponseData) => {
+    await SecureStore.setItemAsync('user', JSON.stringify(user));
+    setUser(user);
+  };
 
   const login = async (
     data: AuthorizationRequestData,
@@ -55,14 +66,9 @@ const AuthProvider = ({ children }: AuthProps) => {
         data
       });
       await SecureStore.setItemAsync('access', response.data.access);
-      setIsAuthenticated(true);
+      updateUser(response.data.user);
     } catch (err) {
-      const axiosError = err as AxiosError;
-      if (axiosError.code === AxiosError.ERR_NETWORK) {
-        alert('Timeout!');
-        return;
-      }
-      const error = axiosError.response?.data as ErrorData;
+      const error = (err as AxiosError).response?.data as ErrorData;
       handleErrors(error.details, errorHandler);
     }
   };
@@ -83,23 +89,21 @@ const AuthProvider = ({ children }: AuthProps) => {
       };
       await login(loginData, errorHandler);
     } catch (err) {
-      const axiosError = err as AxiosError;
-      if (axiosError.code === AxiosError.ERR_NETWORK) {
-        alert('Timeout!');
-        return;
-      }
-      const error = axiosError.response?.data as ErrorData;
+      const error = (err as AxiosError).response?.data as ErrorData;
       handleErrors(error.details, errorHandler);
     }
   };
 
   const logout = async () => {
     await SecureStore.deleteItemAsync('access');
-    setIsAuthenticated(false);
+    await SecureStore.deleteItemAsync('user');
+    setUser(null);
   };
 
   const value = {
-    isAuthenticated,
+    user,
+    updateUser,
+    checking,
     loading,
     login,
     register,

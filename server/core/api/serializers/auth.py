@@ -7,6 +7,7 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from core.api.models import User
+from core.api.serializers.user import ProfileSerializer
 
 
 class AuthorizationSerializer(TokenObtainPairSerializer):
@@ -15,20 +16,26 @@ class AuthorizationSerializer(TokenObtainPairSerializer):
         login = attrs["username"]
         password = attrs.get("password", "")
 
-        user = User.objects.get_or_none(Q(username=login) | Q(email=login))
+        self.user = User.objects.get_or_none(Q(username=login) | Q(email=login))
 
-        if user is None or not user.check_password(password):
+        if self.user is None or not self.user.check_password(password):
             raise AuthenticationFailed("No user was found with these credentials.")
 
-        if not user.is_active:
+        if not self.user.is_active:
             raise AuthenticationFailed("User is blocked.")
 
-        attrs["username"] = user.username
+        attrs["username"] = self.user.username
 
         return super().validate(attrs)
 
     def to_representation(self, tokens: dict) -> OrderedDict:
         data = OrderedDict(tokens)
+
+        if self.user is None:
+            return data
+
+        data["user"] = ProfileSerializer(self.user, context=self.context).data
+
         return data
 
 

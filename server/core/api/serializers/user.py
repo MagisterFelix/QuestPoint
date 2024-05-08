@@ -27,7 +27,7 @@ class ProfileSerializer(UserSerializer):
     new_password = serializers.CharField(max_length=128, required=False, write_only=True)
 
     class Meta(UserSerializer.Meta):
-        exclude = UserSerializer.Meta.exclude[2:]
+        exclude = UserSerializer.Meta.exclude[3:]
         extra_kwargs = {
             "username": {
                 "required": False
@@ -38,6 +38,18 @@ class ProfileSerializer(UserSerializer):
             "password": {
                 "required": False,
                 "write_only": True
+            },
+            "is_active": {
+                "read_only": True
+            },
+            "is_staff": {
+                "read_only": True
+            },
+            "is_superuser": {
+                "read_only": True
+            },
+            "xp": {
+                "read_only": True
             },
         }
 
