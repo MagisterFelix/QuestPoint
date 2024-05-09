@@ -120,6 +120,7 @@ const AuthorizationScreen = ({ navigation }: ScreenProps) => {
       <Button
         mode="contained"
         loading={loading}
+        disabled={loading}
         style={styles.formButton}
         onPress={handleSubmit((data: object) =>
           handleOnSubmit(data as AuthorizationRequestData)
