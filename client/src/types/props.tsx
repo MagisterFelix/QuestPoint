@@ -4,27 +4,42 @@ import { ErrorHandler } from '@/types/errors';
 import { Navigation } from '@/types/navigation';
 import {
   AuthorizationRequestData,
-  RegistrationRequestData
+  RegistrationRequestData,
+  TransactionRequestData,
+  UpdateAccountRequestData
 } from '@/types/request';
 import { ProfileResponseData, UserResponseData } from '@/types/response';
 
 export interface AuthContextProps {
   user: ProfileResponseData | null;
-  updateUser?: (user: ProfileResponseData) => Promise<void>;
+  stripeAccount: string | null;
+  updateUser?: (
+    user: ProfileResponseData,
+    stripeAccount?: string
+  ) => Promise<void>;
   checking: boolean;
   loading?: boolean;
   login?: (
     data: AuthorizationRequestData,
     errorHandler: ErrorHandler
-  ) => Promise<any>;
+  ) => Promise<void>;
   register?: (
     data: RegistrationRequestData,
     errorHandler: ErrorHandler
-  ) => Promise<any>;
+  ) => Promise<void>;
   logout?: () => Promise<void>;
 }
 
-export interface AuthProps {
+export interface PaymentContextProps {
+  loading?: boolean;
+  error?: boolean;
+  hideError?: () => void;
+  updateCustomer?: (data: UpdateAccountRequestData) => Promise<void>;
+  pay?: (data: TransactionRequestData) => Promise<void>;
+  payout?: (data: TransactionRequestData) => Promise<void>;
+}
+
+export interface ProviderProps {
   children: ReactNode;
 }
 

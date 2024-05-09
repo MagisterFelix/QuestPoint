@@ -20,12 +20,15 @@ import DialogError from '@/components/DialogError';
 import DialogInfo from '@/components/DialogInfo';
 import DialogSuccess from '@/components/DialogSuccess';
 import { useAuth } from '@/providers/AuthProvider';
+import { usePayment } from '@/providers/PaymentProvider';
 import { ErrorData } from '@/types/errors';
 import { UpdateAccountRequestData } from '@/types/request';
 import { ProfileResponseData } from '@/types/response';
 
 const AccountSettingsScreen = () => {
   const { user, updateUser } = useAuth();
+
+  const { updateCustomer } = usePayment();
 
   const [{ loading }, request] = useAxios(
     {},
@@ -89,6 +92,9 @@ const AccountSettingsScreen = () => {
         });
         updateUser!(response.data);
         reset(response.data);
+        if (data.username || data.email) {
+          updateCustomer!(data);
+        }
         setMessage('Account has been updated successfully!');
       } catch (err) {
         const error = (err as AxiosError).response?.data as ErrorData;
@@ -289,6 +295,7 @@ const AccountSettingsScreen = () => {
       <Button
         mode="contained"
         loading={loading}
+        disabled={loading}
         style={styles.formButton}
         onPress={handleSubmit((data: object) =>
           handleOnSubmit(data as UpdateAccountRequestData)

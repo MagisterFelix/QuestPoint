@@ -22,12 +22,11 @@ const SettingsScreen = ({ navigation }: ScreenProps) => {
       </TouchableRipple>
       <Divider />
       <TouchableRipple
-        onPress={() => navigation.navigate('Purchase')}
+        onPress={() => navigation.navigate('Payment')}
         style={styles.settingsTab}
       >
-        <Text variant="titleMedium">Purchase</Text>
+        <Text variant="titleMedium">Payment</Text>
       </TouchableRipple>
-      <Divider />
     </View>
   );
 };

@@ -11,7 +11,7 @@ import { useEffect } from 'react';
 import { AxiosProps } from '@/types/props';
 
 const instance = axios.create({
-  baseURL: process.env.API_URL,
+  baseURL: process.env.SERVER_API_URL,
   headers: {
     Accept: 'application/json',
     'Content-Type': 'multipart/form-data'

@@ -6,7 +6,7 @@ import { useAxios } from '@/api/axios';
 import { ENDPOINTS } from '@/api/endpoints';
 import { handleErrors } from '@/api/errors';
 import { ErrorData, ErrorHandler } from '@/types/errors';
-import { AuthContextProps, AuthProps } from '@/types/props';
+import { AuthContextProps, ProviderProps } from '@/types/props';
 import {
   AuthorizationRequestData,
   RegistrationRequestData
@@ -19,6 +19,7 @@ import {
 
 const AuthContext = createContext<AuthContextProps>({
   user: null,
+  stripeAccount: null,
   checking: false
 });
 
@@ -26,8 +27,9 @@ export const useAuth = () => {
   return useContext(AuthContext);
 };
 
-const AuthProvider = ({ children }: AuthProps) => {
+const AuthProvider = ({ children }: ProviderProps) => {
   const [user, setUser] = useState<ProfileResponseData | null>(null);
+  const [stripeAccount, setStripeAccount] = useState<string | null>(null);
   const [checking, setChecking] = useState<boolean>(false);
 
   useEffect(() => {
@@ -35,8 +37,14 @@ const AuthProvider = ({ children }: AuthProps) => {
       setChecking(true);
       const token = await SecureStore.getItemAsync('access');
       const user = await SecureStore.getItemAsync('user');
-      if (token && user) {
-        setUser(JSON.parse(user));
+      const stripeAccount = await SecureStore.getItemAsync('stripe_account');
+      if (token) {
+        if (user) {
+          setUser(JSON.parse(user));
+        }
+        if (stripeAccount) {
+          setStripeAccount(stripeAccount);
+        }
       }
       setChecking(false);
     };
@@ -50,9 +58,16 @@ const AuthProvider = ({ children }: AuthProps) => {
     }
   );
 
-  const updateUser = async (user: ProfileResponseData) => {
+  const updateUser = async (
+    user: ProfileResponseData,
+    stripeAccount?: string
+  ) => {
     await SecureStore.setItemAsync('user', JSON.stringify(user));
     setUser(user);
+    if (stripeAccount) {
+      await SecureStore.setItemAsync('stripe_account', stripeAccount);
+      setStripeAccount(stripeAccount);
+    }
   };
 
   const login = async (
@@ -97,11 +112,14 @@ const AuthProvider = ({ children }: AuthProps) => {
   const logout = async () => {
     await SecureStore.deleteItemAsync('access');
     await SecureStore.deleteItemAsync('user');
+    await SecureStore.deleteItemAsync('stripe_account');
     setUser(null);
+    setStripeAccount(null);
   };
 
   const value = {
     user,
+    stripeAccount,
     updateUser,
     checking,
     loading,

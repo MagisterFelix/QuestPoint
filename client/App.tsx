@@ -12,14 +12,16 @@ import {
 
 import { AxiosInterceptor } from '@/api/axios';
 import { styles, theme } from '@/common/styles';
+import Balance from '@/components/Balance';
 import AuthProvider, { useAuth } from '@/providers/AuthProvider';
+import PaymentProvider from '@/providers/PaymentProvider';
 import AuthorizationScreen from '@/screens/auth/Authorization';
 import RegistrationScreen from '@/screens/auth/Registration';
 import AccountSettingsScreen from '@/screens/home/AccountSettings';
 import MapScreen from '@/screens/home/Map';
+import PaymentScreen from '@/screens/home/Payment';
 import PrivacySettingsScreen from '@/screens/home/PrivacySettings';
 import ProfileScreen from '@/screens/home/Profile';
-import PurchaseScreen from '@/screens/home/Purchase';
 import QuestListScreen from '@/screens/home/QuestList';
 import SettingsScreen from '@/screens/home/Settings';
 import { Navigation } from '@/types/navigation';
@@ -48,6 +50,11 @@ const HomeScreen = () => {
             <View style={styles.rowCenter}>
               <Icon source="clipboard-list" size={30} />
               <Text style={styles.headerTitle}>Quests</Text>
+            </View>
+          ),
+          headerRight: () => (
+            <View style={{ marginRight: 10 }}>
+              <Balance />
             </View>
           ),
           tabBarLabel: 'Quests',
@@ -95,66 +102,68 @@ const HomeScreen = () => {
         }}
       >
         {() => (
-          <Stack.Navigator>
-            <Stack.Screen
-              name="Profile"
-              component={ProfileScreen}
-              options={{
-                headerTitle: ({ children }) => (
-                  <View style={styles.rowCenter}>
-                    <Icon source="badge-account" size={30} />
-                    <Text style={styles.headerTitle}>{children}</Text>
-                  </View>
-                ),
-                headerRight: () => (
-                  <View style={styles.row}>
-                    <IconButton
-                      icon="account-settings-outline"
-                      style={{ marginRight: -10 }}
-                      onPress={() => navigation.navigate('Settings')}
-                    />
-                    <IconButton
-                      icon="logout"
-                      style={{ marginRight: -10 }}
-                      onPress={() => logout!()}
-                    />
-                  </View>
-                )
-              }}
-            />
-            <Stack.Screen
-              name="Settings"
-              component={SettingsScreen}
-              options={{
-                headerTitleAlign: 'center',
-                animation: 'ios'
-              }}
-            />
-            <Stack.Screen
-              name="Account Settings"
-              component={AccountSettingsScreen}
-              options={{
-                headerTitleAlign: 'center',
-                animation: 'ios'
-              }}
-            />
-            <Stack.Screen
-              name="Privacy Settings"
-              component={PrivacySettingsScreen}
-              options={{
-                headerTitleAlign: 'center',
-                animation: 'ios'
-              }}
-            />
-            <Stack.Screen
-              name="Purchase"
-              component={PurchaseScreen}
-              options={{
-                headerTitleAlign: 'center',
-                animation: 'ios'
-              }}
-            />
-          </Stack.Navigator>
+          <PaymentProvider>
+            <Stack.Navigator>
+              <Stack.Screen
+                name="Profile"
+                component={ProfileScreen}
+                options={{
+                  headerTitle: ({ children }) => (
+                    <View style={styles.rowCenter}>
+                      <Icon source="badge-account" size={30} />
+                      <Text style={styles.headerTitle}>{children}</Text>
+                    </View>
+                  ),
+                  headerRight: () => (
+                    <View style={styles.row}>
+                      <IconButton
+                        icon="account-settings-outline"
+                        style={{ marginRight: -10 }}
+                        onPress={() => navigation.navigate('Settings')}
+                      />
+                      <IconButton
+                        icon="logout"
+                        style={{ marginRight: -10 }}
+                        onPress={() => logout!()}
+                      />
+                    </View>
+                  )
+                }}
+              />
+              <Stack.Screen
+                name="Settings"
+                component={SettingsScreen}
+                options={{
+                  headerTitleAlign: 'center',
+                  animation: 'ios'
+                }}
+              />
+              <Stack.Screen
+                name="Account Settings"
+                component={AccountSettingsScreen}
+                options={{
+                  headerTitleAlign: 'center',
+                  animation: 'ios'
+                }}
+              />
+              <Stack.Screen
+                name="Privacy Settings"
+                component={PrivacySettingsScreen}
+                options={{
+                  headerTitleAlign: 'center',
+                  animation: 'ios'
+                }}
+              />
+              <Stack.Screen
+                name="Payment"
+                component={PaymentScreen}
+                options={{
+                  headerTitleAlign: 'center',
+                  animation: 'ios'
+                }}
+              />
+            </Stack.Navigator>
+          </PaymentProvider>
         )}
       </Tab.Screen>
     </Tab.Navigator>

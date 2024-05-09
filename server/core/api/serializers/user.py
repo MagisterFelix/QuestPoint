@@ -48,6 +48,9 @@ class ProfileSerializer(UserSerializer):
             "is_superuser": {
                 "read_only": True
             },
+            "balance": {
+                "read_only": True
+            },
             "xp": {
                 "read_only": True
             },
@@ -63,7 +66,10 @@ class ProfileSerializer(UserSerializer):
 
         if transfer is not None:
             if transfer == 0:
-                raise ValidationError("Transfer cannot be the zero.")
+                raise ValidationError("Transfer cannot be zero.")
+
+            if user.balance + transfer < 0:
+                raise ValidationError("Balance cannot be negative.")
 
             attrs["balance"] = user.balance + transfer
 

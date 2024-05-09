@@ -25,3 +25,8 @@ export interface ChangePasswordRequestData {
   password?: string;
   new_password?: string;
 }
+
+export interface TransactionRequestData {
+  account?: string;
+  amount: number;
+}

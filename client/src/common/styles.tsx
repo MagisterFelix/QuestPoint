@@ -58,6 +58,11 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 5
   },
+  rowSpaceBetween: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 5
+  },
   headerTitle: {
     fontSize: 20,
     fontWeight: 'bold'
