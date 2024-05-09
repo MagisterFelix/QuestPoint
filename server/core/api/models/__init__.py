@@ -4,6 +4,5 @@ from .feedback import Feedback
 from .message import Message
 from .quest import Quest
 from .record import Record
-from .transaction import Transaction
 from .trophy import Trophy
 from .user import User

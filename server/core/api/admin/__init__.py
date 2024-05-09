@@ -7,7 +7,6 @@ from .feedback import FeedbackAdmin
 from .message import MessageAdmin
 from .quest import QuestAdmin
 from .record import RecordAdmin
-from .transaction import TransactionAdmin
 from .trophy import TrophyAdmin
 from .user import UserAdmin
 
