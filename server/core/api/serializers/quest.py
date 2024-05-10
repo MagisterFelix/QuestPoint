@@ -9,7 +9,7 @@ from core.api.models.user import User
 class QuestSerializer(ModelSerializer):
 
     category = CharField(source="category.title")
-    creator = CharField(source="creator.username")
+    creator = CharField(source="creator.username", required=False)
 
     class Meta:
 
@@ -20,30 +20,28 @@ class QuestSerializer(ModelSerializer):
     def validate(self, attrs: dict) -> dict:
         reward = attrs.get("reward")
         category = attrs.get("category")
-        creator = attrs.get("creator")
+        creator = self.context.get("sender")
 
         if category is not None and category.get("title"):
             if not Category.objects.filter(title=category["title"]).exists():
                 raise ValidationError("Title doesn't exists")
-        if creator is not None and creator.get("username"):
-            if not User.objects.filter(username=creator["username"]).exists():
+        if creator is not None:
+            attrs["creator"] = creator
+            if not User.objects.filter(username=creator.username).exists():
                 raise ValidationError("User doesn't exists")
 
-            user = User.objects.get(username=creator["username"])
-            if self.context["sender"] != user:
-                raise ValidationError("Invalid sender")
             if reward is not None:
                 if reward == 0:
                     raise ValidationError("Reward cannot be the zero.")
-                if reward > user.balance:
+                if reward > creator.balance:
                     raise ValidationError("Balance cannot be lower than reward.")
+
         return super().validate(attrs)
 
     def create(self, validated_data):
-        user = User.objects.get(username=validated_data["creator"]["username"])
+        user = validated_data["creator"]
         user.balance -= validated_data["reward"]
         user.save()
         validated_data["creator"] = user
         validated_data["category"] = Category.objects.get(title=validated_data["category"]["title"])
-
         return super().create(validated_data)

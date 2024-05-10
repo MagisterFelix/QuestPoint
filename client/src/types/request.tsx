@@ -21,5 +21,4 @@ export interface QuestRequestData {
   reward: number;
   latitude: number;
   longitude: number;
-  creator: String;
 }
