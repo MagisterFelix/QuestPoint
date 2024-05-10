@@ -1,14 +1,18 @@
+import { NavigationProp, RouteProp } from '@react-navigation/native';
 import { ReactNode } from 'react';
 
 import { ErrorHandler } from '@/types/errors';
-import { Navigation } from '@/types/navigation';
 import {
   AuthorizationRequestData,
   RegistrationRequestData,
   TransactionRequestData,
   UpdateAccountRequestData
 } from '@/types/request';
-import { ProfileResponseData, UserResponseData } from '@/types/response';
+import {
+  FeedbackResponseData,
+  ProfileResponseData,
+  UserResponseData
+} from '@/types/response';
 
 export interface AuthContextProps {
   user: ProfileResponseData | null;
@@ -68,10 +72,16 @@ export interface DialogErrorProps extends DialogProps {
 }
 
 export interface ScreenProps {
-  navigation: Navigation;
+  route: RouteProp<any>;
+  navigation: NavigationProp<any>;
 }
 
 export interface UserProfileProps {
   loading: boolean;
-  data: UserResponseData;
+  user: UserResponseData;
+  feedback: FeedbackResponseData[];
+}
+
+export interface ReviewProps {
+  review: FeedbackResponseData;
 }

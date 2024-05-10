@@ -27,3 +27,12 @@ export interface ProfileResponseData extends UserResponseData {
   email: string;
   balance: number;
 }
+
+export interface FeedbackResponseData {
+  id: number;
+  text: string;
+  rating: number;
+  created_at: string;
+  author: UserResponseData;
+  recipient: UserResponseData;
+}

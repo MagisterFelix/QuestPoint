@@ -87,6 +87,20 @@ export const styles = StyleSheet.create({
   user: {
     gap: 20
   },
+  feedback: {
+    marginTop: 20
+  },
+  review: {
+    backgroundColor: theme.colors.background,
+    margin: 10
+  },
+  reviewAuthor: {
+    gap: 10
+  },
+  reviewText: {
+    paddingTop: 10,
+    textAlign: 'justify'
+  },
   avatar: {
     backgroundColor: theme.colors.background
   },

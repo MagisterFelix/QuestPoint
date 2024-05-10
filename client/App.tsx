@@ -1,5 +1,9 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import {
+  NavigationContainer,
+  NavigationProp,
+  useNavigation
+} from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { View } from 'react-native';
 import {
@@ -24,13 +28,13 @@ import PrivacySettingsScreen from '@/screens/home/PrivacySettings';
 import ProfileScreen from '@/screens/home/Profile';
 import QuestListScreen from '@/screens/home/QuestList';
 import SettingsScreen from '@/screens/home/Settings';
-import { Navigation } from '@/types/navigation';
+import UserScreen from '@/screens/home/User';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 const HomeScreen = () => {
-  const navigation: Navigation = useNavigation();
+  const navigation: NavigationProp<any> = useNavigation();
   const { logout } = useAuth();
 
   return (
@@ -131,37 +135,47 @@ const HomeScreen = () => {
                 }}
               />
               <Stack.Screen
-                name="Settings"
-                component={SettingsScreen}
+                name="User"
+                component={UserScreen}
                 options={{
                   headerTitleAlign: 'center',
                   animation: 'ios'
                 }}
               />
-              <Stack.Screen
-                name="Account Settings"
-                component={AccountSettingsScreen}
-                options={{
-                  headerTitleAlign: 'center',
-                  animation: 'ios'
-                }}
-              />
-              <Stack.Screen
-                name="Privacy Settings"
-                component={PrivacySettingsScreen}
-                options={{
-                  headerTitleAlign: 'center',
-                  animation: 'ios'
-                }}
-              />
-              <Stack.Screen
-                name="Payment"
-                component={PaymentScreen}
-                options={{
-                  headerTitleAlign: 'center',
-                  animation: 'ios'
-                }}
-              />
+              <Stack.Group>
+                <Stack.Screen
+                  name="Settings"
+                  component={SettingsScreen}
+                  options={{
+                    headerTitleAlign: 'center',
+                    animation: 'ios'
+                  }}
+                />
+                <Stack.Screen
+                  name="Account Settings"
+                  component={AccountSettingsScreen}
+                  options={{
+                    headerTitleAlign: 'center',
+                    animation: 'ios'
+                  }}
+                />
+                <Stack.Screen
+                  name="Privacy Settings"
+                  component={PrivacySettingsScreen}
+                  options={{
+                    headerTitleAlign: 'center',
+                    animation: 'ios'
+                  }}
+                />
+                <Stack.Screen
+                  name="Payment"
+                  component={PaymentScreen}
+                  options={{
+                    headerTitleAlign: 'center',
+                    animation: 'ios'
+                  }}
+                />
+              </Stack.Group>
             </Stack.Navigator>
           </PaymentProvider>
         )}

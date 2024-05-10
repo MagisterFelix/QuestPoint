@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.template.defaultfilters import truncatechars
@@ -23,9 +24,15 @@ class Feedback(BaseModel):
     def short_text(self) -> str:
         return truncatechars(self.text, 64)
 
+    def clean(self) -> None:
+        super().clean()
+
+        if self.author == self.recipient:
+            raise ValidationError("Recipient cannot be the author.", code="invalid")
+
     def __str__(self) -> str:
         return self.recipient.username
 
     class Meta:
-        db_table = "feedbacks"
+        db_table = "feedback"
         ordering = ["created_at"]
