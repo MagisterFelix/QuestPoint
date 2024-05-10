@@ -45,3 +45,10 @@ class QuestView(APIView):
             }
 
         return Response(response, status=status_code)
+
+    def post(self, request: Request) -> Response:
+        serializer = self.serializer_class(data=request.data, context={"sender": self.request.user})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        response = Response(status=status.HTTP_200_OK)
+        return response
