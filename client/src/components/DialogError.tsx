@@ -13,9 +13,9 @@ const DialogError = ({
   return (
     <Dialog visible={error !== ''} onDismiss={onDismiss}>
       <Dialog.Icon icon="alert-octagon" color={theme.colors.error} size={48} />
-      <Dialog.Title style={styles.dialogContent}>{title}</Dialog.Title>
+      <Dialog.Title style={styles.textCenter}>{title}</Dialog.Title>
       <Dialog.Content>
-        <Text style={styles.dialogContent}>{error}</Text>
+        <Text style={styles.textCenter}>{error}</Text>
       </Dialog.Content>
       <Dialog.Actions>
         <Button onPress={onAgreePress}>{button}</Button>

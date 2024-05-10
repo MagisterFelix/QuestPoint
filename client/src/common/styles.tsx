@@ -63,6 +63,9 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 5
   },
+  textCenter: {
+    textAlign: 'center'
+  },
   headerTitle: {
     fontSize: 20,
     fontWeight: 'bold'
@@ -80,9 +83,6 @@ export const styles = StyleSheet.create({
   },
   formButton: {
     marginVertical: 10
-  },
-  dialogContent: {
-    textAlign: 'center'
   },
   user: {
     gap: 20

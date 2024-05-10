@@ -13,9 +13,9 @@ const DialogSuccess = ({
   return (
     <Dialog visible={message !== ''} onDismiss={onDismiss}>
       <Dialog.Icon icon="alert-circle" color={theme.colors.success} size={48} />
-      <Dialog.Title style={styles.dialogContent}>{title}</Dialog.Title>
+      <Dialog.Title style={styles.textCenter}>{title}</Dialog.Title>
       <Dialog.Content>
-        <Text style={styles.dialogContent}>{message}</Text>
+        <Text style={styles.textCenter}>{message}</Text>
       </Dialog.Content>
       <Dialog.Actions>
         <Button onPress={onAgreePress}>{button}</Button>
