@@ -36,7 +36,7 @@ class QuestSerializer(ModelSerializer):
                 if reward == 0:
                     raise ValidationError("Reward cannot be the zero.")
                 if reward > user.balance:
-                    raise ValidationError("Reward cannot be lower than balance.")
+                    raise ValidationError("Balance cannot be lower than reward.")
         return super().validate(attrs)
 
     def create(self, validated_data):
