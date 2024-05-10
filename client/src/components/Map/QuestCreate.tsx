@@ -1,10 +1,13 @@
 import { useAxios } from '@/api/axios';
 import { ENDPOINTS } from '@/api/endpoints';
 import { CategoryData } from '@/types/Map/CategoryData';
-import { CategoriesResponseData } from '@/types/response';
+import { QuestRequestData } from '@/types/request';
+import { CategoriesResponseData, ResponseData } from '@/types/response';
 import { AxiosError, AxiosResponse } from 'axios';
 import React, { useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import {
+  Keyboard,
   Modal,
   ScrollView,
   StyleSheet,
@@ -29,6 +32,30 @@ const QuestCreate = () => {
       manual: true
     }
   );
+  const [error, setError] = useState('');
+  const hideError = () => setError('');
+  const { control, handleSubmit, setError: setFieldError } = useForm();
+
+  const create = async (data: QuestRequestData) => {
+    try {
+      const response: AxiosResponse<ResponseData> = await request({
+        url: ENDPOINTS.quest,
+        method: 'POST'
+      });
+    } catch (err) {
+      const axiosError = err as AxiosError;
+      if (axiosError.code === AxiosError.ERR_NETWORK) {
+        alert('Timeout!');
+        return;
+      }
+    }
+  };
+
+  const handleOnSubmit = async (data: QuestRequestData) => {
+    Keyboard.dismiss();
+
+    await create(data);
+  };
 
   useEffect(() => {
     const getCategories = async () => {
@@ -84,19 +111,37 @@ const QuestCreate = () => {
           </TouchableOpacity>
           <Text style={styles.textLabel}>Create quest</Text>
           <View>
-            <TextInput
-              style={styles.inputTitle}
-              label="Title"
-              mode="outlined"
-              value={title}
-              onChangeText={(title) => setTitle(title)}
-              right={<TextInput.Icon icon="pencil" />}
-              placeholder="I need help with the garden..."
-              maxLength={40}
+            <Controller
+              name="title"
+              control={control}
+              defaultValue=""
+              rules={{
+                required: true
+              }}
+              render={({
+                field: { onChange, value },
+                fieldState: { error: fieldError }
+              }) => (
+                <>
+                  <TextInput
+                    style={styles.inputTitle}
+                    label="Title"
+                    mode="outlined"
+                    value={value}
+                    onChangeText={onChange}
+                    right={<TextInput.Icon icon="pencil" />}
+                    placeholder="I need help with the garden..."
+                    maxLength={40}
+                  />
+                  {fieldError !== undefined && (
+                    <HelperText type="error" visible={!validateText(title)}>
+                      Title must contain at least 5 letters.
+                    </HelperText>
+                  )}
+                </>
+              )}
             />
-            <HelperText type="error" visible={!validateText(title)}>
-              Title must contain at least 5 letters.
-            </HelperText>
+
             <TextInput
               style={styles.inputDescription}
               label="Description"
@@ -167,7 +212,11 @@ const QuestCreate = () => {
             </ScrollView>
           </View>
           <View style={styles.finishContainer}>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={handleSubmit((data: object) =>
+                handleOnSubmit(data as QuestRequestData)
+              )}
+            >
               <Icon source={'plus-circle'} size={56} color={'grey'} />
             </TouchableOpacity>
           </View>

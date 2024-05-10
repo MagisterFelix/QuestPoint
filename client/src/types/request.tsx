@@ -13,3 +13,13 @@ export interface MarkerRequestData {
   lat: number;
   lon: number;
 }
+
+export interface QuestRequestData {
+  title: String;
+  description: String;
+  category: String;
+  reward: number;
+  latitude: number;
+  longitude: number;
+  creator: String;
+}
