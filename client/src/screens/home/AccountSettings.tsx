@@ -237,7 +237,6 @@ const AccountSettingsScreen = () => {
             <TextInput
               label="First name"
               mode="outlined"
-              autoCapitalize="none"
               value={value}
               onChangeText={onChange}
               error={fieldError !== undefined}
@@ -272,7 +271,6 @@ const AccountSettingsScreen = () => {
             <TextInput
               label="Last name"
               mode="outlined"
-              autoCapitalize="none"
               value={value}
               onChangeText={onChange}
               error={fieldError !== undefined}
