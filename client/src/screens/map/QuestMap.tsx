@@ -19,6 +19,7 @@ import {
 } from 'react-native';
 import MapView, { Marker, Region } from 'react-native-maps';
 import { Icon } from 'react-native-paper';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1
@@ -76,51 +77,51 @@ const Map = () => {
   } | null>(null);
   const [lastRequestTime, setLastRequestTime] = useState<number>(0);
 
-  useEffect(() => {
-    const currentTime = new Date().getTime();
-    if (
-      location &&
-      currentTime - lastRequestTime > 60000 &&
-      (!lastLocation ||
-        getDistance(
-          lastLocation.latitude,
-          lastLocation.longitude,
-          location.coords.latitude,
-          location.coords.longitude
-        ) > 1000)
-    ) {
-      const getQuests = async (data: MarkerRequestData) => {
-        try {
-          const response: AxiosResponse<MarkerResponseData> = await request({
-            url: `${ENDPOINTS.quests + data.lat}/${data.lon}`,
-            method: 'GET',
-            data
-          });
-
-          setMarkers(response.data.data);
-          setLastLocation({
-            latitude: location.coords.latitude,
-            longitude: location.coords.longitude
-          });
-          setLastRequestTime(currentTime);
-        } catch (err) {
-          const axiosError = err as AxiosError;
-          if (axiosError.code === AxiosError.ERR_NETWORK) {
-            alert('Timeout!');
-            return;
-          }
-        }
-      };
-
-      getQuests({
-        lat: location.coords.latitude,
-        lon: location.coords.longitude
+  const getQuests = async (data: MarkerRequestData) => {
+    try {
+      const response: AxiosResponse<MarkerResponseData> = await request({
+        url: `${ENDPOINTS.quests + data.lat}/${data.lon}`,
+        method: 'GET',
+        data
       });
+
+      setMarkers(response.data.data);
+      setLastLocation({
+        latitude: location!.coords.latitude,
+        longitude: location!.coords.longitude
+      });
+      setLastRequestTime(new Date().getTime());
+    } catch (err) {
+      const axiosError = err as AxiosError;
+      if (axiosError.code === AxiosError.ERR_NETWORK) {
+        alert('Timeout!');
+        return;
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (location) {
+      const currentTime = new Date().getTime();
+      if (currentTime - lastRequestTime > 10000) {
+        getQuests({
+          lat: location.coords.latitude,
+          lon: location.coords.longitude
+        });
+      }
     }
   }, [location]);
 
   const [selectedMarker, setSelectedMarker] = useState<MarkerData | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+  useEffect(() => {
+    if (location) {
+      getQuests({
+        lat: location.coords.latitude,
+        lon: location.coords.longitude
+      });
+    }
+  }, [modalVisible]);
   const [showDetailsButton, setShowDetailsButton] = useState<number | null>();
 
   const maxDistance = 1000;
@@ -271,7 +272,10 @@ const Map = () => {
             <Icon source={'help-circle'} size={42} color={'white'} />
           </TouchableOpacity>
         ) : (
-          <QuestCreate />
+          <QuestCreate
+            latitude={lastLocation?.latitude}
+            longitude={lastLocation?.longitude}
+          />
         )}
       </View>
     </View>
