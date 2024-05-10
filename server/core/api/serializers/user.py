@@ -16,7 +16,7 @@ class UserSerializer(ModelSerializer):
         model = User
         exclude = ("email", "password", "balance", "date_joined", "last_login", "groups", "user_permissions",)
 
-    def to_representation(self, user: User):
+    def to_representation(self, user: User) -> OrderedDict:
         data = OrderedDict(super().to_representation(user))
         return data
 
