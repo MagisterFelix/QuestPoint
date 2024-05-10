@@ -11,6 +11,7 @@ import {
 import {
   FeedbackResponseData,
   ProfileResponseData,
+  TrophyResponseData,
   UserResponseData
 } from '@/types/response';
 
@@ -77,11 +78,15 @@ export interface ScreenProps {
 }
 
 export interface UserProfileProps {
-  loading: boolean;
+  loadingUser?: boolean;
   user: UserResponseData;
-  feedback: FeedbackResponseData[];
 }
 
 export interface ReviewProps {
   review: FeedbackResponseData;
+}
+
+export interface TrophyProps {
+  trophy: TrophyResponseData;
+  owned: boolean;
 }

@@ -66,9 +66,18 @@ export const styles = StyleSheet.create({
   textCenter: {
     textAlign: 'center'
   },
+  wrap: {
+    flexWrap: 'wrap'
+  },
   headerTitle: {
     fontSize: 20,
     fontWeight: 'bold'
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 10
   },
   link: {
     fontWeight: 'bold',
@@ -118,10 +127,27 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   settingsTab: {
-    backgroundColor: theme.colors.onPrimary,
+    backgroundColor: theme.colors.background,
     padding: 20
   },
   imageRipple: {
     borderRadius: 64
+  },
+  modal: {
+    backgroundColor: theme.colors.background,
+    padding: 20,
+    borderRadius: 10,
+    maxHeight: '50%'
+  },
+  trophy: {
+    opacity: 1,
+    marginBottom: 20
+  },
+  trophyNotOwned: {
+    opacity: 0.5,
+    marginBottom: 20
+  },
+  trophyText: {
+    flex: 1
   }
 });

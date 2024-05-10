@@ -36,3 +36,17 @@ export interface FeedbackResponseData {
   author: UserResponseData;
   recipient: UserResponseData;
 }
+
+export interface TrophyResponseData {
+  id: number;
+  title: string;
+  description: string;
+  image: string;
+}
+
+export interface AchievementResponseData {
+  id: number;
+  created_at: string;
+  user: UserResponseData;
+  trophy: TrophyResponseData;
+}

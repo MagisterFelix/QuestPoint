@@ -1,25 +1,71 @@
 import * as Clipboard from 'expo-clipboard';
+import { useState } from 'react';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
-import { ActivityIndicator, Avatar, Icon, Text } from 'react-native-paper';
+import {
+  ActivityIndicator,
+  Avatar,
+  Icon,
+  Modal,
+  Portal,
+  Text
+} from 'react-native-paper';
 
+import { useAxios } from '@/api/axios';
+import { ENDPOINTS } from '@/api/endpoints';
 import { styles } from '@/common/styles';
 import Review from '@/components/Review';
+import Trophy from '@/components/Trophy';
 import { UserProfileProps } from '@/types/props';
-import { FeedbackResponseData } from '@/types/response';
+import {
+  AchievementResponseData,
+  FeedbackResponseData,
+  TrophyResponseData
+} from '@/types/response';
 
-const UserProfile = ({ loading, user, feedback }: UserProfileProps) => {
-  if (loading) {
+const UserProfile = ({ loadingUser, user }: UserProfileProps) => {
+  const [{ loading: loadingFeedback, data: feedback }] = useAxios<
+    FeedbackResponseData[]
+  >({
+    url: `${ENDPOINTS.feedback}${user?.username}`,
+    method: 'GET'
+  });
+
+  const [{ loading: loadingTrophies, data: trophies }] = useAxios<
+    TrophyResponseData[]
+  >({
+    url: ENDPOINTS.trophies,
+    method: 'GET'
+  });
+
+  const [{ loading: loadingAchievements, data: achievements }] = useAxios<
+    AchievementResponseData[]
+  >({
+    url: `${ENDPOINTS.achievements}${user?.username}`,
+    method: 'GET'
+  });
+
+  const [showAchievements, setShowAchievements] = useState<boolean>(false);
+  const toggleAchievements = () => setShowAchievements(!showAchievements);
+
+  if (
+    loadingUser ||
+    loadingFeedback ||
+    loadingTrophies ||
+    loadingAchievements
+  ) {
     return <ActivityIndicator size="large" style={styles.container} />;
   }
 
   return (
     <View style={styles.container}>
       <View style={[styles.rowCenter, styles.user]}>
-        <Avatar.Image
-          source={{ uri: user.image }}
-          size={128}
-          style={styles.avatar}
-        />
+        <TouchableOpacity onPress={toggleAchievements}>
+          <Avatar.Image
+            source={{ uri: user.image }}
+            size={128}
+            style={styles.avatar}
+          />
+        </TouchableOpacity>
         <View style={styles.centerHorizontal}>
           <View style={styles.row}>
             <Icon source={require('assets/level.png')} size={32} />
@@ -40,10 +86,34 @@ const UserProfile = ({ loading, user, feedback }: UserProfileProps) => {
         </View>
       </View>
       <ScrollView style={styles.feedback}>
-        {feedback.map((review: FeedbackResponseData) => (
+        {feedback?.map((review: FeedbackResponseData) => (
           <Review key={review.id} review={review} />
         ))}
       </ScrollView>
+      <Portal>
+        <Modal
+          visible={showAchievements}
+          onDismiss={toggleAchievements}
+          contentContainerStyle={styles.modal}
+          style={styles.container}
+        >
+          <ScrollView>
+            <Text style={styles.title}>Achievements</Text>
+            {trophies?.map((trophy: TrophyResponseData) => (
+              <Trophy
+                key={trophy.id}
+                trophy={trophy}
+                owned={
+                  achievements?.some(
+                    (achievement: AchievementResponseData) =>
+                      achievement.trophy.id === trophy.id
+                  )!
+                }
+              />
+            ))}
+          </ScrollView>
+        </Modal>
+      </Portal>
     </View>
   );
 };

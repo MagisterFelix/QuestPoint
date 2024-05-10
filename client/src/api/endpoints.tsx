@@ -3,5 +3,7 @@ export enum ENDPOINTS {
   registration = '/api/sign-up/',
   profile = '/api/profile/',
   user = '/api/user/',
-  feedback = '/api/feedback/'
+  feedback = '/api/feedback/',
+  trophies = '/api/trophies/',
+  achievements = '/api/achievements/'
 }
