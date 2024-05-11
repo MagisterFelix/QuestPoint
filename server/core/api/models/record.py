@@ -24,10 +24,6 @@ class Record(BaseModel):
     def clean(self) -> None:
         super().clean()
 
-        if not self.pk and hasattr(self, "worker") and \
-                self.__class__.objects.filter(worker=self.worker, status=self.Status.CANCELLED).exists():
-            raise ValidationError("Worker has already been cancelled.", code="invalid")
-
         if hasattr(self, "quest") and hasattr(self, "worker") and self.quest.creator == self.worker:
             raise ValidationError("Creator cannot be the worker.", code="invalid")
 
@@ -36,4 +32,5 @@ class Record(BaseModel):
 
     class Meta:
         db_table = "records"
+        unique_together = (("quest", "worker",))
         ordering = ["created_at"]
