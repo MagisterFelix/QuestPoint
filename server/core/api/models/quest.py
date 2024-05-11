@@ -61,4 +61,5 @@ class Quest(BaseModel):
 
     class Meta:
         db_table = "quests"
+        unique_together = (("title", "creator",))
         ordering = ["created_at"]
