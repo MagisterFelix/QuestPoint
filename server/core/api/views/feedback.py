@@ -1,3 +1,4 @@
+from django.db.models.query import QuerySet
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 
@@ -11,6 +12,6 @@ class FeedbackView(ListAPIView):
     serializer_class = FeedbackSerializer
     permission_classes = (IsAuthenticated,)
 
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        return queryset.filter(recipient__username=self.kwargs["username"])
+    def get_queryset(self) -> QuerySet:
+        queryset = self.queryset.filter(recipient__username=self.kwargs["username"])
+        return queryset
