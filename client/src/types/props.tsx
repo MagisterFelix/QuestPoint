@@ -22,7 +22,6 @@ export interface AuthContextProps {
     user: ProfileResponseData,
     stripeAccount?: string
   ) => Promise<void>;
-  checking: boolean;
   loading?: boolean;
   login?: (
     data: AuthorizationRequestData,

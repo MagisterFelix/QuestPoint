@@ -1,10 +1,12 @@
 import { AxiosError, AxiosResponse } from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { createContext, useContext, useEffect, useState } from 'react';
+import { ActivityIndicator } from 'react-native-paper';
 
 import { useAxios } from '@/api/axios';
 import { ENDPOINTS } from '@/api/endpoints';
 import { handleErrors } from '@/api/errors';
+import { styles } from '@/common/styles';
 import { ErrorData, ErrorHandler } from '@/types/errors';
 import { AuthContextProps, ProviderProps } from '@/types/props';
 import {
@@ -19,8 +21,7 @@ import {
 
 const AuthContext = createContext<AuthContextProps>({
   user: null,
-  stripeAccount: null,
-  checking: false
+  stripeAccount: null
 });
 
 export const useAuth = () => {
@@ -121,14 +122,21 @@ const AuthProvider = ({ children }: ProviderProps) => {
     user,
     stripeAccount,
     updateUser,
-    checking,
     loading,
     login,
     register,
     logout
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {checking ? (
+        <ActivityIndicator style={styles.container} size="large" />
+      ) : (
+        children
+      )}
+    </AuthContext.Provider>
+  );
 };
 
 export default AuthProvider;

@@ -6,13 +6,7 @@ import {
 } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { View } from 'react-native';
-import {
-  ActivityIndicator,
-  Icon,
-  IconButton,
-  PaperProvider,
-  Text
-} from 'react-native-paper';
+import { Icon, IconButton, PaperProvider, Text } from 'react-native-paper';
 
 import { AxiosInterceptor } from '@/api/axios';
 import { styles, theme } from '@/common/styles';
@@ -208,11 +202,7 @@ const AuthScreen = () => {
 };
 
 const Main = () => {
-  const { user, checking, logout } = useAuth();
-
-  if (checking) {
-    return <ActivityIndicator style={styles.container} size="large" />;
-  }
+  const { user, logout } = useAuth();
 
   return (
     <AxiosInterceptor logout={logout!}>
