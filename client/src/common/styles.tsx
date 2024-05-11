@@ -69,6 +69,9 @@ export const styles = StyleSheet.create({
   wrap: {
     flexWrap: 'wrap'
   },
+  disabled: {
+    opacity: 0.5
+  },
   headerTitle: {
     fontSize: 20,
     fontWeight: 'bold'
@@ -140,11 +143,6 @@ export const styles = StyleSheet.create({
     maxHeight: '50%'
   },
   trophy: {
-    opacity: 1,
-    marginBottom: 20
-  },
-  trophyNotOwned: {
-    opacity: 0.5,
     marginBottom: 20
   },
   trophyText: {
