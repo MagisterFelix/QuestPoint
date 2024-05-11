@@ -1,6 +1,7 @@
 import { useAxios } from '@/api/axios';
 import { ENDPOINTS } from '@/api/endpoints';
 import QuestCreate from '@/components/Map/QuestCreate';
+import BottomDrawer from '@/components/Map/QuestInfo';
 import { getDistance } from '@/components/Map/Utils';
 import useLocationTracker from '@/components/Map/useLocationTracker';
 import { MarkerData } from '@/types/Map/MarkerData';
@@ -8,17 +9,8 @@ import { MarkerRequestData } from '@/types/request';
 import { MarkerResponseData } from '@/types/response';
 import { AxiosError, AxiosResponse } from 'axios';
 import React, { useEffect, useState } from 'react';
-import {
-  Button,
-  Image,
-  Modal,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
-} from 'react-native';
+import { Button, Image, StyleSheet, Text, View } from 'react-native';
 import MapView, { Marker, Region } from 'react-native-maps';
-import { Icon } from 'react-native-paper';
 
 const styles = StyleSheet.create({
   container: {
@@ -44,7 +36,7 @@ const styles = StyleSheet.create({
   },
   modalButton: {
     position: 'absolute',
-    bottom: 0,
+    top: 0,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center'
@@ -111,7 +103,11 @@ const Map = () => {
       }
     }
   }, [location]);
+  const [clickCount, setClickCount] = useState(0);
 
+  const handleMarkerClick = () => {
+    setClickCount((prev) => prev + 1);
+  };
   const [selectedMarker, setSelectedMarker] = useState<MarkerData | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   useEffect(() => {
@@ -210,11 +206,10 @@ const Map = () => {
                   latitude: marker.latitude,
                   longitude: marker.longitude
                 }}
-                title={marker.title}
-                description={marker.description}
                 onPress={() => {
                   setSelectedMarker(marker);
                   setShowDetailsButton(marker.id);
+                  handleMarkerClick();
                 }}
               >
                 <Image
@@ -224,59 +219,37 @@ const Map = () => {
               </Marker>
             ))}
       </MapView>
-
-      <Modal
-        animationType="slide"
-        transparent={false}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(!modalVisible);
-        }}
-      >
-        <View style={styles.modalContainer}>
-          {selectedMarker && (
-            <>
-              <Text>{selectedMarker.title}</Text>
-              <Text>Опис: {selectedMarker.description}</Text>
-              <Text>Нагорода: {selectedMarker.reward} QP</Text>
-              <Text>
-                Відстань:
-                {location
-                  ? `${getDistance(location.coords.latitude, location.coords.longitude, selectedMarker.latitude, selectedMarker.longitude).toFixed(2)} кроків`
-                  : 'Розраховую...'}
-              </Text>
-              <Text>Замовник: {selectedMarker.creator}</Text>
-              <Text>{selectedMarker.created_at}</Text>
-              <Button
-                onPress={() => {
-                  // TODO Accept quest
-                  console.log('Прийняти квест!');
-                  setModalVisible(false);
-                }}
-                title="Хочу виконати"
-              />
-            </>
-          )}
-        </View>
-      </Modal>
+      {selectedMarker && (
+        <BottomDrawer isVisible={!!selectedMarker} clickCount={clickCount}>
+          <>
+            <Text>{selectedMarker.title}</Text>
+            <Text>Опис: {selectedMarker.description}</Text>
+            <Text>Нагорода: {selectedMarker.reward} QP</Text>
+            <Text>
+              Відстань:
+              {location
+                ? `${getDistance(location.coords.latitude, location.coords.longitude, selectedMarker.latitude, selectedMarker.longitude).toFixed(2)} кроків`
+                : 'Розраховую...'}
+            </Text>
+            <Text>Замовник: {selectedMarker.creator}</Text>
+            <Text>{selectedMarker.created_at}</Text>
+            <Button
+              onPress={() => {
+                // TODO Accept quest
+                console.log('Прийняти квест!');
+                setModalVisible(false);
+              }}
+              title="Хочу виконати"
+            />
+          </>
+        </BottomDrawer>
+      )}
 
       <View style={styles.modalButton}>
-        {selectedMarker && showDetailsButton === selectedMarker.id ? (
-          <TouchableOpacity
-            style={styles.center}
-            onPress={() => {
-              setModalVisible(true);
-              setShowDetailsButton(null);
-            }}
-          >
-            <Icon source={'help-circle'} size={42} color={'white'} />
-          </TouchableOpacity>
-        ) : (
-          <QuestCreate
-            latitude={lastLocation?.latitude}
-            longitude={lastLocation?.longitude}
-          />
-        )}
+        <QuestCreate
+          latitude={lastLocation?.latitude}
+          longitude={lastLocation?.longitude}
+        />
       </View>
     </View>
   );
