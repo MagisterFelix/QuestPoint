@@ -1,7 +1,7 @@
 from django.urls import path
 
 from core.api.views import (AchievementListView, AuthorizationView, CategoryListView, FeedbackView, ProfileView,
-                            RegistrationView, TrophyListView, UserView)
+                            QuestListView, QuestView, RegistrationView, TrophyListView, UserView)
 
 urlpatterns = [
     path("sign-in/", AuthorizationView().as_view(), name="sign-in"),
@@ -12,4 +12,6 @@ urlpatterns = [
     path("trophies/", TrophyListView().as_view(), name="trophies"),
     path("achievements/<username>/", AchievementListView().as_view(), name="achievements"),
     path("categories/", CategoryListView().as_view(), name="categories"),
+    path("quests/", QuestListView().as_view(), name="quests"),
+    path("quest/<pk>/", QuestView().as_view(), name="quest"),
 ]
