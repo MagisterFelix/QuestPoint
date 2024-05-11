@@ -1,3 +1,9 @@
+import { AxiosError, AxiosResponse } from 'axios';
+import { useEffect, useState } from 'react';
+import { Button, Image, StyleSheet, View } from 'react-native';
+import MapView, { Marker, Region } from 'react-native-maps';
+import { Card, Icon, Paragraph, Title } from 'react-native-paper';
+
 import { useAxios } from '@/api/axios';
 import { ENDPOINTS } from '@/api/endpoints';
 import QuestCreate from '@/components/Map/QuestCreate';
@@ -7,10 +13,6 @@ import useLocationTracker from '@/components/Map/useLocationTracker';
 import { MarkerData } from '@/types/Map/MarkerData';
 import { MarkerRequestData } from '@/types/request';
 import { MarkerResponseData } from '@/types/response';
-import { AxiosError, AxiosResponse } from 'axios';
-import React, { useEffect, useState } from 'react';
-import { Button, Image, StyleSheet, Text, View } from 'react-native';
-import MapView, { Marker, Region } from 'react-native-maps';
 
 const styles = StyleSheet.create({
   container: {
@@ -46,6 +48,49 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
     paddingBottom: 10
+  },
+  fullWidth: {
+    flex: 1
+  },
+  fullWidthCard: {
+    flex: 1,
+    margin: 10,
+    padding: 10,
+    backgroundColor: 'white',
+    borderRadius: 8
+  },
+  card: {
+    margin: 10,
+    padding: 10,
+    backgroundColor: 'white',
+    borderRadius: 8
+  },
+  cardContent: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  doubleCardContainer: {
+    flexDirection: 'row'
+  },
+  smallCard: {
+    flex: 1,
+    justifyContent: 'space-between'
+  },
+  smallText: {
+    fontSize: 12
+  },
+  boldTitle: {
+    fontWeight: 'bold',
+    marginLeft: 8
+  },
+  iconWithText: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4
+  },
+  spaceBetween: {
+    justifyContent: 'space-between',
+    flex: 1
   }
 });
 
@@ -221,27 +266,74 @@ const Map = () => {
       </MapView>
       {selectedMarker && (
         <BottomDrawer isVisible={!!selectedMarker} clickCount={clickCount}>
-          <>
-            <Text>{selectedMarker.title}</Text>
-            <Text>Опис: {selectedMarker.description}</Text>
-            <Text>Нагорода: {selectedMarker.reward} QP</Text>
-            <Text>
-              Відстань:
-              {location
-                ? `${getDistance(location.coords.latitude, location.coords.longitude, selectedMarker.latitude, selectedMarker.longitude).toFixed(2)} кроків`
-                : 'Розраховую...'}
-            </Text>
-            <Text>Замовник: {selectedMarker.creator}</Text>
-            <Text>{selectedMarker.created_at}</Text>
-            <Button
-              onPress={() => {
-                // TODO Accept quest
-                console.log('Прийняти квест!');
-                setModalVisible(false);
-              }}
-              title="Хочу виконати"
-            />
-          </>
+          <View styles={styles.fullWidth}>
+            <Card style={styles.fullWidthCard}>
+              <Card.Content style={styles.cardContent}>
+                <Icon source="map-marker" size={20} />
+                <Title style={styles.boldTitle}>{selectedMarker.title}</Title>
+              </Card.Content>
+              <Card.Content style={styles.cardContent}>
+                <Icon source="book-outline" size={20} />
+                <Paragraph style={{ width: '100%' }}>
+                  {selectedMarker.description}
+                </Paragraph>
+              </Card.Content>
+            </Card>
+
+            <View style={styles.doubleCardContainer}>
+              <Card style={[styles.card, styles.smallCard]}>
+                <Card.Content>
+                  <View style={styles.iconWithText}>
+                    <Icon source="account" size={16} />
+                    <Paragraph style={styles.smallText}>Creator</Paragraph>
+                  </View>
+                  <Paragraph style={styles.smallText}>
+                    {selectedMarker.creator}
+                  </Paragraph>
+                </Card.Content>
+                <Card.Content>
+                  <View style={styles.iconWithText}>
+                    <Icon source="treasure-chest" size={16} />
+                    <Paragraph style={styles.smallText}>Reward</Paragraph>
+                  </View>
+                  <Paragraph style={styles.smallText}>
+                    {selectedMarker.reward} QP
+                  </Paragraph>
+                </Card.Content>
+              </Card>
+
+              <Card style={[styles.card, styles.smallCard]}>
+                <Card.Content>
+                  <View style={styles.iconWithText}>
+                    <Icon source="calendar" size={16} />
+                    <Paragraph style={styles.smallText}>Date</Paragraph>
+                  </View>
+                  <Paragraph style={styles.smallText}>
+                    {selectedMarker.created_at}
+                  </Paragraph>
+                </Card.Content>
+                <Card.Content>
+                  <View style={styles.iconWithText}>
+                    <Icon source="walk" size={16} />
+                    <Paragraph style={styles.smallText}>Distance</Paragraph>
+                  </View>
+                  <Paragraph style={styles.smallText}>
+                    {location
+                      ? `${getDistance(location.coords.latitude, location.coords.longitude, selectedMarker.latitude, selectedMarker.longitude).toFixed(2)} steps`
+                      : 'Calculating...'}
+                  </Paragraph>
+                </Card.Content>
+              </Card>
+            </View>
+
+            <Card.Actions>
+              <Button
+                onPress={() => console.log('Accept quest!')}
+                title="Accept Quest"
+                color="#6200ee"
+              />
+            </Card.Actions>
+          </View>
         </BottomDrawer>
       )}
 
