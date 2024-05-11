@@ -11,7 +11,7 @@ import {
 } from 'react-native-paper';
 
 import { styles } from '@/common/styles';
-import Balance from '@/components/Balance';
+import Coins from '@/components/Coins';
 import DialogError from '@/components/DialogError';
 import { useAuth } from '@/providers/AuthProvider';
 import { usePayment } from '@/providers/PaymentProvider';
@@ -54,7 +54,7 @@ const PaymentScreen = () => {
       <View style={styles.rowSpaceBetween}>
         <View style={styles.rowCenter}>
           <Text style={styles.headerTitle}>Balance:</Text>
-          <Balance />
+          <Coins amount={user?.balance!} size={32} />
         </View>
         <Switch value={isPayout} onValueChange={onSwitch} />
       </View>

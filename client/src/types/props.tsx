@@ -76,6 +76,11 @@ export interface ScreenProps {
   navigation: NavigationProp<any>;
 }
 
+export interface CoinsProps {
+  amount: number;
+  size: number;
+}
+
 export interface UserProfileProps {
   loadingUser?: boolean;
   user: UserResponseData;

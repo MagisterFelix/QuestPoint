@@ -10,7 +10,7 @@ import { Icon, IconButton, PaperProvider, Text } from 'react-native-paper';
 
 import { AxiosInterceptor } from '@/api/axios';
 import { styles, theme } from '@/common/styles';
-import Balance from '@/components/Balance';
+import Coins from '@/components/Coins';
 import AuthProvider, { useAuth } from '@/providers/AuthProvider';
 import PaymentProvider from '@/providers/PaymentProvider';
 import AuthorizationScreen from '@/screens/auth/Authorization';
@@ -29,7 +29,7 @@ const Stack = createNativeStackNavigator();
 
 const HomeScreen = () => {
   const navigation: NavigationProp<any> = useNavigation();
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
 
   return (
     <Tab.Navigator
@@ -52,7 +52,7 @@ const HomeScreen = () => {
           ),
           headerRight: () => (
             <View style={{ marginRight: 10 }}>
-              <Balance />
+              <Coins amount={user?.balance!} size={32} />
             </View>
           ),
           tabBarLabel: 'Quests',
