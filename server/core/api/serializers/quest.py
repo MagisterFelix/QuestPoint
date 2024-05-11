@@ -1,7 +1,11 @@
+from collections import OrderedDict
+
 from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer
 
 from core.api.models import Quest, Record, User
+from core.api.serializers.category import CategorySerializer
+from core.api.serializers.user import UserSerializer
 
 
 class QuestSerializer(ModelSerializer):
@@ -32,3 +36,11 @@ class QuestSerializer(ModelSerializer):
         attrs["creator"] = creator
 
         return super().validate(attrs)
+
+    def to_representation(self, quest: Quest) -> OrderedDict:
+        data = OrderedDict(super().to_representation(quest))
+
+        data["category"] = CategorySerializer(quest.category, context=self.context).data
+        data["creator"] = UserSerializer(quest.creator, context=self.context).data
+
+        return data
