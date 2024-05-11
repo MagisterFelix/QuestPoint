@@ -77,7 +77,7 @@ export const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 10
+    marginBottom: 25
   },
   link: {
     fontWeight: 'bold',
