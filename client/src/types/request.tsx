@@ -15,9 +15,9 @@ export interface MarkerRequestData {
 }
 
 export interface QuestRequestData {
-  title: String;
-  description: String;
-  category: String;
+  title: string;
+  description: string;
+  category: string;
   reward: number;
   latitude: number;
   longitude: number;

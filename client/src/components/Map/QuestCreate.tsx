@@ -1,3 +1,7 @@
+import { AxiosError, AxiosResponse } from 'axios';
+import { useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+
 import { useAxios } from '@/api/axios';
 import { ENDPOINTS } from '@/api/endpoints';
 import ErrorPop from '@/components/Map/ErrorPop';
@@ -5,9 +9,7 @@ import SuccessPop from '@/components/Map/SuccessPop';
 import { CategoryData } from '@/types/Map/CategoryData';
 import { QuestRequestData } from '@/types/request';
 import { CategoriesResponseData, ResponseData } from '@/types/response';
-import { AxiosError, AxiosResponse } from 'axios';
-import React, { useEffect, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+
 import {
   Keyboard,
   Modal,
@@ -98,7 +100,7 @@ const QuestCreate = ({
   const increaseReward = (value: number) => {
     setReward((prevReward) => Math.max(0, prevReward + value));
   };
-  const validateText = (text: String) => {
+  const validateText = (text: string) => {
     return text.length >= 5;
   };
   const [showSuccess, setShowSuccess] = useState(false);
