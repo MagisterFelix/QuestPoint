@@ -28,8 +28,33 @@ class Quest(BaseModel):
         if self.reward == 0:
             raise ValidationError("Reward cannot be zero.", code="invalid")
 
-        if self.reward > self.creator.balance:
+        if self.latitude and self.longitude and not ((-90 <= self.latitude <= 90) and (-180 <= self.longitude <= 180)):
+            raise ValidationError("Invalid coords.", code="invalid")
+
+        if hasattr(self, "creator") and self.reward > self.creator.balance:
             raise ValidationError("Reward cannot be greater than creator's balance.", code="invalid")
+
+    def save(self, *args, **kwargs) -> None:
+        reward = 0
+
+        if self.pk:
+            prev = self.__class__.objects.get(pk=self.pk)
+
+            if prev.reward != self.reward:
+                reward = self.reward - prev.reward
+        else:
+            reward = self.reward
+
+        self.creator.balance -= reward
+        self.creator.save()
+
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs) -> tuple[int, dict]:
+        self.creator.balance += self.reward
+        self.creator.save()
+
+        return super().delete(*args, **kwargs)
 
     def __str__(self) -> str:
         return self.title

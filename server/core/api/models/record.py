@@ -24,10 +24,8 @@ class Record(BaseModel):
     def clean(self) -> None:
         super().clean()
 
-        if self.pk:
-            return None
-
-        if self.worker.pk and self.objects.filter(worker=self.worker, status=self.Status.CANCELLED).exists():
+        if not self.pk and hasattr(self, "worker") and \
+                self.__class__.objects.filter(worker=self.worker, status=self.Status.CANCELLED).exists():
             raise ValidationError("Worker has already been cancelled.", code="invalid")
 
     def __str__(self) -> str:
