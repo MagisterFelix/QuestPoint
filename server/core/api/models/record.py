@@ -18,7 +18,7 @@ class Record(BaseModel):
 
     quest = models.ForeignKey(Quest, on_delete=models.CASCADE)
     worker = models.ForeignKey(User, on_delete=models.CASCADE)
-    status = models.IntegerField(choices=Status.choices)
+    status = models.IntegerField(choices=Status.choices, default=Status.HAS_OFFER)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def clean(self) -> None:
@@ -27,6 +27,9 @@ class Record(BaseModel):
         if not self.pk and hasattr(self, "worker") and \
                 self.__class__.objects.filter(worker=self.worker, status=self.Status.CANCELLED).exists():
             raise ValidationError("Worker has already been cancelled.", code="invalid")
+
+        if hasattr(self, "quest") and hasattr(self, "worker") and self.quest.creator == self.worker:
+            raise ValidationError("Creator cannot be the worker.", code="invalid")
 
     def __str__(self) -> str:
         return self.quest.title
