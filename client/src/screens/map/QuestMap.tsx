@@ -163,7 +163,6 @@ const Map = () => {
       });
     }
   }, [modalVisible]);
-  const [showDetailsButton, setShowDetailsButton] = useState<number | null>();
 
   const maxDistance = 1000;
 
@@ -208,7 +207,6 @@ const Map = () => {
         onRegionChangeComplete={onRegionChangeComplete}
         onPress={() => {
           setSelectedMarker(null);
-          setShowDetailsButton(null);
         }}
       >
         {location && (
@@ -221,10 +219,8 @@ const Map = () => {
               location.coords.heading ? location.coords.heading : undefined
             }
             anchor={{ x: 0.5, y: 0.5 }}
-            title="Це ти. Спробуй знайти квести поблизу."
             onPress={() => {
               setSelectedMarker(null);
-              setShowDetailsButton(null);
             }}
           >
             <Image
@@ -253,7 +249,6 @@ const Map = () => {
                 }}
                 onPress={() => {
                   setSelectedMarker(marker);
-                  setShowDetailsButton(marker.id);
                   handleMarkerClick();
                 }}
               >
