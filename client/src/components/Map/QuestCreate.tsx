@@ -1,12 +1,5 @@
-import { useAxios } from '@/api/axios';
-import { ENDPOINTS } from '@/api/endpoints';
-import ErrorPop from '@/components/Map/ErrorPop';
-import SuccessPop from '@/components/Map/SuccessPop';
-import { CategoryData } from '@/types/Map/CategoryData';
-import { QuestRequestData } from '@/types/request';
-import { CategoriesResponseData, ResponseData } from '@/types/response';
 import { AxiosError, AxiosResponse } from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import {
   Keyboard,
@@ -19,11 +12,20 @@ import {
 } from 'react-native';
 import {
   Button,
+  Dialog,
   HelperText,
   Icon,
   Provider as PaperProvider,
   TextInput
 } from 'react-native-paper';
+
+import { useAxios } from '@/api/axios';
+import { ENDPOINTS } from '@/api/endpoints';
+import ErrorPop from '@/components/Map/ErrorPop';
+import SuccessPop from '@/components/Map/SuccessPop';
+import { CategoryData } from '@/types/Map/CategoryData';
+import { QuestRequestData } from '@/types/request';
+import { CategoriesResponseData, ResponseData } from '@/types/response';
 
 const QuestCreate = ({
   latitude,
@@ -46,6 +48,11 @@ const QuestCreate = ({
   const hideError = () => setTimeout(() => setError(''), 5500);
   const { control, handleSubmit, setError: setFieldError } = useForm();
 
+  const [questRequestData, setRequestQuestData] = useState<QuestRequestData>();
+  const [confirmModalVisible, setConfirmModalVisible] = useState(false);
+  const showConfirmModal = () => setConfirmModalVisible(true);
+  const hideConfirmModal = () => setConfirmModalVisible(false);
+
   const create = async (data: QuestRequestData) => {
     try {
       const response: AxiosResponse<ResponseData> = await request({
@@ -60,7 +67,6 @@ const QuestCreate = ({
       setError(axiosError.response?.data.details[0].non_field_errors);
       if (axiosError.code === AxiosError.ERR_NETWORK) {
         alert('Timeout!');
-        return;
       }
     }
   };
@@ -83,7 +89,6 @@ const QuestCreate = ({
         const axiosError = err as AxiosError;
         if (axiosError.code === AxiosError.ERR_NETWORK) {
           alert('Timeout!');
-          return;
         }
       }
     };
@@ -94,13 +99,12 @@ const QuestCreate = ({
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(categories[0]);
   const [reward, setReward] = useState(0);
+  const rewardInputRef = useRef<any>(null);
   const adjustments = [-20, -5, -1, 1, 5, 20];
   const increaseReward = (value: number) => {
     setReward((prevReward) => Math.max(0, prevReward + value));
   };
-  const validateText = (text: String) => {
-    return text.length >= 5;
-  };
+
   const [showSuccess, setShowSuccess] = useState(false);
 
   const handleSuccess = () => {
@@ -112,7 +116,7 @@ const QuestCreate = ({
     <PaperProvider>
       <View style={styles.center}>
         <TouchableOpacity onPress={() => setModalVisible(true)}>
-          <Icon source={'plus-circle'} size={42} color={'white'} />
+          <Icon source="plus-circle" size={42} color="#dae2ff" />
         </TouchableOpacity>
         <SuccessPop isVisible={showSuccess} />
         <Modal
@@ -124,12 +128,12 @@ const QuestCreate = ({
           }}
         >
           <TouchableOpacity onPress={() => setModalVisible(false)}>
-            <Icon source={'close-circle'} size={42} color={'black'} />
+            <Icon source="close-circle" size={42} color="black" />
           </TouchableOpacity>
           <HelperText
             type="error"
             visible={
-              (!firstVisit && latitude == undefined) || longitude == undefined
+              (!firstVisit && latitude === undefined) || longitude === undefined
             }
           >
             Geolocation Error. Try reload application
@@ -155,14 +159,12 @@ const QuestCreate = ({
                     value={value}
                     onChangeText={onChange}
                     right={<TextInput.Icon icon="pencil" />}
-                    placeholder="I need help with the garden..."
                     maxLength={40}
                   />
-                  {fieldError !== undefined && (
-                    <HelperText type="error" visible={!validateText(value)}>
-                      Title must contain at least 5 letters.
-                    </HelperText>
-                  )}
+
+                  <HelperText type="error" visible={fieldError !== undefined}>
+                    Please provide a valid title.
+                  </HelperText>
                 </>
               )}
             />
@@ -182,19 +184,17 @@ const QuestCreate = ({
                     style={styles.inputDescription}
                     label="Description"
                     mode="outlined"
-                    multiline={true}
+                    multiline
                     value={value}
                     onChangeText={onChange}
                     right={<TextInput.Icon icon="note-edit-outline" />}
-                    placeholder="You need to cut down 5 trees and..."
                     maxLength={200}
                     numberOfLines={4}
                   />
-                  {fieldError !== undefined && (
-                    <HelperText type="error" visible={!validateText(value)}>
-                      Description must contain at least 5 letters.
-                    </HelperText>
-                  )}
+
+                  <HelperText type="error" visible={fieldError !== undefined}>
+                    Please provide a valid description.
+                  </HelperText>
                 </>
               )}
             />
@@ -208,10 +208,33 @@ const QuestCreate = ({
               justifyContent: 'center'
             }}
           >
-            <Text style={styles.rewardText}>{reward} QP</Text>
+            <TouchableOpacity
+              onPress={() => {
+                rewardInputRef.current?.blur();
+                setTimeout(() => rewardInputRef.current?.focus(), 100);
+              }}
+            >
+              <Text style={styles.rewardText}>{reward} QP</Text>
+              <TextInput
+                ref={rewardInputRef}
+                style={{
+                  position: 'absolute',
+                  width: 1,
+                  height: 1,
+                  opacity: 0
+                }}
+                keyboardType="numeric"
+                onChangeText={(text) => {
+                  const numericValue = text.replace(/[^0-9]/g, '');
+                  setReward(numericValue ? parseInt(numericValue, 10) : 0);
+                }}
+                value={reward.toString()}
+                maxLength={10}
+              />
+            </TouchableOpacity>
             {reward > 0 && (
               <TouchableOpacity onPress={() => setReward(0)}>
-                <Icon source={'eraser'} size={24} color={'black'} />
+                <Icon source="eraser" size={24} color="black" />
               </TouchableOpacity>
             )}
           </View>
@@ -222,13 +245,13 @@ const QuestCreate = ({
                 mode="outlined"
                 onPress={() => increaseReward(adjustment)}
                 style={styles.button}
-                compact={true}
+                compact
               >
                 {adjustment >= 0 ? `+${adjustment}` : adjustment}
               </Button>
             ))}
           </View>
-          <HelperText type="error" visible={reward == 0 && !firstVisit}>
+          <HelperText type="error" visible={reward === 0 && !firstVisit}>
             Reward can't be zero
           </HelperText>
           <Text style={styles.textLabel}>Category</Text>
@@ -261,13 +284,36 @@ const QuestCreate = ({
           >
             Category should be set
           </HelperText>
+
+          <Dialog visible={confirmModalVisible} onDismiss={hideConfirmModal}>
+            <Dialog.Title>Create quest?</Dialog.Title>
+            <Dialog.Actions>
+              <Button
+                onPress={() => {
+                  handleOnSubmit(questRequestData!);
+                  hideConfirmModal();
+                }}
+              >
+                Yes
+              </Button>
+            </Dialog.Actions>
+            <Dialog.Actions>
+              <Button onPress={hideConfirmModal}>Cancel</Button>
+            </Dialog.Actions>
+          </Dialog>
+
           <ErrorPop error={error} />
           <View style={styles.finishContainer}>
             <TouchableOpacity
               onPress={handleSubmit((data: any) => {
                 setVisit(false);
 
-                if (latitude != undefined && longitude != undefined && reward) {
+                if (
+                  latitude !== undefined &&
+                  longitude !== undefined &&
+                  reward &&
+                  selectedCategory
+                ) {
                   const toServer: QuestRequestData = {
                     title: data.title,
                     description: data.description,
@@ -276,12 +322,13 @@ const QuestCreate = ({
                     latitude: latitude,
                     longitude: longitude
                   };
-                  handleOnSubmit(toServer);
+                  setRequestQuestData(toServer);
+                  showConfirmModal();
                 }
                 hideError();
               })}
             >
-              <Icon source={'plus-circle'} size={56} color={'grey'} />
+              <Icon source="plus-circle" size={56} color="grey" />
             </TouchableOpacity>
           </View>
         </Modal>
@@ -296,14 +343,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
     paddingBottom: 10
-  },
-  modalView: {
-    flex: 1,
-    justifyContent: 'space-between'
-  },
-  modalText: {
-    fontSize: 18,
-    textAlign: 'center'
   },
   categoryScrollView: {
     flexDirection: 'row',
@@ -322,8 +361,7 @@ const styles = StyleSheet.create({
     color: 'white'
   },
   categoryContainer: {
-    flexDirection: 'row',
-    marginBottom: 20
+    flexDirection: 'row'
   },
   inputTitle: {
     margin: 20
@@ -332,7 +370,7 @@ const styles = StyleSheet.create({
     margin: 20
   },
   textLabel: {
-    fontSize: 30,
+    fontSize: 26,
     textAlign: 'center'
   },
   rewardContainer: {
@@ -342,7 +380,7 @@ const styles = StyleSheet.create({
     marginTop: 20
   },
   rewardText: {
-    fontSize: 36,
+    fontSize: 34,
     marginHorizontal: 10,
     textAlign: 'center'
   },

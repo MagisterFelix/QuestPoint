@@ -1,24 +1,18 @@
+import { AxiosError, AxiosResponse } from 'axios';
+import { useEffect, useState } from 'react';
+import { Button, Image, StyleSheet, View } from 'react-native';
+import MapView, { Marker, Region } from 'react-native-maps';
+import { Card, Icon, Paragraph, Title } from 'react-native-paper';
+
 import { useAxios } from '@/api/axios';
 import { ENDPOINTS } from '@/api/endpoints';
 import QuestCreate from '@/components/Map/QuestCreate';
+import BottomDrawer from '@/components/Map/QuestInfo';
 import { getDistance } from '@/components/Map/Utils';
 import useLocationTracker from '@/components/Map/useLocationTracker';
 import { MarkerData } from '@/types/Map/MarkerData';
 import { MarkerRequestData } from '@/types/request';
 import { MarkerResponseData } from '@/types/response';
-import { AxiosError, AxiosResponse } from 'axios';
-import React, { useEffect, useState } from 'react';
-import {
-  Button,
-  Image,
-  Modal,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
-} from 'react-native';
-import MapView, { Marker, Region } from 'react-native-maps';
-import { Icon } from 'react-native-paper';
 
 const styles = StyleSheet.create({
   container: {
@@ -44,7 +38,7 @@ const styles = StyleSheet.create({
   },
   modalButton: {
     position: 'absolute',
-    bottom: 0,
+    top: 0,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center'
@@ -54,6 +48,49 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
     paddingBottom: 10
+  },
+  fullWidth: {
+    flex: 1
+  },
+  fullWidthCard: {
+    flex: 1,
+    margin: 10,
+    padding: 10,
+    backgroundColor: 'white',
+    borderRadius: 8
+  },
+  card: {
+    margin: 10,
+    padding: 10,
+    backgroundColor: 'white',
+    borderRadius: 8
+  },
+  cardContent: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  doubleCardContainer: {
+    flexDirection: 'row'
+  },
+  smallCard: {
+    flex: 1,
+    justifyContent: 'space-between'
+  },
+  smallText: {
+    fontSize: 12
+  },
+  boldTitle: {
+    fontWeight: 'bold',
+    marginLeft: 8
+  },
+  iconWithText: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4
+  },
+  spaceBetween: {
+    justifyContent: 'space-between',
+    flex: 1
   }
 });
 
@@ -111,7 +148,11 @@ const Map = () => {
       }
     }
   }, [location]);
+  const [clickCount, setClickCount] = useState(0);
 
+  const handleMarkerClick = () => {
+    setClickCount((prev) => prev + 1);
+  };
   const [selectedMarker, setSelectedMarker] = useState<MarkerData | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   useEffect(() => {
@@ -122,7 +163,6 @@ const Map = () => {
       });
     }
   }, [modalVisible]);
-  const [showDetailsButton, setShowDetailsButton] = useState<number | null>();
 
   const maxDistance = 1000;
 
@@ -167,7 +207,6 @@ const Map = () => {
         onRegionChangeComplete={onRegionChangeComplete}
         onPress={() => {
           setSelectedMarker(null);
-          setShowDetailsButton(null);
         }}
       >
         {location && (
@@ -180,10 +219,8 @@ const Map = () => {
               location.coords.heading ? location.coords.heading : undefined
             }
             anchor={{ x: 0.5, y: 0.5 }}
-            title="Це ти. Спробуй знайти квести поблизу."
             onPress={() => {
               setSelectedMarker(null);
-              setShowDetailsButton(null);
             }}
           >
             <Image
@@ -210,11 +247,9 @@ const Map = () => {
                   latitude: marker.latitude,
                   longitude: marker.longitude
                 }}
-                title={marker.title}
-                description={marker.description}
                 onPress={() => {
                   setSelectedMarker(marker);
-                  setShowDetailsButton(marker.id);
+                  handleMarkerClick();
                 }}
               >
                 <Image
@@ -224,59 +259,84 @@ const Map = () => {
               </Marker>
             ))}
       </MapView>
+      {selectedMarker && (
+        <BottomDrawer isVisible={!!selectedMarker} clickCount={clickCount}>
+          <View styles={styles.fullWidth}>
+            <Card style={styles.fullWidthCard}>
+              <Card.Content style={styles.cardContent}>
+                <Icon source="map-marker" size={20} />
+                <Title style={styles.boldTitle}>{selectedMarker.title}</Title>
+              </Card.Content>
+              <Card.Content style={styles.cardContent}>
+                <Icon source="book-outline" size={20} />
+                <Paragraph style={{ width: '100%' }}>
+                  {selectedMarker.description}
+                </Paragraph>
+              </Card.Content>
+            </Card>
 
-      <Modal
-        animationType="slide"
-        transparent={false}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(!modalVisible);
-        }}
-      >
-        <View style={styles.modalContainer}>
-          {selectedMarker && (
-            <>
-              <Text>{selectedMarker.title}</Text>
-              <Text>Опис: {selectedMarker.description}</Text>
-              <Text>Нагорода: {selectedMarker.reward} QP</Text>
-              <Text>
-                Відстань:
-                {location
-                  ? `${getDistance(location.coords.latitude, location.coords.longitude, selectedMarker.latitude, selectedMarker.longitude).toFixed(2)} кроків`
-                  : 'Розраховую...'}
-              </Text>
-              <Text>Замовник: {selectedMarker.creator}</Text>
-              <Text>{selectedMarker.created_at}</Text>
+            <View style={styles.doubleCardContainer}>
+              <Card style={[styles.card, styles.smallCard]}>
+                <Card.Content>
+                  <View style={styles.iconWithText}>
+                    <Icon source="account" size={16} />
+                    <Paragraph style={styles.smallText}>Creator</Paragraph>
+                  </View>
+                  <Paragraph style={styles.smallText}>
+                    {selectedMarker.creator}
+                  </Paragraph>
+                </Card.Content>
+                <Card.Content>
+                  <View style={styles.iconWithText}>
+                    <Icon source="treasure-chest" size={16} />
+                    <Paragraph style={styles.smallText}>Reward</Paragraph>
+                  </View>
+                  <Paragraph style={styles.smallText}>
+                    {selectedMarker.reward} QP
+                  </Paragraph>
+                </Card.Content>
+              </Card>
+
+              <Card style={[styles.card, styles.smallCard]}>
+                <Card.Content>
+                  <View style={styles.iconWithText}>
+                    <Icon source="calendar" size={16} />
+                    <Paragraph style={styles.smallText}>Date</Paragraph>
+                  </View>
+                  <Paragraph style={styles.smallText}>
+                    {selectedMarker.created_at}
+                  </Paragraph>
+                </Card.Content>
+                <Card.Content>
+                  <View style={styles.iconWithText}>
+                    <Icon source="walk" size={16} />
+                    <Paragraph style={styles.smallText}>Distance</Paragraph>
+                  </View>
+                  <Paragraph style={styles.smallText}>
+                    {location
+                      ? `${getDistance(location.coords.latitude, location.coords.longitude, selectedMarker.latitude, selectedMarker.longitude).toFixed(2)} steps`
+                      : 'Calculating...'}
+                  </Paragraph>
+                </Card.Content>
+              </Card>
+            </View>
+
+            <Card.Actions>
               <Button
-                onPress={() => {
-                  // TODO Accept quest
-                  console.log('Прийняти квест!');
-                  setModalVisible(false);
-                }}
-                title="Хочу виконати"
+                onPress={() => console.log('Accept quest!')}
+                title="Accept Quest"
+                color="#6200ee"
               />
-            </>
-          )}
-        </View>
-      </Modal>
+            </Card.Actions>
+          </View>
+        </BottomDrawer>
+      )}
 
       <View style={styles.modalButton}>
-        {selectedMarker && showDetailsButton === selectedMarker.id ? (
-          <TouchableOpacity
-            style={styles.center}
-            onPress={() => {
-              setModalVisible(true);
-              setShowDetailsButton(null);
-            }}
-          >
-            <Icon source={'help-circle'} size={42} color={'white'} />
-          </TouchableOpacity>
-        ) : (
-          <QuestCreate
-            latitude={lastLocation?.latitude}
-            longitude={lastLocation?.longitude}
-          />
-        )}
+        <QuestCreate
+          latitude={lastLocation?.latitude}
+          longitude={lastLocation?.longitude}
+        />
       </View>
     </View>
   );
