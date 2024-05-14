@@ -5,17 +5,17 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from core.api.models import Category
-from core.api.serializers import CategorySerializer
+from core.api.serializers import DeprecatedCategorySerializer
 
 
-class CategoryView(APIView):
+class DeprecatedCategoryView(APIView):
 
-    serializer_class = CategorySerializer
+    serializer_class = DeprecatedCategorySerializer
     permission_classes = (AllowAny,)
 
     def get(self, request: Request) -> Response:
         categories = Category.objects.all()
-        serializer = CategorySerializer(categories, many=True)
+        serializer = DeprecatedCategorySerializer(categories, many=True)
 
         success = True
         status_code = status.HTTP_200_OK

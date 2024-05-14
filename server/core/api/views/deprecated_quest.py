@@ -6,12 +6,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from core.api.models import Quest
-from core.api.serializers import QuestSerializer
+from core.api.serializers import DeprecatedQuestSerializer
 
 
-class QuestView(APIView):
+class DeprecatedQuestView(APIView):
 
-    serializer_class = QuestSerializer
+    serializer_class = DeprecatedQuestSerializer
     permission_classes = (AllowAny,)
 
     def get(self, request: Request, lat: float, lon: float) -> Response:
@@ -31,7 +31,7 @@ class QuestView(APIView):
                   - radians(%s)) + sin(radians(%s)) * sin(radians(latitude)))",
                 [lat, lon, lat]
             )).filter(distance__lte=5)
-            serializer = QuestSerializer(quests, many=True)
+            serializer = DeprecatedQuestSerializer(quests, many=True)
 
             success = True
             status_code = status.HTTP_200_OK

@@ -6,7 +6,7 @@ from core.api.models.category import Category
 from core.api.models.user import User
 
 
-class QuestSerializer(ModelSerializer):
+class DeprecatedQuestSerializer(ModelSerializer):
 
     category = CharField(source="category.title")
     creator = CharField(source="creator.username", required=False)

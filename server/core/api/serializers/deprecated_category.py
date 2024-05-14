@@ -3,7 +3,7 @@ from rest_framework.serializers import ModelSerializer
 from core.api.models import Category
 
 
-class CategorySerializer(ModelSerializer):
+class DeprecatedCategorySerializer(ModelSerializer):
 
     class Meta:
 

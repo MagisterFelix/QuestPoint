@@ -1,3 +1,3 @@
 from .auth import AuthorizationView, RegistrationView
-from .category import CategoryView
-from .quest import QuestView
+from .deprecated_category import DeprecatedCategoryView
+from .deprecated_quest import DeprecatedQuestView
