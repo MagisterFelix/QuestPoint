@@ -1,3 +1,3 @@
 from .auth import AuthorizationSerializer, RegistrationSerializer
-from .category import CategorySerializer
-from .quest import QuestSerializer
+from .deprecated_category import DeprecatedCategorySerializer
+from .deprecated_quest import DeprecatedQuestSerializer

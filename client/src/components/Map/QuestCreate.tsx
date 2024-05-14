@@ -23,9 +23,12 @@ import { useAxios } from '@/api/axios';
 import { ENDPOINTS } from '@/api/endpoints';
 import ErrorPop from '@/components/Map/ErrorPop';
 import SuccessPop from '@/components/Map/SuccessPop';
-import { CategoryData } from '@/types/Map/CategoryData';
-import { QuestRequestData } from '@/types/request';
-import { CategoriesResponseData, ResponseData } from '@/types/response';
+import { DeprecatedCategoryData } from '@/types/Map/DeprecatedCategoryData';
+import { DeprecatedQuestRequestData } from '@/types/request';
+import {
+  DeprecatedCategoriesResponseData,
+  ResponseData
+} from '@/types/response';
 
 const QuestCreate = ({
   latitude,
@@ -34,7 +37,7 @@ const QuestCreate = ({
   latitude: number | undefined;
   longitude: number | undefined;
 }) => {
-  const [categories, setCategories] = useState<CategoryData[]>([]);
+  const [categories, setCategories] = useState<DeprecatedCategoryData[]>([]);
   const [firstVisit, setVisit] = useState(true);
   const [{ loading }, request] = useAxios(
     {
@@ -48,15 +51,16 @@ const QuestCreate = ({
   const hideError = () => setTimeout(() => setError(''), 5500);
   const { control, handleSubmit, setError: setFieldError } = useForm();
 
-  const [questRequestData, setRequestQuestData] = useState<QuestRequestData>();
+  const [questRequestData, setRequestQuestData] =
+    useState<DeprecatedQuestRequestData>();
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
   const showConfirmModal = () => setConfirmModalVisible(true);
   const hideConfirmModal = () => setConfirmModalVisible(false);
 
-  const create = async (data: QuestRequestData) => {
+  const create = async (data: DeprecatedQuestRequestData) => {
     try {
       const response: AxiosResponse<ResponseData> = await request({
-        url: ENDPOINTS.quest,
+        url: ENDPOINTS.deprecated_quest,
         method: 'POST',
         data: data
       });
@@ -71,7 +75,7 @@ const QuestCreate = ({
     }
   };
 
-  const handleOnSubmit = async (data: QuestRequestData) => {
+  const handleOnSubmit = async (data: DeprecatedQuestRequestData) => {
     Keyboard.dismiss();
     await create(data);
   };
@@ -79,10 +83,11 @@ const QuestCreate = ({
   useEffect(() => {
     const getCategories = async () => {
       try {
-        const response: AxiosResponse<CategoriesResponseData> = await request({
-          url: ENDPOINTS.categories,
-          method: 'GET'
-        });
+        const response: AxiosResponse<DeprecatedCategoriesResponseData> =
+          await request({
+            url: ENDPOINTS.deprecated_categories,
+            method: 'GET'
+          });
 
         setCategories(response.data.data);
       } catch (err) {
@@ -314,7 +319,7 @@ const QuestCreate = ({
                   reward &&
                   selectedCategory
                 ) {
-                  const toServer: QuestRequestData = {
+                  const toServer: DeprecatedQuestRequestData = {
                     title: data.title,
                     description: data.description,
                     category: selectedCategory.title,

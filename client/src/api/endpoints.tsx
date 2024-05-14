@@ -1,7 +1,7 @@
 export enum ENDPOINTS {
   authorization = '/api/sign-in/',
   registration = '/api/sign-up/',
-  quests = '/api/quests/',
-  categories = 'api/categories/',
-  quest = '/api/quest/'
+  deprecated_quests = '/api/deprecated-quests/',
+  deprecated_categories = 'api/deprecated-categories/',
+  deprecated_quest = '/api/deprecated-quest/'
 }

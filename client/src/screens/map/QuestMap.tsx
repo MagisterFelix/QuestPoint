@@ -10,9 +10,9 @@ import QuestCreate from '@/components/Map/QuestCreate';
 import BottomDrawer from '@/components/Map/QuestInfo';
 import { getDistance } from '@/components/Map/Utils';
 import useLocationTracker from '@/components/Map/useLocationTracker';
-import { MarkerData } from '@/types/Map/MarkerData';
-import { MarkerRequestData } from '@/types/request';
-import { MarkerResponseData } from '@/types/response';
+import { DeprecatedMarkerData } from '@/types/Map/DeprecatedMarkerData';
+import { DeprecatedMarkerRequestData } from '@/types/request';
+import { DeprecatedMarkerResponseData } from '@/types/response';
 
 const styles = StyleSheet.create({
   container: {
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
 
 const Map = () => {
   let mapView: MapView | null;
-  const [markers, setMarkers] = useState<MarkerData[]>([]);
+  const [markers, setMarkers] = useState<DeprecatedMarkerData[]>([]);
 
   const [{ loading }, request] = useAxios(
     {
@@ -114,13 +114,14 @@ const Map = () => {
   } | null>(null);
   const [lastRequestTime, setLastRequestTime] = useState<number>(0);
 
-  const getQuests = async (data: MarkerRequestData) => {
+  const getQuests = async (data: DeprecatedMarkerRequestData) => {
     try {
-      const response: AxiosResponse<MarkerResponseData> = await request({
-        url: `${ENDPOINTS.quests + data.lat}/${data.lon}`,
-        method: 'GET',
-        data
-      });
+      const response: AxiosResponse<DeprecatedMarkerResponseData> =
+        await request({
+          url: `${ENDPOINTS.deprecated_quests + data.lat}/${data.lon}`,
+          method: 'GET',
+          data
+        });
 
       setMarkers(response.data.data);
       setLastLocation({
@@ -153,7 +154,8 @@ const Map = () => {
   const handleMarkerClick = () => {
     setClickCount((prev) => prev + 1);
   };
-  const [selectedMarker, setSelectedMarker] = useState<MarkerData | null>(null);
+  const [selectedMarker, setSelectedMarker] =
+    useState<DeprecatedMarkerData | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   useEffect(() => {
     if (location) {

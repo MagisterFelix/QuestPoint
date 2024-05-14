@@ -1,5 +1,5 @@
-import { CategoryData } from '@/types/Map/CategoryData';
-import { MarkerData } from '@/types/Map/MarkerData';
+import { DeprecatedCategoryData } from '@/types/Map/DeprecatedCategoryData';
+import { DeprecatedMarkerData } from '@/types/Map/DeprecatedMarkerData';
 
 export interface ResponseData {
   details: string;
@@ -20,10 +20,10 @@ export interface RegistrationResponseData extends ResponseData {
   };
 }
 
-export interface MarkerResponseData extends ResponseData {
-  data: MarkerData[];
+export interface DeprecatedMarkerResponseData extends ResponseData {
+  data: DeprecatedMarkerData[];
 }
 
-export interface CategoriesResponseData extends ResponseData {
-  data: CategoryData[];
+export interface DeprecatedCategoriesResponseData extends ResponseData {
+  data: DeprecatedCategoryData[];
 }

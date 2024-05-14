@@ -9,12 +9,12 @@ export interface RegistrationRequestData {
   password: string;
 }
 
-export interface MarkerRequestData {
+export interface DeprecatedMarkerRequestData {
   lat: number;
   lon: number;
 }
 
-export interface QuestRequestData {
+export interface DeprecatedQuestRequestData {
   title: string;
   description: string;
   category: string;

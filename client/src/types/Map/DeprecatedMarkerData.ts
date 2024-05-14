@@ -1,4 +1,4 @@
-export interface MarkerData {
+export interface DeprecatedMarkerData {
   id: number;
   title: string;
   description: string;

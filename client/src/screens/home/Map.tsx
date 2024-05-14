@@ -1,16 +1,7 @@
-import { View } from 'react-native';
-import { Text } from 'react-native-paper';
-
-import { styles } from '@/common/styles';
+import QuestMap from '../map/QuestMap';
 
 const MapScreen = () => {
-  return (
-    <View
-      style={[styles.container, styles.centerVertical, styles.centerHorizontal]}
-    >
-      <Text>Map</Text>
-    </View>
-  );
+  return <QuestMap />;
 };
 
 export default MapScreen;
