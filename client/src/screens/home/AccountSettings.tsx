@@ -142,7 +142,7 @@ const AccountSettingsScreen = () => {
                   uri: value?.uri ? value.uri : user?.image
                 }}
                 size={128}
-                style={styles.avatar}
+                style={styles.image}
               />
             </TouchableRipple>
           )}

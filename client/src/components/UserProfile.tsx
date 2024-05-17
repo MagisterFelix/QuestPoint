@@ -57,13 +57,13 @@ const UserProfile = ({ loadingUser, user }: UserProfileProps) => {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={styles.containerInner}>
       <View style={[styles.rowCenter, styles.user]}>
         <TouchableOpacity onPress={toggleAchievements}>
           <Avatar.Image
             source={{ uri: user.image }}
             size={128}
-            style={styles.avatar}
+            style={styles.image}
           />
         </TouchableOpacity>
         <View style={styles.centerHorizontal}>

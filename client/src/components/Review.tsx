@@ -1,6 +1,6 @@
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { TouchableOpacity, View } from 'react-native';
-import { Avatar, Card, Icon, Text } from 'react-native-paper';
+import { Image, TouchableOpacity, View } from 'react-native';
+import { Card, Icon, Text } from 'react-native-paper';
 
 import { styles } from '@/common/styles';
 import { ReviewProps } from '@/types/props';
@@ -18,10 +18,11 @@ const Review = ({ review }: ReviewProps) => {
                 navigation.navigate('User', { user: review.author.username })
               }
             >
-              <Avatar.Image
+              <Image
                 source={{ uri: review.author.image }}
-                size={32}
-                style={styles.avatar}
+                width={32}
+                height={32}
+                style={styles.image}
               />
             </TouchableOpacity>
             <Text variant="titleSmall">{review.author.username}</Text>

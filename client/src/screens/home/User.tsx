@@ -1,5 +1,8 @@
+import { View } from 'react-native';
+
 import { useAxios } from '@/api/axios';
 import { ENDPOINTS } from '@/api/endpoints';
+import { styles } from '@/common/styles';
 import UserProfile from '@/components/UserProfile';
 import { ScreenProps } from '@/types/props';
 import { UserResponseData } from '@/types/response';
@@ -10,7 +13,11 @@ const UserScreen = ({ route }: ScreenProps) => {
     method: 'GET'
   });
 
-  return <UserProfile loadingUser={loadingUser} user={user!} />;
+  return (
+    <View style={styles.container}>
+      <UserProfile loadingUser={loadingUser} user={user!} />
+    </View>
+  );
 };
 
 export default UserScreen;

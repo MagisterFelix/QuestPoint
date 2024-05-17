@@ -38,11 +38,19 @@ export const styles = StyleSheet.create({
     width: '100%',
     padding: 30
   },
+  containerInner: {
+    flex: 1,
+    flexDirection: 'column',
+    width: '100%'
+  },
   centerVertical: {
     justifyContent: 'center'
   },
   centerHorizontal: {
     alignItems: 'center'
+  },
+  endHorizontal: {
+    alignItems: 'flex-end'
   },
   col: {
     flexDirection: 'column',
@@ -65,6 +73,9 @@ export const styles = StyleSheet.create({
   },
   textCenter: {
     textAlign: 'center'
+  },
+  flexForWrap: {
+    flex: 1
   },
   wrap: {
     flexWrap: 'wrap'
