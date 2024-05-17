@@ -38,9 +38,11 @@ export const AxiosInterceptor = ({ children, logout }: AxiosProps) => {
         if (error.code === AxiosError.ERR_NETWORK) {
           alert('Timeout!');
         }
-        if (error.response?.status === HttpStatusCode.Unauthorized) {
+        if (
+          error.response?.status === HttpStatusCode.Unauthorized ||
+          error.response?.status === HttpStatusCode.Forbidden
+        ) {
           await logout();
-          alert('Session has expired!');
         }
         return Promise.reject(error);
       }
