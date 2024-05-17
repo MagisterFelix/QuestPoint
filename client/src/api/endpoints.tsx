@@ -5,5 +5,11 @@ export enum ENDPOINTS {
   user = '/api/user/',
   feedback = '/api/feedback/',
   trophies = '/api/trophies/',
-  achievements = '/api/achievements/'
+  achievements = '/api/achievements/',
+  categories = '/api/categories/',
+  quests = '/api/quests/',
+  quest = '/api/quest/',
+  records = '/api/records/',
+  record = '/api/record/',
+  messages = '/api/messages/'
 }

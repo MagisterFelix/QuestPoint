@@ -17,13 +17,14 @@ class QuestListView(ListCreateAPIView):
     def get_queryset(self) -> QuerySet:
         queryset = self.queryset
 
-        records = Record.objects.filter(
-            Q(worker=self.request.user) & ~Q(status__in=[Record.Status.CANCELLED, Record.Status.COMPLETED])
-        ).values_list("quest__pk", flat=True)
+        records = Record.objects.filter(worker=self.request.user)
 
         latitude, longitude = self.request.GET.get("latitude"), self.request.GET.get("longitude")
 
         if latitude is None and longitude is None:
+            records = records.filter(
+                ~Q(status__in=[Record.Status.CANCELLED, Record.Status.COMPLETED])
+            ).values_list("quest__pk", flat=True)
             return queryset.filter(Q(creator=self.request.user) | Q(pk__in=records))
 
         if latitude is None or longitude is None:
@@ -37,6 +38,8 @@ class QuestListView(ListCreateAPIView):
 
         if not ((-90 <= latitude <= 90) and (-180 <= longitude <= 180)):
             return queryset.none()
+
+        records = records.values_list("quest__pk", flat=True)
 
         return queryset.annotate(distance=RawSQL(
             "6371 * acos(cos(radians(%s)) * cos(radians(latitude)) * cos(radians(longitude)\

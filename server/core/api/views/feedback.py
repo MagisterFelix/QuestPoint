@@ -1,12 +1,12 @@
 from django.db.models.query import QuerySet
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListCreateAPIView
 from rest_framework.permissions import IsAuthenticated
 
 from core.api.models import Feedback
 from core.api.serializers import FeedbackSerializer
 
 
-class FeedbackView(ListAPIView):
+class FeedbackView(ListCreateAPIView):
 
     queryset = Feedback.objects.all()
     serializer_class = FeedbackSerializer

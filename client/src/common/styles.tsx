@@ -107,6 +107,10 @@ export const styles = StyleSheet.create({
   formButton: {
     marginVertical: 10
   },
+  detailsButton: {
+    width: '50%',
+    marginTop: 30
+  },
   user: {
     gap: 20
   },
@@ -124,8 +128,12 @@ export const styles = StyleSheet.create({
     paddingTop: 10,
     textAlign: 'justify'
   },
-  avatar: {
+  image: {
     backgroundColor: theme.colors.background
+  },
+  noData: {
+    width: '100%',
+    height: '100%'
   },
   name: {
     fontSize: 20,
@@ -153,10 +161,32 @@ export const styles = StyleSheet.create({
     borderRadius: 10,
     maxHeight: '50%'
   },
+  modalImage: {
+    alignItems: 'center'
+  },
   trophy: {
     marginBottom: 20
   },
-  trophyText: {
-    flex: 1
+  quest: {
+    backgroundColor: theme.colors.background,
+    margin: 10
+  },
+  cardRightElement: {
+    marginRight: 15
+  },
+  cardButton: {
+    marginRight: 5
+  },
+  messageCurrentUser: {
+    margin: 10,
+    borderRadius: 10,
+    borderBottomEndRadius: 0,
+    alignSelf: 'flex-end'
+  },
+  messageOtherUser: {
+    margin: 10,
+    borderRadius: 10,
+    borderBottomStartRadius: 0,
+    alignSelf: 'flex-start'
   }
 });

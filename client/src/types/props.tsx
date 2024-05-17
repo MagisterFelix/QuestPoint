@@ -9,8 +9,12 @@ import {
   UpdateAccountRequestData
 } from '@/types/request';
 import {
+  CategoryResponseData,
   FeedbackResponseData,
+  MessageResponseData,
   ProfileResponseData,
+  QuestResponseData,
+  RecordResponseData,
   TrophyResponseData,
   UserResponseData
 } from '@/types/response';
@@ -71,6 +75,11 @@ export interface DialogErrorProps extends DialogProps {
   error: string;
 }
 
+export interface DialogFeedbackProps extends DialogProps {
+  show: boolean;
+  user: string;
+}
+
 export interface ScreenProps {
   route: RouteProp<any>;
   navigation: NavigationProp<any>;
@@ -93,4 +102,42 @@ export interface ReviewProps {
 export interface TrophyProps {
   trophy: TrophyResponseData;
   owned: boolean;
+}
+
+export interface CategoryProps {
+  category: CategoryResponseData;
+}
+
+export interface QuestProps {
+  quest: QuestResponseData;
+}
+
+export interface FiltersProps {
+  Created: boolean;
+  Offer: boolean;
+  InProgress: boolean;
+}
+
+export interface QuestListProps {
+  filters: FiltersProps;
+}
+
+export interface DetailsInfoProps {
+  record: RecordResponseData;
+  isWorker: boolean;
+}
+
+export interface ChatProps {
+  record: RecordResponseData;
+  isKeyboardVisible: boolean;
+}
+
+export interface MessageProps {
+  message: MessageResponseData;
+  isOwner: boolean;
+}
+
+export interface RatingProps {
+  rating: number;
+  onStarPress: (rating: number) => void;
 }

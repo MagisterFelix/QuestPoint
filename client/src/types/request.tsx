@@ -1,3 +1,5 @@
+import { MessageContentType } from '@/types/response';
+
 export interface AuthorizationRequestData {
   username: string;
   password: string;
@@ -29,4 +31,15 @@ export interface ChangePasswordRequestData {
 export interface TransactionRequestData {
   account?: string;
   amount: number;
+}
+
+export interface MessageRequestData {
+  content: string;
+  content_type: MessageContentType;
+}
+
+export interface CreateFeedbackRequestData {
+  recipient: number;
+  text?: string;
+  rating: number;
 }

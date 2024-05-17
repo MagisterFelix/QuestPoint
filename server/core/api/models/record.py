@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Q
 
 from .base import BaseModel
 from .quest import Quest
@@ -26,6 +27,13 @@ class Record(BaseModel):
 
         if hasattr(self, "quest") and hasattr(self, "worker") and self.quest.creator == self.worker:
             raise ValidationError("Creator cannot be the worker.", code="invalid")
+
+        if hasattr(self, "quest") and hasattr(self, "worker") and \
+                self.__class__.objects.filter(
+                    Q(quest=self.quest) &
+                    ~Q(worker=self.worker) &
+                    ~Q(status=self.Status.CANCELLED)).exists():
+            raise ValidationError("Quest already taken or completed.", code="invalid")
 
     def __str__(self) -> str:
         return self.quest.title

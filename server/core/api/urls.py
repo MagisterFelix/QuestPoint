@@ -1,7 +1,8 @@
 from django.urls import path
 
-from core.api.views import (AchievementListView, AuthorizationView, CategoryListView, FeedbackView, ProfileView,
-                            QuestListView, QuestView, RegistrationView, TrophyListView, UserView)
+from core.api.views import (AchievementListView, AuthorizationView, CategoryListView, FeedbackView, MessageListView,
+                            ProfileView, QuestListView, QuestView, RecordListView, RecordView, RegistrationView,
+                            TrophyListView, UserView)
 
 urlpatterns = [
     path("sign-in/", AuthorizationView().as_view(), name="sign-in"),
@@ -14,4 +15,7 @@ urlpatterns = [
     path("categories/", CategoryListView().as_view(), name="categories"),
     path("quests/", QuestListView().as_view(), name="quests"),
     path("quest/<pk>/", QuestView().as_view(), name="quest"),
+    path("records/", RecordListView().as_view(), name="records"),
+    path("record/<quest>/", RecordView().as_view(), name="record"),
+    path("messages/<quest>/", MessageListView().as_view(), name="messages"),
 ]

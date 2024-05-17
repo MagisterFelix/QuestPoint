@@ -13,7 +13,7 @@ class Message(BaseModel):
 
     quest = models.ForeignKey(Quest, on_delete=models.CASCADE)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    content = models.BinaryField()
+    content = models.TextField()
     content_type = models.IntegerField(choices=ContentType.choices)
     created_at = models.DateTimeField(auto_now_add=True)
 
