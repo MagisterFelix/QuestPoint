@@ -1,16 +1,16 @@
 import { useState } from 'react';
-import { Image, TouchableOpacity } from 'react-native';
+import { Image, TouchableOpacity, View } from 'react-native';
 import { Card, Modal, Portal, Text } from 'react-native-paper';
 
 import { styles } from '@/common/styles';
-import { MessageProps } from '@/types/props';
+import { MessageProps } from '@/types/Quests/props';
 
 const Message = ({ message, isOwner }: MessageProps) => {
   const [showImage, setShowImage] = useState<boolean>(false);
   const toggleImage = () => setShowImage(!showImage);
 
   return (
-    <>
+    <View>
       <Card
         style={isOwner ? styles.messageCurrentUser : styles.messageOtherUser}
       >
@@ -24,7 +24,7 @@ const Message = ({ message, isOwner }: MessageProps) => {
               <Image
                 source={{ uri: message.content }}
                 resizeMode="contain"
-                style={{ width: 150, height: 150 }}
+                style={styles.messageImage}
               />
             </TouchableOpacity>
           </Card.Content>
@@ -40,11 +40,11 @@ const Message = ({ message, isOwner }: MessageProps) => {
           <Image
             source={{ uri: message.content }}
             resizeMode="contain"
-            style={{ width: 300, height: 300 }}
+            style={styles.messagePreview}
           />
         </Modal>
       </Portal>
-    </>
+    </View>
   );
 };
 

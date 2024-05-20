@@ -1,7 +1,7 @@
 import { View } from 'react-native';
 
 import { styles } from '@/common/styles';
-import UserProfile from '@/components/UserProfile';
+import Profile from '@/components/User/Profile';
 import { useAuth } from '@/providers/AuthProvider';
 
 const ProfileScreen = () => {
@@ -9,7 +9,7 @@ const ProfileScreen = () => {
 
   return (
     <View style={styles.container}>
-      <UserProfile user={user!} />
+      <Profile user={user!} />
     </View>
   );
 };

@@ -1,32 +1,27 @@
 import * as Clipboard from 'expo-clipboard';
 import { useState } from 'react';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
-import {
-  ActivityIndicator,
-  Avatar,
-  Icon,
-  Modal,
-  Portal,
-  Text
-} from 'react-native-paper';
+import { Avatar, Icon, Modal, Portal, Text } from 'react-native-paper';
 
 import { useAxios } from '@/api/axios';
 import { ENDPOINTS } from '@/api/endpoints';
 import { styles } from '@/common/styles';
-import Review from '@/components/Review';
-import Trophy from '@/components/Trophy';
-import { UserProfileProps } from '@/types/props';
+import Loading from '@/components/Loading';
+import NoData from '@/components/NoData';
+import Review from '@/components/User/Review';
+import Trophy from '@/components/User/Trophy';
+import { ProfileProps } from '@/types/User/props';
 import {
   AchievementResponseData,
   FeedbackResponseData,
   TrophyResponseData
-} from '@/types/response';
+} from '@/types/User/response';
 
-const UserProfile = ({ loadingUser, user }: UserProfileProps) => {
+const Profile = ({ user }: ProfileProps) => {
   const [{ loading: loadingFeedback, data: feedback }] = useAxios<
     FeedbackResponseData[]
   >({
-    url: `${ENDPOINTS.feedback}${user?.username}`,
+    url: `${ENDPOINTS.feedback}${user?.username}/`,
     method: 'GET'
   });
 
@@ -40,21 +35,12 @@ const UserProfile = ({ loadingUser, user }: UserProfileProps) => {
   const [{ loading: loadingAchievements, data: achievements }] = useAxios<
     AchievementResponseData[]
   >({
-    url: `${ENDPOINTS.achievements}${user?.username}`,
+    url: `${ENDPOINTS.achievements}${user?.username}/`,
     method: 'GET'
   });
 
   const [showAchievements, setShowAchievements] = useState<boolean>(false);
   const toggleAchievements = () => setShowAchievements(!showAchievements);
-
-  if (
-    loadingUser ||
-    loadingFeedback ||
-    loadingTrophies ||
-    loadingAchievements
-  ) {
-    return <ActivityIndicator size="large" style={styles.container} />;
-  }
 
   return (
     <View style={styles.containerInner}>
@@ -66,7 +52,7 @@ const UserProfile = ({ loadingUser, user }: UserProfileProps) => {
             style={styles.image}
           />
         </TouchableOpacity>
-        <View style={styles.centerHorizontal}>
+        <View style={styles.alignItemsCenter}>
           <View style={styles.row}>
             <Icon source={require('assets/level.png')} size={32} />
             <Text style={styles.level_xp}>
@@ -85,11 +71,17 @@ const UserProfile = ({ loadingUser, user }: UserProfileProps) => {
           </TouchableOpacity>
         </View>
       </View>
-      <ScrollView style={styles.feedback}>
-        {feedback?.map((review: FeedbackResponseData) => (
-          <Review key={review.id} review={review} />
-        ))}
-      </ScrollView>
+      {loadingFeedback && !feedback ? (
+        <Loading />
+      ) : feedback?.length! > 0 ? (
+        <ScrollView style={styles.feedback}>
+          {feedback?.map((review: FeedbackResponseData) => (
+            <Review key={review.id} review={review} />
+          ))}
+        </ScrollView>
+      ) : (
+        <NoData />
+      )}
       <Portal>
         <Modal
           visible={showAchievements}
@@ -97,25 +89,33 @@ const UserProfile = ({ loadingUser, user }: UserProfileProps) => {
           contentContainerStyle={styles.modal}
           style={styles.container}
         >
-          <ScrollView>
-            <Text style={styles.title}>Achievements</Text>
-            {trophies?.map((trophy: TrophyResponseData) => (
-              <Trophy
-                key={trophy.id}
-                trophy={trophy}
-                owned={
-                  achievements?.some(
-                    (achievement: AchievementResponseData) =>
-                      achievement.trophy.id === trophy.id
-                  )!
-                }
-              />
-            ))}
-          </ScrollView>
+          {(loadingTrophies && !trophies) ||
+          (loadingAchievements && !achievements) ? (
+            <ScrollView>
+              <Text style={styles.title}>Achievements</Text>
+              <Loading />
+            </ScrollView>
+          ) : (
+            <ScrollView>
+              <Text style={styles.title}>Achievements</Text>
+              {trophies?.map((trophy: TrophyResponseData) => (
+                <Trophy
+                  key={trophy.id}
+                  trophy={trophy}
+                  owned={
+                    achievements?.some(
+                      (achievement: AchievementResponseData) =>
+                        achievement.trophy.id === trophy.id
+                    )!
+                  }
+                />
+              ))}
+            </ScrollView>
+          )}
         </Modal>
       </Portal>
     </View>
   );
 };
 
-export default UserProfile;
+export default Profile;

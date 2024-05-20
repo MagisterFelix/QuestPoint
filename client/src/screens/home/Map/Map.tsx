@@ -6,7 +6,11 @@ import { styles } from '@/common/styles';
 const MapScreen = () => {
   return (
     <View
-      style={[styles.container, styles.centerVertical, styles.centerHorizontal]}
+      style={[
+        styles.container,
+        styles.justifyContentCenter,
+        styles.alignItemsCenter
+      ]}
     >
       <Text>Map</Text>
     </View>

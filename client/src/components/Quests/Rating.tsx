@@ -2,7 +2,7 @@ import React from 'react';
 import { Image, TouchableOpacity, View } from 'react-native';
 
 import { styles } from '@/common/styles';
-import { RatingProps } from '@/types/props';
+import { RatingProps } from '@/types/Quests/props';
 
 const Rating = ({ rating, onStarPress }: RatingProps) => {
   const renderStar = (index: number) => {
@@ -17,7 +17,7 @@ const Rating = ({ rating, onStarPress }: RatingProps) => {
         onPress={() => onStarPress(index + 1)}
         style={styles.formField}
       >
-        <Image source={starImage} style={{ width: 32, height: 32 }} />
+        <Image source={starImage} style={styles.ratingImage} />
       </TouchableOpacity>
     );
   };

@@ -16,4 +16,4 @@ class Achievement(BaseModel):
 
     class Meta:
         db_table = "achievements"
-        ordering = ["created_at"]
+        ordering = ["-created_at"]

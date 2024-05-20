@@ -35,4 +35,4 @@ class Feedback(BaseModel):
 
     class Meta:
         db_table = "feedback"
-        ordering = ["created_at"]
+        ordering = ["-created_at"]

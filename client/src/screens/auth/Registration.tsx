@@ -1,19 +1,13 @@
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Keyboard, TouchableOpacity, View } from 'react-native';
-import {
-  Button,
-  HelperText,
-  Portal,
-  Text,
-  TextInput
-} from 'react-native-paper';
+import { Button, HelperText, Text, TextInput } from 'react-native-paper';
 
 import { styles } from '@/common/styles';
-import DialogError from '@/components/DialogError';
+import DialogWindow from '@/components/DialogWindow';
 import { useAuth } from '@/providers/AuthProvider';
+import { RegistrationRequestData } from '@/types/Auth/request';
 import { ScreenProps } from '@/types/props';
-import { RegistrationRequestData } from '@/types/request';
 
 const RegistrationScreen = ({ navigation }: ScreenProps) => {
   const { loading, register } = useAuth();
@@ -58,7 +52,7 @@ const RegistrationScreen = ({ navigation }: ScreenProps) => {
   const togglePassword = () => setShowPassword((show) => !show);
 
   return (
-    <View style={[styles.container, styles.centerVertical]}>
+    <View style={[styles.container, styles.justifyContentCenter]}>
       <Controller
         name="username"
         control={control}
@@ -72,7 +66,7 @@ const RegistrationScreen = ({ navigation }: ScreenProps) => {
           field: { onChange, value },
           fieldState: { error: fieldError }
         }) => (
-          <>
+          <View>
             <TextInput
               label="Username *"
               mode="outlined"
@@ -93,7 +87,7 @@ const RegistrationScreen = ({ navigation }: ScreenProps) => {
                   : ''}
               </HelperText>
             )}
-          </>
+          </View>
         )}
       />
       <Controller
@@ -109,7 +103,7 @@ const RegistrationScreen = ({ navigation }: ScreenProps) => {
           field: { onChange, value },
           fieldState: { error: fieldError }
         }) => (
-          <>
+          <View>
             <TextInput
               label="Email *"
               mode="outlined"
@@ -130,7 +124,7 @@ const RegistrationScreen = ({ navigation }: ScreenProps) => {
                   : ''}
               </HelperText>
             )}
-          </>
+          </View>
         )}
       />
       <Controller
@@ -147,7 +141,7 @@ const RegistrationScreen = ({ navigation }: ScreenProps) => {
           field: { onChange, value },
           fieldState: { error: fieldError }
         }) => (
-          <>
+          <View>
             <TextInput
               label="Password *"
               mode="outlined"
@@ -170,7 +164,7 @@ const RegistrationScreen = ({ navigation }: ScreenProps) => {
                   : ''}
               </HelperText>
             )}
-          </>
+          </View>
         )}
       />
       <Controller
@@ -185,7 +179,7 @@ const RegistrationScreen = ({ navigation }: ScreenProps) => {
           field: { onChange, value },
           fieldState: { error: fieldError }
         }) => (
-          <>
+          <View>
             <TextInput
               label="Confirm password *"
               mode="outlined"
@@ -208,7 +202,7 @@ const RegistrationScreen = ({ navigation }: ScreenProps) => {
                   : ''}
               </HelperText>
             )}
-          </>
+          </View>
         )}
       />
       <Button
@@ -228,15 +222,14 @@ const RegistrationScreen = ({ navigation }: ScreenProps) => {
           <Text style={styles.link}>Sign in</Text>
         </TouchableOpacity>
       </View>
-      <Portal>
-        <DialogError
-          title="Attention!"
-          error={error}
-          button="OK"
-          onDismiss={hideError}
-          onAgreePress={hideError}
-        />
-      </Portal>
+      <DialogWindow
+        title="Attention!"
+        type="error"
+        message={error}
+        button="OK"
+        onDismiss={hideError}
+        onAgreePress={hideError}
+      />
     </View>
   );
 };

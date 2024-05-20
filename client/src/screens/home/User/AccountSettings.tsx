@@ -1,13 +1,12 @@
 import { AxiosError, AxiosResponse } from 'axios';
 import * as ImagePicker from 'expo-image-picker';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Keyboard, View } from 'react-native';
 import {
   Avatar,
   Button,
   HelperText,
-  Portal,
   TextInput,
   TouchableRipple
 } from 'react-native-paper';
@@ -16,14 +15,12 @@ import { useAxios } from '@/api/axios';
 import { ENDPOINTS } from '@/api/endpoints';
 import { handleErrors } from '@/api/errors';
 import { styles } from '@/common/styles';
-import DialogError from '@/components/DialogError';
-import DialogInfo from '@/components/DialogInfo';
-import DialogSuccess from '@/components/DialogSuccess';
+import DialogWindow from '@/components/DialogWindow';
 import { useAuth } from '@/providers/AuthProvider';
 import { usePayment } from '@/providers/PaymentProvider';
+import { UpdateAccountRequestData } from '@/types/User/request';
+import { ProfileResponseData } from '@/types/User/response';
 import { ErrorData } from '@/types/errors';
-import { UpdateAccountRequestData } from '@/types/request';
-import { ProfileResponseData } from '@/types/response';
 
 const AccountSettingsScreen = () => {
   const { user, updateUser } = useAuth();
@@ -63,9 +60,15 @@ const AccountSettingsScreen = () => {
   const hideMessage = () => setMessage('');
   const [info, setInfo] = useState<string>('');
   const hideInfo = () => setInfo('');
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string>('');
   const hideError = () => setError('');
-  const { control, handleSubmit, setError: setFieldError, reset } = useForm();
+  const {
+    control,
+    handleSubmit,
+    setError: setFieldError,
+    clearErrors,
+    reset
+  } = useForm();
   const handleOnSubmit = async (data: UpdateAccountRequestData) => {
     Keyboard.dismiss();
     const errorHandler = {
@@ -103,12 +106,13 @@ const AccountSettingsScreen = () => {
     }
   };
 
+  const [showImage, setShowImage] = useState<boolean>(true);
   const pickImage = async (onChange: (...event: any[]) => void) => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1
+      aspect: [1, 1],
+      quality: 0.75
     });
     if (!result.canceled) {
       const image = result.assets[0];
@@ -124,30 +128,46 @@ const AccountSettingsScreen = () => {
     }
   };
 
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
+      setShowImage(false);
+    });
+    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+      setShowImage(true);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, [clearErrors]);
+
   return (
-    <View style={[styles.container, styles.centerVertical]}>
-      <View style={[styles.centerHorizontal, styles.formField]}>
-        <Controller
-          name="image"
-          control={control}
-          defaultValue={user?.image}
-          render={({ field: { onChange, value } }) => (
-            <TouchableRipple
-              onPress={() => pickImage(onChange)}
-              borderless
-              style={[styles.formField, styles.imageRipple]}
-            >
-              <Avatar.Image
-                source={{
-                  uri: value?.uri ? value.uri : user?.image
-                }}
-                size={128}
-                style={styles.image}
-              />
-            </TouchableRipple>
-          )}
-        />
-      </View>
+    <View style={[styles.container, styles.justifyContentCenter]}>
+      {showImage && (
+        <View style={[styles.alignItemsCenter, styles.formField]}>
+          <Controller
+            name="image"
+            control={control}
+            defaultValue={user?.image}
+            render={({ field: { onChange, value } }) => (
+              <TouchableRipple
+                onPress={() => pickImage(onChange)}
+                borderless
+                style={[styles.formField, styles.imageRipple]}
+              >
+                <Avatar.Image
+                  source={{
+                    uri: value?.uri ? value.uri : user?.image
+                  }}
+                  size={128}
+                  style={styles.image}
+                />
+              </TouchableRipple>
+            )}
+          />
+        </View>
+      )}
       <Controller
         name="username"
         control={control}
@@ -161,13 +181,14 @@ const AccountSettingsScreen = () => {
           field: { onChange, value },
           fieldState: { error: fieldError }
         }) => (
-          <>
+          <View>
             <TextInput
               label="Username *"
               mode="outlined"
               autoCapitalize="none"
               value={value}
               onChangeText={onChange}
+              onFocus={() => clearErrors()}
               error={fieldError !== undefined}
               style={styles.formField}
               right={<TextInput.Icon icon="account" />}
@@ -182,7 +203,7 @@ const AccountSettingsScreen = () => {
                   : ''}
               </HelperText>
             )}
-          </>
+          </View>
         )}
       />
       <Controller
@@ -198,13 +219,14 @@ const AccountSettingsScreen = () => {
           field: { onChange, value },
           fieldState: { error: fieldError }
         }) => (
-          <>
+          <View>
             <TextInput
               label="Email *"
               mode="outlined"
               autoCapitalize="none"
               value={value}
               onChangeText={onChange}
+              onFocus={() => clearErrors()}
               error={fieldError !== undefined}
               style={styles.formField}
               right={<TextInput.Icon icon="email" />}
@@ -219,7 +241,7 @@ const AccountSettingsScreen = () => {
                   : ''}
               </HelperText>
             )}
-          </>
+          </View>
         )}
       />
       <Controller
@@ -233,12 +255,13 @@ const AccountSettingsScreen = () => {
           field: { onChange, value },
           fieldState: { error: fieldError }
         }) => (
-          <>
+          <View>
             <TextInput
               label="First name"
               mode="outlined"
               value={value}
               onChangeText={onChange}
+              onFocus={() => clearErrors()}
               error={fieldError !== undefined}
               style={styles.formField}
               right={<TextInput.Icon icon="card-account-details" />}
@@ -253,7 +276,7 @@ const AccountSettingsScreen = () => {
                   : ''}
               </HelperText>
             )}
-          </>
+          </View>
         )}
       />
       <Controller
@@ -267,12 +290,13 @@ const AccountSettingsScreen = () => {
           field: { onChange, value },
           fieldState: { error: fieldError }
         }) => (
-          <>
+          <View>
             <TextInput
               label="Last name"
               mode="outlined"
               value={value}
               onChangeText={onChange}
+              onFocus={() => clearErrors()}
               error={fieldError !== undefined}
               style={styles.formField}
               right={<TextInput.Icon icon="card-account-details" />}
@@ -287,7 +311,7 @@ const AccountSettingsScreen = () => {
                   : ''}
               </HelperText>
             )}
-          </>
+          </View>
         )}
       />
       <Button
@@ -301,29 +325,30 @@ const AccountSettingsScreen = () => {
       >
         Update
       </Button>
-      <Portal>
-        <DialogSuccess
-          title="Congratulations!"
-          message={message}
-          button="OK"
-          onDismiss={hideMessage}
-          onAgreePress={hideMessage}
-        />
-        <DialogInfo
-          title="Oops..."
-          info={info}
-          button="OK"
-          onDismiss={hideInfo}
-          onAgreePress={hideInfo}
-        />
-        <DialogError
-          title="Attention!"
-          error={error}
-          button="OK"
-          onDismiss={hideError}
-          onAgreePress={hideError}
-        />
-      </Portal>
+      <DialogWindow
+        title="Congratulations!"
+        type="success"
+        message={message}
+        button="OK"
+        onDismiss={hideMessage}
+        onAgreePress={hideMessage}
+      />
+      <DialogWindow
+        title="Attention!"
+        type="error"
+        message={error}
+        button="OK"
+        onDismiss={hideError}
+        onAgreePress={hideError}
+      />
+      <DialogWindow
+        title="Oops..."
+        type="info"
+        message={info}
+        button="OK"
+        onDismiss={hideInfo}
+        onAgreePress={hideInfo}
+      />
     </View>
   );
 };

@@ -1,19 +1,13 @@
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Keyboard, TouchableOpacity, View } from 'react-native';
-import {
-  Button,
-  HelperText,
-  Portal,
-  Text,
-  TextInput
-} from 'react-native-paper';
+import { Button, HelperText, Text, TextInput } from 'react-native-paper';
 
 import { styles } from '@/common/styles';
-import DialogError from '@/components/DialogError';
+import DialogWindow from '@/components/DialogWindow';
 import { useAuth } from '@/providers/AuthProvider';
+import { AuthorizationRequestData } from '@/types/Auth/request';
 import { ScreenProps } from '@/types/props';
-import { AuthorizationRequestData } from '@/types/request';
 
 const AuthorizationScreen = ({ navigation }: ScreenProps) => {
   const { loading, login } = useAuth();
@@ -44,7 +38,7 @@ const AuthorizationScreen = ({ navigation }: ScreenProps) => {
   const togglePassword = () => setShowPassword((show) => !show);
 
   return (
-    <View style={[styles.container, styles.centerVertical]}>
+    <View style={[styles.container, styles.justifyContentCenter]}>
       <Controller
         name="username"
         control={control}
@@ -56,7 +50,7 @@ const AuthorizationScreen = ({ navigation }: ScreenProps) => {
           field: { onChange, value },
           fieldState: { error: fieldError }
         }) => (
-          <>
+          <View>
             <TextInput
               label="Username or email *"
               mode="outlined"
@@ -77,7 +71,7 @@ const AuthorizationScreen = ({ navigation }: ScreenProps) => {
                   : ''}
               </HelperText>
             )}
-          </>
+          </View>
         )}
       />
       <Controller
@@ -91,7 +85,7 @@ const AuthorizationScreen = ({ navigation }: ScreenProps) => {
           field: { onChange, value },
           fieldState: { error: fieldError }
         }) => (
-          <>
+          <View>
             <TextInput
               label="Password *"
               mode="outlined"
@@ -114,7 +108,7 @@ const AuthorizationScreen = ({ navigation }: ScreenProps) => {
                   : ''}
               </HelperText>
             )}
-          </>
+          </View>
         )}
       />
       <Button
@@ -134,15 +128,14 @@ const AuthorizationScreen = ({ navigation }: ScreenProps) => {
           <Text style={styles.link}>Sign up</Text>
         </TouchableOpacity>
       </View>
-      <Portal>
-        <DialogError
-          title="Attention!"
-          error={error}
-          button="OK"
-          onDismiss={hideError}
-          onAgreePress={hideError}
-        />
-      </Portal>
+      <DialogWindow
+        title="Attention!"
+        type="error"
+        message={error}
+        button="OK"
+        onDismiss={hideError}
+        onAgreePress={hideError}
+      />
     </View>
   );
 };

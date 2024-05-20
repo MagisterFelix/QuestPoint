@@ -4,7 +4,7 @@ from django.db.models import Q
 from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer
 
-from core.api.models import Quest, Record, User
+from core.api.models import Quest, Record
 from core.api.serializers.quest import QuestSerializer
 from core.api.serializers.user import UserSerializer
 
@@ -17,11 +17,11 @@ class RecordSerializer(ModelSerializer):
 
     def validate(self, attrs: dict) -> dict:
         if self.instance is None:
-            quest: Quest = attrs["quest"]
-            worker: User = self.context["request"].user
+            quest = attrs["quest"]
+            worker = self.context["request"].user
         else:
-            quest: Quest = Quest.objects.get(pk=self.context["view"].kwargs["quest"])
-            worker: User = self.instance.worker
+            quest = Quest.objects.get(pk=self.context["view"].kwargs["quest"])
+            worker = self.instance.worker
 
         if quest.creator == worker:
             raise ValidationError("Creator cannot be the worker.")

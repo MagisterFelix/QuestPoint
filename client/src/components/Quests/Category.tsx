@@ -1,7 +1,7 @@
 import { Image } from 'react-native';
 
 import { styles } from '@/common/styles';
-import { CategoryProps } from '@/types/props';
+import { CategoryProps } from '@/types/Quests/props';
 
 const Category = ({ category }: CategoryProps) => {
   return (

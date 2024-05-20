@@ -1,23 +1,23 @@
 import { AxiosError, AxiosResponse } from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { ActivityIndicator } from 'react-native-paper';
 
-import { useAxios } from '@/api/axios';
+import { AxiosInterceptor, useAxios } from '@/api/axios';
 import { ENDPOINTS } from '@/api/endpoints';
 import { handleErrors } from '@/api/errors';
-import { styles } from '@/common/styles';
-import { ErrorData, ErrorHandler } from '@/types/errors';
-import { AuthContextProps, ProviderProps } from '@/types/props';
+import Logo from '@/components/Logo';
+import { AuthContextProps } from '@/types/Auth/props';
 import {
   AuthorizationRequestData,
   RegistrationRequestData
-} from '@/types/request';
+} from '@/types/Auth/request';
 import {
   AuthorizationResponseData,
-  ProfileResponseData,
   RegistrationResponseData
-} from '@/types/response';
+} from '@/types/Auth/response';
+import { ProfileResponseData } from '@/types/User/response';
+import { ErrorData, ErrorHandler } from '@/types/errors';
+import { ProviderProps } from '@/types/props';
 
 const AuthContext = createContext<AuthContextProps>({
   user: null,
@@ -71,6 +71,14 @@ const AuthProvider = ({ children }: ProviderProps) => {
     }
   };
 
+  const getProfile = async () => {
+    const response: AxiosResponse<ProfileResponseData> = await request({
+      url: ENDPOINTS.profile,
+      method: 'GET'
+    });
+    await updateUser(response.data);
+  };
+
   const login = async (
     data: AuthorizationRequestData,
     errorHandler: ErrorHandler
@@ -119,10 +127,11 @@ const AuthProvider = ({ children }: ProviderProps) => {
   };
 
   const value = {
+    loading,
     user,
     stripeAccount,
     updateUser,
-    loading,
+    getProfile,
     login,
     register,
     logout
@@ -130,10 +139,10 @@ const AuthProvider = ({ children }: ProviderProps) => {
 
   return (
     <AuthContext.Provider value={value}>
-      {checking ? (
-        <ActivityIndicator style={styles.container} size="large" />
+      {checking && !user ? (
+        <Logo />
       ) : (
-        children
+        <AxiosInterceptor logout={logout}>{children}</AxiosInterceptor>
       )}
     </AuthContext.Provider>
   );

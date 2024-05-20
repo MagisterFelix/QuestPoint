@@ -45,13 +45,13 @@ class Quest(BaseModel):
         else:
             reward = self.reward
 
-        self.creator.balance -= reward
+        self.creator.balance -= reward * 1.2
         self.creator.save()
 
         super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs) -> tuple[int, dict]:
-        self.creator.balance += self.reward
+        self.creator.balance += self.reward * 1.2
         self.creator.save()
 
         return super().delete(*args, **kwargs)
@@ -62,4 +62,4 @@ class Quest(BaseModel):
     class Meta:
         db_table = "quests"
         unique_together = (("title", "creator",))
-        ordering = ["created_at"]
+        ordering = ["-created_at"]

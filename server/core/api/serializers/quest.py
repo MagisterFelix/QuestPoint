@@ -4,7 +4,7 @@ from django.db.models import Q
 from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 
-from core.api.models import Quest, Record, User
+from core.api.models import Quest, Record
 from core.api.serializers.category import CategorySerializer
 from core.api.serializers.user import UserSerializer
 
@@ -18,24 +18,29 @@ class QuestSerializer(ModelSerializer):
         exclude = ("creator",)
 
     def get_status(self, quest: Quest) -> str:
-        user: User = self.context["request"].user
-
-        records = Record.objects.filter(quest=quest)
+        user = self.context["request"].user
 
         if quest.creator == user:
-            if records.filter(~Q(status=Record.Status.CANCELLED)).exists():
+            if Record.objects.filter(Q(quest=quest) & ~Q(status=Record.Status.CANCELLED)).exists():
                 return "Created"
             return "Created [Waiting]"
 
-        record = records.get(worker=user)
+        record = Record.objects.get_or_none(quest=quest, worker=user)
+
+        if record is None:
+            return "Available"
 
         return Record.Status.choices[record.status][1]
 
     def validate(self, attrs: dict) -> dict:
+        title = attrs.get("title")
         reward = attrs.get("reward")
         latitude = attrs.get("latitude")
         longitude = attrs.get("longitude")
-        creator: User = self.context["request"].user
+        creator = self.context["request"].user
+
+        if Quest.objects.filter(title=title, creator=creator).exists():
+            raise ValidationError({"title": "Quest with this title already exists."})
 
         if reward == 0:
             raise ValidationError("Reward cannot be the zero.")

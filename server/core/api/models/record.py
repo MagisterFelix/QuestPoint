@@ -41,4 +41,4 @@ class Record(BaseModel):
     class Meta:
         db_table = "records"
         unique_together = (("quest", "worker",))
-        ordering = ["created_at"]
+        ordering = ["-created_at"]

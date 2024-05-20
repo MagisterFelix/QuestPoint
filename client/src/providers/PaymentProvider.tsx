@@ -6,12 +6,13 @@ import { createContext, useContext, useState } from 'react';
 
 import { ENDPOINTS } from '@/api/endpoints';
 import { useAuth } from '@/providers/AuthProvider';
-import { PaymentContextProps, ProviderProps } from '@/types/props';
+import { PaymentContextProps } from '@/types/User/props';
 import {
   TransactionRequestData,
   UpdateAccountRequestData
-} from '@/types/request';
-import { ProfileResponseData } from '@/types/response';
+} from '@/types/User/request';
+import { ProfileResponseData } from '@/types/User/response';
+import { ProviderProps } from '@/types/props';
 
 const PaymentContext = createContext<PaymentContextProps>({});
 
@@ -117,7 +118,7 @@ const PaymentProvider = ({ children }: ProviderProps) => {
           url: ENDPOINTS.profile,
           method: 'PATCH',
           data: {
-            transfer: data.amount * 100
+            transfer: data.amount * 2
           },
           withCredentials: true
         });

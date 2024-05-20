@@ -43,13 +43,13 @@ export const styles = StyleSheet.create({
     flexDirection: 'column',
     width: '100%'
   },
-  centerVertical: {
+  justifyContentCenter: {
     justifyContent: 'center'
   },
-  centerHorizontal: {
+  alignItemsCenter: {
     alignItems: 'center'
   },
-  endHorizontal: {
+  alignItemsEnd: {
     alignItems: 'flex-end'
   },
   col: {
@@ -74,14 +74,26 @@ export const styles = StyleSheet.create({
   textCenter: {
     textAlign: 'center'
   },
+  textEnd: {
+    textAlign: 'right'
+  },
   flexForWrap: {
     flex: 1
+  },
+  date: {
+    marginTop: 10
   },
   wrap: {
     flexWrap: 'wrap'
   },
   disabled: {
     opacity: 0.5
+  },
+  screenIconButton: {
+    marginRight: -10
+  },
+  menuContent: {
+    backgroundColor: theme.colors.background
   },
   headerTitle: {
     fontSize: 20,
@@ -100,6 +112,10 @@ export const styles = StyleSheet.create({
   formField: {
     marginVertical: 5
   },
+  dropdownFormField: {
+    marginTop: 5,
+    marginBottom: -5
+  },
   formHelperText: {
     marginTop: -5,
     marginBottom: -5
@@ -107,9 +123,9 @@ export const styles = StyleSheet.create({
   formButton: {
     marginVertical: 10
   },
-  detailsButton: {
+  formGroupButton: {
     width: '50%',
-    marginTop: 30
+    marginVertical: 10
   },
   user: {
     gap: 20
@@ -131,9 +147,13 @@ export const styles = StyleSheet.create({
   image: {
     backgroundColor: theme.colors.background
   },
-  noData: {
+  fullImage: {
     width: '100%',
     height: '100%'
+  },
+  logo: {
+    width: 64,
+    height: 64
   },
   name: {
     fontSize: 20,
@@ -177,6 +197,31 @@ export const styles = StyleSheet.create({
   cardButton: {
     marginRight: 5
   },
+  info: {
+    backgroundColor: theme.colors.background,
+    margin: 10
+  },
+  chat: {
+    backgroundColor: theme.colors.background,
+    margin: 10
+  },
+  chatFull: {
+    height: '95%'
+  },
+  chatHalf: {
+    height: '60%'
+  },
+  chatScrollView: {
+    height: '100%'
+  },
+  messageImage: {
+    width: 150,
+    height: 125
+  },
+  messagePreview: {
+    width: 300,
+    height: 250
+  },
   messageCurrentUser: {
     margin: 10,
     borderRadius: 10,
@@ -188,5 +233,13 @@ export const styles = StyleSheet.create({
     borderRadius: 10,
     borderBottomStartRadius: 0,
     alignSelf: 'flex-start'
+  },
+  ratingImage: {
+    width: 32,
+    height: 32
+  },
+  email: {
+    marginTop: 25,
+    marginBottom: 10
   }
 });

@@ -2,16 +2,15 @@ import { AxiosError } from 'axios';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Keyboard, View } from 'react-native';
-import { Button, HelperText, Portal, TextInput } from 'react-native-paper';
+import { Button, HelperText, TextInput } from 'react-native-paper';
 
 import { useAxios } from '@/api/axios';
 import { ENDPOINTS } from '@/api/endpoints';
 import { handleErrors } from '@/api/errors';
 import { styles } from '@/common/styles';
-import DialogError from '@/components/DialogError';
-import DialogSuccess from '@/components/DialogSuccess';
+import DialogWindow from '@/components/DialogWindow';
+import { ChangePasswordRequestData } from '@/types/User/request';
 import { ErrorData } from '@/types/errors';
-import { ChangePasswordRequestData } from '@/types/request';
 
 const PrivacySettingsScreen = () => {
   const [{ loading }, request] = useAxios(
@@ -38,7 +37,13 @@ const PrivacySettingsScreen = () => {
   const hideMessage = () => setMessage('');
   const [error, setError] = useState<string>('');
   const hideError = () => setError('');
-  const { control, handleSubmit, setError: setFieldError, watch } = useForm();
+  const {
+    control,
+    handleSubmit,
+    setError: setFieldError,
+    clearErrors,
+    watch
+  } = useForm();
   const handleOnSubmit = async (data: ChangePasswordRequestData) => {
     Keyboard.dismiss();
     const errorHandler = {
@@ -63,7 +68,7 @@ const PrivacySettingsScreen = () => {
   const togglePassword = () => setShowPassword((show) => !show);
 
   return (
-    <View style={[styles.container, styles.centerVertical]}>
+    <View style={[styles.container, styles.justifyContentCenter]}>
       <Controller
         name="password"
         control={control}
@@ -75,7 +80,7 @@ const PrivacySettingsScreen = () => {
           field: { onChange, value },
           fieldState: { error: fieldError }
         }) => (
-          <>
+          <View>
             <TextInput
               label="Old password *"
               mode="outlined"
@@ -84,6 +89,7 @@ const PrivacySettingsScreen = () => {
               autoCapitalize="none"
               value={value}
               onChangeText={onChange}
+              onFocus={() => clearErrors()}
               error={fieldError !== undefined}
               style={styles.formField}
               right={<TextInput.Icon icon="shield-key" />}
@@ -98,7 +104,7 @@ const PrivacySettingsScreen = () => {
                   : ''}
               </HelperText>
             )}
-          </>
+          </View>
         )}
       />
       <Controller
@@ -115,7 +121,7 @@ const PrivacySettingsScreen = () => {
           field: { onChange, value },
           fieldState: { error: fieldError }
         }) => (
-          <>
+          <View>
             <TextInput
               label="New password *"
               mode="outlined"
@@ -124,6 +130,7 @@ const PrivacySettingsScreen = () => {
               autoCapitalize="none"
               value={value}
               onChangeText={onChange}
+              onFocus={() => clearErrors()}
               error={fieldError !== undefined}
               style={styles.formField}
               right={<TextInput.Icon icon="eye" onPress={togglePassword} />}
@@ -138,7 +145,7 @@ const PrivacySettingsScreen = () => {
                   : ''}
               </HelperText>
             )}
-          </>
+          </View>
         )}
       />
       <Controller
@@ -153,7 +160,7 @@ const PrivacySettingsScreen = () => {
           field: { onChange, value },
           fieldState: { error: fieldError }
         }) => (
-          <>
+          <View>
             <TextInput
               label="Confirm new password *"
               mode="outlined"
@@ -162,6 +169,7 @@ const PrivacySettingsScreen = () => {
               autoCapitalize="none"
               value={value}
               onChangeText={onChange}
+              onFocus={() => clearErrors()}
               error={fieldError !== undefined}
               style={styles.formField}
               right={<TextInput.Icon icon="key" />}
@@ -176,7 +184,7 @@ const PrivacySettingsScreen = () => {
                   : ''}
               </HelperText>
             )}
-          </>
+          </View>
         )}
       />
       <Button
@@ -190,22 +198,22 @@ const PrivacySettingsScreen = () => {
       >
         Change
       </Button>
-      <Portal>
-        <DialogSuccess
-          title="Congratulations!"
-          message={message}
-          button="OK"
-          onDismiss={hideMessage}
-          onAgreePress={hideMessage}
-        />
-        <DialogError
-          title="Attention!"
-          error={error}
-          button="OK"
-          onDismiss={hideError}
-          onAgreePress={hideError}
-        />
-      </Portal>
+      <DialogWindow
+        title="Congratulations!"
+        type="success"
+        message={message}
+        button="OK"
+        onDismiss={hideMessage}
+        onAgreePress={hideMessage}
+      />
+      <DialogWindow
+        title="Attention!"
+        type="error"
+        message={error}
+        button="OK"
+        onDismiss={hideError}
+        onAgreePress={hideError}
+      />
     </View>
   );
 };

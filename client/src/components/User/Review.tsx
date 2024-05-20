@@ -3,7 +3,7 @@ import { Image, TouchableOpacity, View } from 'react-native';
 import { Card, Icon, Text } from 'react-native-paper';
 
 import { styles } from '@/common/styles';
-import { ReviewProps } from '@/types/props';
+import { ReviewProps } from '@/types/User/props';
 
 const Review = ({ review }: ReviewProps) => {
   const navigation: NavigationProp<any> = useNavigation();
@@ -27,7 +27,7 @@ const Review = ({ review }: ReviewProps) => {
             </TouchableOpacity>
             <Text variant="titleSmall">{review.author.username}</Text>
           </View>
-          <View style={[styles.rowCenter]}>
+          <View style={styles.rowCenter}>
             {Array.from({ length: 5 }, (_, index) =>
               index + 1 <= review.rating ? (
                 <Icon
@@ -50,6 +50,9 @@ const Review = ({ review }: ReviewProps) => {
             {review.text}
           </Text>
         )}
+        <Text style={[styles.date, styles.textEnd]}>
+          {new Date(review.created_at).toLocaleDateString()}
+        </Text>
       </Card.Content>
     </Card>
   );

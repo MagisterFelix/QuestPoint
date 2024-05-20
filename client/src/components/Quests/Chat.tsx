@@ -3,28 +3,31 @@ import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Keyboard, ScrollView } from 'react-native';
-import { ActivityIndicator, Card, TextInput } from 'react-native-paper';
+import { Card, TextInput } from 'react-native-paper';
 
 import { useAxios } from '@/api/axios';
 import { ENDPOINTS } from '@/api/endpoints';
 import { styles, theme } from '@/common/styles';
-import Message from '@/components/Message';
+import Loading from '@/components/Loading';
+import Message from '@/components/Quests/Message';
 import { useAuth } from '@/providers/AuthProvider';
-import { ChatProps } from '@/types/props';
-import { MessageRequestData } from '@/types/request';
-import { MessageContentType, MessageResponseData } from '@/types/response';
+import { ChatProps } from '@/types/Quests/props';
+import { MessageRequestData } from '@/types/Quests/request';
+import {
+  MessageContentType,
+  MessageResponseData
+} from '@/types/Quests/response';
 
-const Chat = ({ record, isKeyboardVisible }: ChatProps) => {
+const Chat = ({ record }: ChatProps) => {
   const scrollViewRef = useRef<ScrollView>(null);
 
   const { user } = useAuth();
 
   const [messages, setMessages] = useState<MessageResponseData[]>([]);
-
   const [{ loading: loadingMessages, data: messageList }] = useAxios<
     MessageResponseData[]
   >({
-    url: `${ENDPOINTS.messages}${record.quest.id}`,
+    url: `${ENDPOINTS.messages}${record.quest.id}/`,
     method: 'GET'
   });
 
@@ -89,30 +92,58 @@ const Chat = ({ record, isKeyboardVisible }: ChatProps) => {
     setMessages(messageList);
   }, [messageList]);
 
-  if (loadingMessages) {
-    return <ActivityIndicator size="large" style={styles.container} />;
-  }
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState<boolean>(
+    Keyboard.isVisible()
+  );
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
+      setIsKeyboardVisible(true);
+    });
+    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+      setIsKeyboardVisible(false);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
 
   return (
-    <Card style={[styles.quest, { height: isKeyboardVisible ? '95%' : '60%' }]}>
-      <ScrollView
-        ref={scrollViewRef}
-        onLayout={() => scrollViewRef.current?.scrollToEnd({ animated: false })}
-        onContentSizeChange={() =>
-          scrollViewRef.current?.scrollToEnd({ animated: false })
-        }
-        style={{
-          height: '100%'
-        }}
-      >
-        {messages?.map((message: MessageResponseData) => (
-          <Message
-            key={message.id}
-            message={message}
-            isOwner={message.author.id === user?.id}
-          />
-        ))}
-      </ScrollView>
+    <Card
+      style={[
+        styles.chat,
+        isKeyboardVisible ? styles.chatFull : styles.chatHalf
+      ]}
+    >
+      {loadingMessages && !messageList ? (
+        <ScrollView
+          ref={scrollViewRef}
+          style={styles.chatScrollView}
+          contentContainerStyle={styles.containerInner}
+        >
+          <Loading />
+        </ScrollView>
+      ) : (
+        <ScrollView
+          ref={scrollViewRef}
+          onLayout={() =>
+            scrollViewRef.current?.scrollToEnd({ animated: false })
+          }
+          onContentSizeChange={() =>
+            scrollViewRef.current?.scrollToEnd({ animated: false })
+          }
+          style={styles.chatScrollView}
+        >
+          {messages?.map((message: MessageResponseData) => (
+            <Message
+              key={message.id}
+              message={message}
+              isOwner={message.author.id === user?.id}
+            />
+          ))}
+        </ScrollView>
+      )}
       <Controller
         name="content"
         control={control}
@@ -128,6 +159,7 @@ const Chat = ({ record, isKeyboardVisible }: ChatProps) => {
                 marginVertical: 0
               }
             ]}
+            disabled={loadingMessages}
             left={
               <TextInput.Icon
                 icon="image"

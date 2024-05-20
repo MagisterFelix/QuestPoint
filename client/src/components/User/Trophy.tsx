@@ -2,7 +2,7 @@ import { Image, View } from 'react-native';
 import { Text } from 'react-native-paper';
 
 import { styles } from '@/common/styles';
-import { TrophyProps } from '@/types/props';
+import { TrophyProps } from '@/types/User/props';
 
 const Trophy = ({ trophy, owned }: TrophyProps) => {
   return (

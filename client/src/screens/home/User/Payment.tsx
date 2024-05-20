@@ -4,7 +4,6 @@ import { Keyboard, View } from 'react-native';
 import {
   Button,
   HelperText,
-  Portal,
   Switch,
   Text,
   TextInput
@@ -12,10 +11,10 @@ import {
 
 import { styles } from '@/common/styles';
 import Coins from '@/components/Coins';
-import DialogError from '@/components/DialogError';
+import DialogWindow from '@/components/DialogWindow';
 import { useAuth } from '@/providers/AuthProvider';
 import { usePayment } from '@/providers/PaymentProvider';
-import { TransactionRequestData } from '@/types/request';
+import { TransactionRequestData } from '@/types/User/request';
 
 const PaymentScreen = () => {
   const { user, stripeAccount } = useAuth();
@@ -31,15 +30,15 @@ const PaymentScreen = () => {
     },
     amount: {
       required: 'This field may not be blank.',
-      min: isPayout ? 'At least 100 coins' : 'At least 1$.',
+      min: isPayout ? 'At least 10 coins.' : 'At least 1$.',
       max: isPayout
-        ? `No more than current balance for payout.`
+        ? 'No more than current balance for payout.'
         : 'No more than 100$ for payment.',
       pattern: 'Provide a valid amount.'
     }
   };
 
-  const { control, handleSubmit } = useForm();
+  const { control, handleSubmit, clearErrors, reset } = useForm();
   const handleOnSubmit = async (data: TransactionRequestData) => {
     Keyboard.dismiss();
     if (isPayout) {
@@ -47,10 +46,11 @@ const PaymentScreen = () => {
     } else {
       await pay!(data);
     }
+    reset({ amount: '' });
   };
 
   return (
-    <View style={[styles.container, styles.centerVertical]}>
+    <View style={[styles.container, styles.justifyContentCenter]}>
       <View style={styles.rowSpaceBetween}>
         <View style={styles.rowCenter}>
           <Text style={styles.headerTitle}>Balance:</Text>
@@ -70,13 +70,14 @@ const PaymentScreen = () => {
             field: { onChange, value },
             fieldState: { error: fieldError }
           }) => (
-            <>
+            <View>
               <TextInput
                 label="Stripe account *"
                 mode="outlined"
                 autoCapitalize="none"
                 value={value}
                 onChangeText={onChange}
+                onFocus={() => clearErrors()}
                 error={fieldError !== undefined}
                 style={styles.formField}
                 right={<TextInput.Icon icon="account-tie" />}
@@ -91,7 +92,7 @@ const PaymentScreen = () => {
                     : ''}
                 </HelperText>
               )}
-            </>
+            </View>
           )}
         />
       )}
@@ -101,21 +102,22 @@ const PaymentScreen = () => {
         defaultValue=""
         rules={{
           required: true,
-          min: isPayout ? 100 : 1,
+          min: isPayout ? 10 : 1,
           max: isPayout ? user?.balance : 100,
-          pattern: /\d+/
+          pattern: /^\d+(?:\.\d+)?$/
         }}
         render={({
           field: { onChange, value },
           fieldState: { error: fieldError }
         }) => (
-          <>
+          <View>
             <TextInput
               label="Amount *"
               mode="outlined"
               keyboardType="numeric"
               value={value}
               onChangeText={onChange}
+              onFocus={() => clearErrors()}
               error={fieldError !== undefined}
               style={styles.formField}
               right={<TextInput.Icon icon="currency-usd" />}
@@ -130,7 +132,7 @@ const PaymentScreen = () => {
                   : ''}
               </HelperText>
             )}
-          </>
+          </View>
         )}
       />
       <Button
@@ -144,15 +146,14 @@ const PaymentScreen = () => {
       >
         {isPayout ? 'Pay Out' : 'Pay'}
       </Button>
-      <Portal>
-        <DialogError
-          title="Oops..."
-          error={error ? 'Something went wrong...' : ''}
-          button="OK"
-          onDismiss={hideError!}
-          onAgreePress={hideError!}
-        />
-      </Portal>
+      <DialogWindow
+        title="Oops..."
+        type="error"
+        message={error ? 'Something went wrong...' : ''}
+        button="OK"
+        onDismiss={hideError!}
+        onAgreePress={hideError!}
+      />
     </View>
   );
 };
