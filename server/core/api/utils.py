@@ -2,6 +2,7 @@ import os
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.db.models.expressions import RawSQL
 
 
 class ImageUtils:
@@ -33,3 +34,14 @@ class ImageUtils:
             return None
 
         os.remove(path)
+
+
+class QuestUtils:
+
+    @staticmethod
+    def get_distance_sql(latitude: float, longitude: float) -> RawSQL:
+        return RawSQL(
+            "6371 * acos(cos(radians(%s)) * cos(radians(latitude)) * cos(radians(longitude)\
+                            - radians(%s)) + sin(radians(%s)) * sin(radians(latitude)))",
+            [latitude, longitude, latitude]
+        )

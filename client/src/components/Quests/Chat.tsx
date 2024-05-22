@@ -7,6 +7,7 @@ import { Card, TextInput } from 'react-native-paper';
 
 import { useAxios } from '@/api/axios';
 import { ENDPOINTS } from '@/api/endpoints';
+import { windowSize } from '@/common/constants';
 import { styles, theme } from '@/common/styles';
 import Loading from '@/components/Loading';
 import Message from '@/components/Quests/Message';
@@ -113,7 +114,9 @@ const Chat = ({ record }: ChatProps) => {
     <Card
       style={[
         styles.chat,
-        isKeyboardVisible ? styles.chatFull : styles.chatHalf
+        isKeyboardVisible
+          ? { height: windowSize.height * 0.41 }
+          : { height: windowSize.height * 0.45 }
       ]}
     >
       {loadingMessages && !messageList ? (

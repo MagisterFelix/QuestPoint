@@ -12,6 +12,7 @@ import { styles, theme } from '@/common/styles';
 import DialogWindow from '@/components/DialogWindow';
 import Loading from '@/components/Loading';
 import { useAuth } from '@/providers/AuthProvider';
+import { useLocation } from '@/providers/LocationProvider';
 import { useQuestData } from '@/providers/QuestDataProvider';
 import {
   CreateQuestRequestData,
@@ -25,11 +26,13 @@ import { ErrorData } from '@/types/errors';
 import { ScreenProps } from '@/types/props';
 
 const QuestFormScreen = ({ route, navigation }: ScreenProps) => {
+  const { user, getProfile } = useAuth();
+
   const { updateQuests } = useQuestData();
 
-  const quest: QuestResponseData = route.params?.quest;
+  const { location } = useLocation();
 
-  const { user, getProfile } = useAuth();
+  const quest: QuestResponseData = route.params?.quest;
 
   const [{ loading: loadingCategories, data: categories }] = useAxios<
     CategoryResponseData[]
@@ -276,10 +279,12 @@ const QuestFormScreen = ({ route, navigation }: ScreenProps) => {
                       <Text>
                         You will get {(quest.reward - value) * 1.2} coins
                       </Text>
-                    ) : (
+                    ) : value > quest.reward ? (
                       <Text>
                         You will pay {(value - quest.reward) * 1.2} coins
                       </Text>
+                    ) : (
+                      <Text>Current price</Text>
                     )
                   ) : (
                     <Text>You will pay {value * 1.2} coins</Text>
@@ -389,6 +394,8 @@ const QuestFormScreen = ({ route, navigation }: ScreenProps) => {
           style={styles.formButton}
           onPress={handleSubmit((data: any) => {
             data.category = data.category.selectedList[0]._id;
+            data.latitude = location?.latitude;
+            data.longitude = location?.longitude;
             handleOnSubmit(data as CreateQuestRequestData);
           })}
         >

@@ -21,9 +21,9 @@ const Info = ({
 }: InfoProps) => {
   const navigation: NavigationProp<any> = useNavigation();
 
-  const { updateQuests } = useQuestData();
-
   const { getProfile } = useAuth();
+
+  const { updateQuests } = useQuestData();
 
   const [{ loading }, request] = useAxios(
     {},

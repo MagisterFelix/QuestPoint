@@ -7,6 +7,7 @@ from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from core.api.models import Quest, Record
 from core.api.serializers.category import CategorySerializer
 from core.api.serializers.user import UserSerializer
+from core.api.utils import QuestUtils
 
 
 class QuestSerializer(ModelSerializer):
@@ -28,6 +29,8 @@ class QuestSerializer(ModelSerializer):
         record = Record.objects.get_or_none(quest=quest, worker=user)
 
         if record is None:
+            if Record.objects.filter(quest=quest, status=Record.Status.HAS_OFFER).exists():
+                return "Pending"
             return "Available"
 
         return Record.Status.choices[record.status][1]
@@ -54,6 +57,22 @@ class QuestSerializer(ModelSerializer):
 
         if Record.objects.filter(Q(quest=self.instance), ~Q(status=Record.Status.CANCELLED)).exists():
             raise ValidationError("Quest cannot be updated if its status had been changed.")
+
+        if latitude is not None and longitude is not None:
+            worker = Record.objects.filter(
+                Q(worker=creator) & ~Q(status__in=[Record.Status.CANCELLED, Record.Status.COMPLETED])
+            ).values_list("quest__pk", flat=True)
+
+            taken = Record.objects.filter(
+                ~Q(status__in=[Record.Status.HAS_OFFER, Record.Status.CANCELLED])
+            ).values_list("quest__pk", flat=True)
+
+            nearby_50_m = Quest.objects.annotate(
+                distance=QuestUtils.get_distance_sql(latitude, longitude)
+            ).filter(Q(distance__lte=0.05) & (Q(creator=creator) | Q(pk__in=worker) | ~Q(pk__in=taken)))
+
+            if nearby_50_m:
+                raise ValidationError("There is already a quest nearby 50 m.")
 
         attrs["creator"] = creator
 

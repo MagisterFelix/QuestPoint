@@ -74,6 +74,9 @@ export const styles = StyleSheet.create({
   textCenter: {
     textAlign: 'center'
   },
+  textJustify: {
+    textAlign: 'justify'
+  },
   textEnd: {
     textAlign: 'right'
   },
@@ -178,8 +181,7 @@ export const styles = StyleSheet.create({
   modal: {
     backgroundColor: theme.colors.background,
     padding: 20,
-    borderRadius: 10,
-    maxHeight: '50%'
+    borderRadius: 10
   },
   modalImage: {
     alignItems: 'center'
@@ -204,12 +206,6 @@ export const styles = StyleSheet.create({
   chat: {
     backgroundColor: theme.colors.background,
     margin: 10
-  },
-  chatFull: {
-    height: '95%'
-  },
-  chatHalf: {
-    height: '60%'
   },
   chatScrollView: {
     height: '100%'
@@ -241,5 +237,84 @@ export const styles = StyleSheet.create({
   email: {
     marginTop: 25,
     marginBottom: 10
+  },
+  map: {
+    flex: 3
+  },
+  playerMarkerBackground: {
+    width: 28,
+    height: 28
+  },
+  playerMarkerForeground: {
+    width: 28,
+    height: 28,
+    backgroundColor: theme.colors.elevation.level0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 3
+  },
+  questMarker: {
+    width: 28,
+    height: 28
+  },
+  questInfo: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'flex-end',
+    alignItems: 'center'
+  },
+  chevron: {
+    position: 'absolute',
+    zIndex: 1
+  },
+  questInfoContent: {
+    backgroundColor: theme.colors.background,
+    width: '100%',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+    alignItems: 'center',
+    shadowColor: theme.colors.shadow,
+    shadowOffset: { width: 0, height: -3 },
+    shadowOpacity: 0.29,
+    shadowRadius: 4.65,
+    elevation: 7
+  },
+  fullWidthCard: {
+    flex: 1,
+    margin: 10,
+    padding: 10,
+    backgroundColor: theme.colors.background,
+    borderRadius: 8
+  },
+  card: {
+    margin: 10,
+    padding: 10,
+    backgroundColor: theme.colors.background,
+    borderRadius: 8,
+    justifyContent: 'center'
+  },
+  cardContentMain: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  cardContentAdditional: {
+    marginBottom: 20
+  },
+  smallCard: {
+    flex: 1,
+    justifyContent: 'center'
+  },
+  boldTitle: {
+    fontWeight: 'bold'
+  },
+  iconWithText: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8
   }
 });

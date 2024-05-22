@@ -1,11 +1,11 @@
 from django.db.models import Count, Q
-from django.db.models.expressions import RawSQL
 from django.db.models.query import QuerySet
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 
 from core.api.models import Quest, Record
 from core.api.serializers import QuestSerializer
+from core.api.utils import QuestUtils
 
 
 class QuestListView(ListCreateAPIView):
@@ -54,15 +54,17 @@ class QuestListView(ListCreateAPIView):
         if not ((-90 <= latitude <= 90) and (-180 <= longitude <= 180)):
             return queryset.none()
 
-        worker = Record.objects.filter(worker=self.request.user).values_list("quest__pk", flat=True)
+        worker = Record.objects.filter(
+            Q(worker=self.request.user) & ~Q(status__in=[Record.Status.CANCELLED, Record.Status.COMPLETED])
+        ).values_list("quest__pk", flat=True)
 
-        taken = Record.objects.filter(~Q(status=Record.Status.CANCELLED)).values_list("quest__pk", flat=True)
+        taken = Record.objects.filter(
+            ~Q(status__in=[Record.Status.HAS_OFFER, Record.Status.CANCELLED])
+        ).values_list("quest__pk", flat=True)
 
-        return queryset.annotate(distance=RawSQL(
-            "6371 * acos(cos(radians(%s)) * cos(radians(latitude)) * cos(radians(longitude)\
-                  - radians(%s)) + sin(radians(%s)) * sin(radians(latitude)))",
-            [latitude, longitude, latitude]
-        )).filter(Q(distance__lte=5) & ~Q(creator=self.request.user) & ~Q(pk__in=worker) & ~Q(pk__in=taken))
+        return queryset.annotate(
+            distance=QuestUtils.get_distance_sql(latitude, longitude)
+        ).filter(Q(distance__lte=5) & (~Q(creator=self.request.user) & ~Q(pk__in=taken) | Q(pk__in=worker)))
 
 
 class QuestView(RetrieveUpdateDestroyAPIView):

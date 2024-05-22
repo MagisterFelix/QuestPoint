@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 
 import { useAxios } from '@/api/axios';
 import { ENDPOINTS } from '@/api/endpoints';
+import { useLocation } from '@/providers/LocationProvider';
 import {
   QuestDataContextProps,
   QuestDataProviderProps
@@ -21,12 +22,18 @@ const QuestDataProvider = ({ children, filters }: QuestDataProviderProps) => {
     undefined
   );
 
-  const [{ loading: loadingQuests, data: questList }, refetch] = useAxios<
-    QuestResponseData[]
-  >({
-    url: ENDPOINTS.quests,
+  const { location } = useLocation();
+
+  const [{ data: questList }, refetch] = useAxios<QuestResponseData[]>({
+    url: location
+      ? `${ENDPOINTS.quests}?latitude=${location.latitude}&longitude=${location.longitude}`
+      : ENDPOINTS.quests,
     method: 'GET'
   });
+
+  const updateQuests = async () => {
+    await refetch();
+  };
 
   useEffect(() => {
     if (!questList) {
@@ -63,12 +70,7 @@ const QuestDataProvider = ({ children, filters }: QuestDataProviderProps) => {
     }
   }, [questList, filters]);
 
-  const updateQuests = async () => {
-    await refetch();
-  };
-
   const value = {
-    loadingQuests,
     quests,
     updateQuests
   };

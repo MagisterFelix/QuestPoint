@@ -10,7 +10,7 @@ import { QuestResponseData } from '@/types/Quests/response';
 import { ScreenProps } from '@/types/props';
 
 const QuestListScreen = ({ route, navigation }: ScreenProps) => {
-  const { loadingQuests, quests, updateQuests } = useQuestData();
+  const { quests, updateQuests } = useQuestData();
 
   useEffect(() => {
     if (route.params?.updateQuests) {
@@ -19,18 +19,18 @@ const QuestListScreen = ({ route, navigation }: ScreenProps) => {
     }
   }, [route.params?.updateQuests, navigation, updateQuests]);
 
-  if (loadingQuests && !quests) {
+  if (!quests) {
     return <Loading />;
   }
 
-  if (quests?.length === 0) {
+  if (quests.length === 0) {
     return <NoData />;
   }
 
   return (
     <View style={styles.container}>
       <ScrollView>
-        {quests?.map((quest: QuestResponseData) => (
+        {quests.map((quest: QuestResponseData) => (
           <Quest key={quest.id} quest={quest} />
         ))}
       </ScrollView>

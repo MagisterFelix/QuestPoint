@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Image, TouchableOpacity, View } from 'react-native';
 import { Card, Modal, Portal, Text } from 'react-native-paper';
 
+import { windowSize } from '@/common/constants';
 import { styles } from '@/common/styles';
 import { MessageProps } from '@/types/Quests/props';
 
@@ -34,7 +35,10 @@ const Message = ({ message, isOwner }: MessageProps) => {
         <Modal
           visible={showImage}
           onDismiss={toggleImage}
-          contentContainerStyle={styles.modal}
+          contentContainerStyle={[
+            styles.modal,
+            { height: windowSize.height * 0.4 }
+          ]}
           style={styles.modalImage}
         >
           <Image

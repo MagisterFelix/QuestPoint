@@ -5,6 +5,7 @@ import { Avatar, Icon, Modal, Portal, Text } from 'react-native-paper';
 
 import { useAxios } from '@/api/axios';
 import { ENDPOINTS } from '@/api/endpoints';
+import { windowSize } from '@/common/constants';
 import { styles } from '@/common/styles';
 import Loading from '@/components/Loading';
 import NoData from '@/components/NoData';
@@ -86,7 +87,10 @@ const Profile = ({ user }: ProfileProps) => {
         <Modal
           visible={showAchievements}
           onDismiss={toggleAchievements}
-          contentContainerStyle={styles.modal}
+          contentContainerStyle={[
+            styles.modal,
+            { maxHeight: windowSize.height * 0.5 }
+          ]}
           style={styles.container}
         >
           {(loadingTrophies && !trophies) ||

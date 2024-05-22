@@ -18,8 +18,10 @@ import {
   Text
 } from 'react-native-paper';
 
+import { windowSize } from '@/common/constants';
 import { styles, theme } from '@/common/styles';
 import AuthProvider, { useAuth } from '@/providers/AuthProvider';
+import LocationProvider from '@/providers/LocationProvider';
 import PaymentProvider from '@/providers/PaymentProvider';
 import QuestDataProvider from '@/providers/QuestDataProvider';
 import AuthorizationScreen from '@/screens/auth/Authorization';
@@ -155,37 +157,39 @@ const MapTab = () => {
   const navigation: NavigationProp<any> = useNavigation();
 
   return (
-    <QuestDataProvider>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="Map"
-          component={MapScreen}
-          options={{
-            headerTitle: ({ children }) => (
-              <View style={styles.rowCenter}>
-                <Icon source="map" size={30} />
-                <Text style={styles.headerTitle}>{children}</Text>
-              </View>
-            ),
-            headerRight: () => (
-              <IconButton
-                icon="plus-circle-outline"
-                style={styles.screenIconButton}
-                onPress={() => navigation.navigate('New Quest')}
-              />
-            )
-          }}
-        />
-        <Stack.Screen
-          name="New Quest"
-          component={QuestFormScreen}
-          options={{
-            headerTitleAlign: 'center',
-            animation: 'ios'
-          }}
-        />
-      </Stack.Navigator>
-    </QuestDataProvider>
+    <LocationProvider>
+      <QuestDataProvider>
+        <Stack.Navigator>
+          <Stack.Screen
+            name="Map"
+            component={MapScreen}
+            options={{
+              headerTitle: ({ children }) => (
+                <View style={styles.rowCenter}>
+                  <Icon source="map" size={30} />
+                  <Text style={styles.headerTitle}>{children}</Text>
+                </View>
+              ),
+              headerRight: () => (
+                <IconButton
+                  icon="plus-circle-outline"
+                  style={styles.screenIconButton}
+                  onPress={() => navigation.navigate('New Quest')}
+                />
+              )
+            }}
+          />
+          <Stack.Screen
+            name="New Quest"
+            component={QuestFormScreen}
+            options={{
+              headerTitleAlign: 'center',
+              animation: 'ios'
+            }}
+          />
+        </Stack.Navigator>
+      </QuestDataProvider>
+    </LocationProvider>
   );
 };
 
@@ -195,7 +199,7 @@ const ProfileTab = () => {
   const { logout } = useAuth();
 
   const [showHelp, setShowHelp] = useState<boolean>(false);
-  const toggleShowHelp = () => setShowHelp(!showHelp);
+  const toggleHelp = () => setShowHelp(!showHelp);
 
   return (
     <PaymentProvider>
@@ -238,13 +242,16 @@ const ProfileTab = () => {
                   <IconButton
                     icon="help-circle-outline"
                     style={styles.screenIconButton}
-                    onPress={toggleShowHelp}
+                    onPress={toggleHelp}
                   />
                   <Portal>
                     <Modal
                       visible={showHelp}
-                      onDismiss={toggleShowHelp}
-                      contentContainerStyle={styles.modal}
+                      onDismiss={toggleHelp}
+                      contentContainerStyle={[
+                        styles.modal,
+                        { maxHeight: windowSize.height * 0.5 }
+                      ]}
                       style={styles.container}
                     >
                       <Text style={styles.title}>Help</Text>

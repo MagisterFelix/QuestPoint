@@ -8,7 +8,6 @@ import {
 } from '@/types/Quests/response';
 
 export interface QuestDataContextProps {
-  loadingQuests?: boolean;
   quests: QuestResponseData[] | undefined;
   updateQuests?: () => Promise<void>;
 }

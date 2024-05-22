@@ -21,6 +21,7 @@ export interface QuestResponseData {
     | 'Created'
     | 'Created [Waiting]'
     | 'Available'
+    | 'Pending'
     | keyof typeof RecordStatus;
   title: string;
   description: string;
