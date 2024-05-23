@@ -23,6 +23,7 @@ export interface QuestResponseData {
     | 'Available'
     | 'Pending'
     | keyof typeof RecordStatus;
+  has_notification: boolean;
   title: string;
   description: string;
   reward: number;

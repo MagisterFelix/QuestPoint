@@ -58,6 +58,7 @@ const Quest = ({ quest }: QuestProps) => {
               quest.status === 'Created [Waiting]' ||
               quest.status === 'Has an offer'
             }
+            icon={quest.has_notification ? 'bell-ring' : 'arrow-right-top-bold'}
             style={[styles.formButton, styles.cardButton]}
           >
             Details

@@ -18,8 +18,9 @@ class Record(BaseModel):
         COMPLETED = 5, "Completed"
 
     quest = models.ForeignKey(Quest, on_delete=models.CASCADE)
-    worker = models.ForeignKey(User, on_delete=models.CASCADE)
+    worker = models.ForeignKey(User, related_name="worker", on_delete=models.CASCADE)
     status = models.IntegerField(choices=Status.choices, default=Status.HAS_OFFER)
+    with_notification = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def clean(self) -> None:
@@ -34,6 +35,10 @@ class Record(BaseModel):
                     ~Q(worker=self.worker) &
                     ~Q(status=self.Status.CANCELLED)).exists():
             raise ValidationError("Quest already taken or completed.", code="invalid")
+
+        if hasattr(self, "with_notification") and hasattr(self, "quest") and hasattr(self, "worker") \
+                and self.with_notification not in [None, self.worker, self.quest.creator]:
+            raise ValidationError("Notification must be null, the worker, or the quest creator.")
 
     def __str__(self) -> str:
         return self.quest.title

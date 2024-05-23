@@ -94,6 +94,13 @@ const DetailsScreen = ({ route, navigation }: ScreenProps) => {
     };
   }, [showFeedback]);
 
+  useEffect(() => {
+    if (quest.has_notification && record) {
+      updateQuests!();
+      quest.has_notification = false;
+    }
+  }, [quest, record, updateQuests]);
+
   if (loadingRecord && !record) {
     return <Loading />;
   }

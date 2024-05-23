@@ -13,6 +13,7 @@ from core.api.utils import QuestUtils
 class QuestSerializer(ModelSerializer):
 
     status = SerializerMethodField(method_name="get_status")
+    has_notification = SerializerMethodField(method_name="get_has_notification")
 
     class Meta:
         model = Quest
@@ -34,6 +35,16 @@ class QuestSerializer(ModelSerializer):
             return "Available"
 
         return Record.Status.choices[record.status][1]
+
+    def get_has_notification(self, quest: Quest) -> bool:
+        record = Record.objects.get_or_none(
+            Q(quest=quest) & ~Q(status__in=[Record.Status.CANCELLED, Record.Status.COMPLETED])
+        )
+
+        if record is None or record.with_notification is None:
+            return False
+
+        return record.with_notification == self.context["request"].user
 
     def validate(self, attrs: dict) -> dict:
         title = attrs.get("title")

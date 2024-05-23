@@ -25,12 +25,15 @@ const Chat = ({ record }: ChatProps) => {
   const { user } = useAuth();
 
   const [messages, setMessages] = useState<MessageResponseData[]>([]);
-  const [{ loading: loadingMessages, data: messageList }] = useAxios<
+  const [{ loading: loadingMessages, data: messageList }, refetch] = useAxios<
     MessageResponseData[]
-  >({
-    url: `${ENDPOINTS.messages}${record.quest.id}/`,
-    method: 'GET'
-  });
+  >(
+    {
+      url: `${ENDPOINTS.messages}${record.quest.id}/`,
+      method: 'GET'
+    },
+    { autoCancel: false }
+  );
 
   const [choose, setChoose] = useState<MessageContentType | null>(null);
 
@@ -56,6 +59,7 @@ const Chat = ({ record }: ChatProps) => {
     reset({ content: '' });
     setMessages((prev: MessageResponseData[]) => [...prev, response.data]);
     setChoose(null);
+    await refetch();
   };
 
   const pickImage = async () => {
@@ -162,7 +166,7 @@ const Chat = ({ record }: ChatProps) => {
                 marginVertical: 0
               }
             ]}
-            disabled={loadingMessages}
+            disabled={loadingMessages && !messageList}
             left={
               <TextInput.Icon
                 icon="image"

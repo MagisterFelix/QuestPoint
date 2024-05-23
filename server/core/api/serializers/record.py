@@ -40,4 +40,7 @@ class RecordSerializer(ModelSerializer):
         data["quest"] = QuestSerializer(record.quest, context=self.context).data
         data["worker"] = UserSerializer(record.worker, context=self.context).data
 
+        if record.with_notification is not None:
+            data["with_notification"] = UserSerializer(record.with_notification, context=self.context).data
+
         return data

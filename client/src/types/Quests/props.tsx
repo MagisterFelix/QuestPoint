@@ -16,6 +16,7 @@ export interface FiltersProps {
   Created: boolean;
   Offer: boolean;
   InProgress: boolean;
+  HasNotification: boolean;
 }
 
 export interface QuestDataProviderProps {

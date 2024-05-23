@@ -45,7 +45,8 @@ const QuestListTab = () => {
   const [filters, setFilters] = useState<FiltersProps>({
     Created: false,
     Offer: false,
-    InProgress: false
+    InProgress: false,
+    HasNotification: false
   });
   const [showMenu, setShowMenu] = useState<boolean>(false);
   const toggleMenu = () => setShowMenu(!showMenu);
@@ -116,6 +117,20 @@ const QuestListTab = () => {
                       setFilters((prev) => ({
                         ...prev,
                         InProgress: !filters.InProgress
+                      }))
+                    }
+                  />
+                  <Menu.Item
+                    title="Has Notification"
+                    leadingIcon={
+                      filters.HasNotification
+                        ? 'checkbox-marked-outline'
+                        : 'checkbox-blank-outline'
+                    }
+                    onPress={() =>
+                      setFilters((prev) => ({
+                        ...prev,
+                        HasNotification: !filters.HasNotification
                       }))
                     }
                   />

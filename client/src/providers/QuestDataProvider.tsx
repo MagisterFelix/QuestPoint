@@ -42,7 +42,10 @@ const QuestDataProvider = ({ children, filters }: QuestDataProviderProps) => {
     setQuests(questList);
     if (
       !filters ||
-      (!filters.Created && !filters.Offer && !filters.InProgress)
+      (!filters.Created &&
+        !filters.Offer &&
+        !filters.InProgress &&
+        !filters.HasNotification)
     ) {
       return;
     }
@@ -61,13 +64,17 @@ const QuestDataProvider = ({ children, filters }: QuestDataProviderProps) => {
         "Waiting for the worker's response"
       );
     }
-    if (combinedFilters.length > 0) {
-      setQuests(
-        questList.filter((quest: QuestResponseData) =>
-          combinedFilters.includes(quest.status)
-        )
-      );
+    if (combinedFilters.length === 0 && !filters.HasNotification) {
+      return;
     }
+    setQuests(
+      questList.filter(
+        (quest: QuestResponseData) =>
+          (combinedFilters.length > 0 &&
+            combinedFilters.includes(quest.status)) ||
+          (filters.HasNotification && quest.has_notification)
+      )
+    );
   }, [questList, filters]);
 
   const value = {
