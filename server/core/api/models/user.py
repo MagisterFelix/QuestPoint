@@ -1,5 +1,4 @@
 from django.contrib.auth.models import AbstractUser, BaseUserManager, PermissionsMixin
-from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
 
@@ -69,7 +68,7 @@ class User(AbstractUser, PermissionsMixin):
         upload_to=upload_image_to,
         validators=[ImageUtils.validate_image_file_extension]
     )
-    balance = models.FloatField(default=0.0, validators=[MinValueValidator(0.0)])
+    balance = models.PositiveIntegerField(default=0)
     xp = models.FloatField(default=0.0)
 
     objects: UserManager = UserManager()

@@ -28,6 +28,12 @@ class Quest(BaseModel):
         if self.reward == 0:
             raise ValidationError("Reward cannot be zero.", code="invalid")
 
+        if self.reward < 5:
+            raise ValidationError("Reward cannot be lower than 5 coins.", code="invalid")
+
+        if self.reward % 5 != 0:
+            raise ValidationError("Reward must be divisible 5.", code="invalid")
+
         if self.latitude and self.longitude and not ((-90 <= self.latitude <= 90) and (-180 <= self.longitude <= 180)):
             raise ValidationError("Invalid coords.", code="invalid")
 
@@ -45,13 +51,13 @@ class Quest(BaseModel):
         else:
             reward = self.reward
 
-        self.creator.balance -= reward * 1.2
+        self.creator.balance -= int(reward * 1.2)
         self.creator.save()
 
         super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs) -> tuple[int, dict]:
-        self.creator.balance += self.reward * 1.2
+        self.creator.balance += int(self.reward * 1.2)
         self.creator.save()
 
         return super().delete(*args, **kwargs)

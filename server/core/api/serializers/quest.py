@@ -56,15 +56,22 @@ class QuestSerializer(ModelSerializer):
         if Quest.objects.filter(title=title, creator=creator).exists():
             raise ValidationError({"title": "Quest with this title already exists."})
 
-        if reward == 0:
-            raise ValidationError("Reward cannot be the zero.")
+        if reward is not None:
+            if reward == 0:
+                raise ValidationError("Reward cannot be the zero.")
+
+            if reward < 5:
+                raise ValidationError("Reward cannot be lower than 5 coins.", code="invalid")
+
+            if reward % 5 != 0:
+                raise ValidationError("Reward must be divisible 5.", code="invalid")
+
+            if reward > creator.balance:
+                raise ValidationError("Reward cannot be greater than creator's balance.")
 
         if latitude is not None and longitude is not None and \
                 not ((-90 <= latitude <= 90) and (-180 <= longitude <= 180)):
             raise ValidationError("Invalid coords.")
-
-        if reward is not None and reward > creator.balance:
-            raise ValidationError("Reward cannot be greater than creator's balance.")
 
         if Record.objects.filter(Q(quest=self.instance), ~Q(status=Record.Status.CANCELLED)).exists():
             raise ValidationError("Quest cannot be updated if its status had been changed.")

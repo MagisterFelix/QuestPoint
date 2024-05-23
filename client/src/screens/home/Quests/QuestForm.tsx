@@ -242,7 +242,7 @@ const QuestFormScreen = ({ route, navigation }: ScreenProps) => {
           required: true,
           min: 5,
           max: user?.balance! / 1.2,
-          pattern: /^\d+$/
+          pattern: /^\d*[05]$/
         }}
         render={({
           field: { onChange, value },
@@ -271,26 +271,30 @@ const QuestFormScreen = ({ route, navigation }: ScreenProps) => {
               </HelperText>
             )}
             {value &&
-              RegExp(/^\d+$/).test(value) &&
-              fieldError === undefined && (
-                <HelperText type="info" style={styles.formHelperText}>
-                  {quest ? (
-                    value < quest.reward ? (
-                      <Text>
-                        You will get {(quest.reward - value) * 1.2} coins
-                      </Text>
-                    ) : value > quest.reward ? (
-                      <Text>
-                        You will pay {(value - quest.reward) * 1.2} coins
-                      </Text>
-                    ) : (
-                      <Text>Current price</Text>
-                    )
+            RegExp(/^\d*[05]$/).test(value) &&
+            fieldError === undefined ? (
+              <HelperText type="info" style={styles.formHelperText}>
+                {quest ? (
+                  value < quest.reward ? (
+                    <Text>
+                      You will get {(quest.reward - value) * 1.2} coins
+                    </Text>
+                  ) : value > quest.reward ? (
+                    <Text>
+                      You will pay {(value - quest.reward) * 1.2} coins
+                    </Text>
                   ) : (
-                    <Text>You will pay {value * 1.2} coins</Text>
-                  )}
-                </HelperText>
-              )}
+                    <Text>Current price</Text>
+                  )
+                ) : (
+                  <Text>You will pay {value * 1.2} coins</Text>
+                )}
+              </HelperText>
+            ) : (
+              <HelperText type="info" style={styles.formHelperText}>
+                <Text>Price must be divisible by 5</Text>
+              </HelperText>
+            )}
           </View>
         )}
       />
