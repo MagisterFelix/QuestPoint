@@ -31,7 +31,23 @@ export const AxiosInterceptor = ({ children, logout }: AxiosProps) => {
     async (error: any) => Promise.reject(error)
   );
   instance.interceptors.response.use(
-    async (response: AxiosResponse) => response,
+    async (response: AxiosResponse) => {
+      const cookies = response.headers['set-cookie'];
+      if (!cookies) {
+        return response;
+      }
+      const accessTokenCookie = cookies.find((cookie) =>
+        cookie.startsWith('access_token=')
+      );
+      if (!accessTokenCookie) {
+        return response;
+      }
+      const access = accessTokenCookie.split(';')[0].split('=')[1];
+      if (access && access !== '""') {
+        await SecureStore.setItemAsync('access', access);
+      }
+      return response;
+    },
     async (error: AxiosError) => {
       if (error.code === AxiosError.ERR_NETWORK) {
         alert('Timeout!');

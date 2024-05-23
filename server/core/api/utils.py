@@ -1,9 +1,13 @@
 import os
 
+import jwt
 import stripe
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db.models.expressions import RawSQL
+from django.http import HttpResponse
+from django.utils import timezone
+from jwt.exceptions import DecodeError
 
 
 class ImageUtils:
@@ -66,3 +70,52 @@ class StripeUtils:
             },
             confirm=True
         )
+
+
+class AuthorizationUtils:
+
+    @staticmethod
+    def get_user_id(token: str) -> int | None:
+        if token is None:
+            return None
+
+        try:
+            user_id = jwt.decode(
+                jwt=token,
+                key=settings.SIMPLE_JWT["SIGNING_KEY"],
+                algorithms=[settings.SIMPLE_JWT["ALGORITHM"]],
+            )["user_id"]
+        except DecodeError:
+            return None
+
+        return user_id
+
+    @staticmethod
+    def add_access_cookie(response: HttpResponse, token: str) -> None:
+        cookie = {
+            "key": "access_token",
+            "value": token,
+            "expires": timezone.now() + settings.SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"],
+            "httponly": False,
+        }
+
+        response.set_cookie(**cookie)
+
+    @staticmethod
+    def remove_access_cookie(response: HttpResponse) -> None:
+        response.delete_cookie("access_token")
+
+    @staticmethod
+    def add_refresh_cookie(response: HttpResponse, token: str) -> None:
+        cookie = {
+            "key": "refresh_token",
+            "value": token,
+            "expires": timezone.now() + settings.SIMPLE_JWT["REFRESH_TOKEN_LIFETIME"],
+            "httponly": True,
+        }
+
+        response.set_cookie(**cookie)
+
+    @staticmethod
+    def remove_refresh_cookie(response: HttpResponse) -> None:
+        response.delete_cookie("refresh_token")

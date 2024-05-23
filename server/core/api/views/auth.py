@@ -1,11 +1,14 @@
 from django.middleware.csrf import rotate_token
 from rest_framework import status
+from rest_framework.fields import empty
 from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.utils.serializer_helpers import ReturnDict
 from rest_framework.views import APIView
 
 from core.api.serializers import AuthorizationSerializer, RegistrationSerializer
+from core.api.utils import AuthorizationUtils
 
 
 class AuthorizationView(APIView):
@@ -19,7 +22,15 @@ class AuthorizationView(APIView):
 
         rotate_token(request._request)
 
-        response = Response(data=serializer.data, status=status.HTTP_200_OK)
+        data = serializer.data
+
+        if isinstance(data, ReturnDict):
+            data.pop("refresh")
+
+        response = Response(data=data, status=status.HTTP_200_OK)
+
+        if serializer.validated_data is not None and not isinstance(serializer.validated_data, empty):
+            AuthorizationUtils.add_refresh_cookie(response, token=serializer.validated_data["refresh"])
 
         return response
 
