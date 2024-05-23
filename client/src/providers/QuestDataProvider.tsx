@@ -1,3 +1,4 @@
+import { RouteProp, useRoute } from '@react-navigation/native';
 import { createContext, useContext, useEffect, useState } from 'react';
 
 import { useAxios } from '@/api/axios';
@@ -18,18 +19,23 @@ export const useQuestData = () => {
 };
 
 const QuestDataProvider = ({ children, filters }: QuestDataProviderProps) => {
+  const route: RouteProp<any> = useRoute();
+
   const [quests, setQuests] = useState<QuestResponseData[] | undefined>(
     undefined
   );
 
   const { location } = useLocation();
 
-  const [{ data: questList }, refetch] = useAxios<QuestResponseData[]>({
-    url: location
-      ? `${ENDPOINTS.quests}?latitude=${location.latitude}&longitude=${location.longitude}`
-      : ENDPOINTS.quests,
-    method: 'GET'
-  });
+  const [{ data: questList }, refetch] = useAxios<QuestResponseData[]>(
+    {
+      url: location
+        ? `${ENDPOINTS.quests}?latitude=${location.latitude}&longitude=${location.longitude}`
+        : ENDPOINTS.quests,
+      method: 'GET'
+    },
+    { manual: route.name === 'MapTab' && !location }
+  );
 
   const updateQuests = async () => {
     await refetch();
