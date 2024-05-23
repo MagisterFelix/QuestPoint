@@ -1,5 +1,6 @@
 import os
 
+import stripe
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db.models.expressions import RawSQL
@@ -44,4 +45,24 @@ class QuestUtils:
             "6371 * acos(cos(radians(%s)) * cos(radians(latitude)) * cos(radians(longitude)\
                             - radians(%s)) + sin(radians(%s)) * sin(radians(latitude)))",
             [latitude, longitude, latitude]
+        )
+
+
+class StripeUtils:
+
+    @staticmethod
+    def pay(api_key: str, amount: int) -> None:
+        stripe.api_key = api_key
+
+        # ! Just a simulation of payment !
+
+        stripe.PaymentIntent.create(
+            amount=amount,
+            currency="usd",
+            payment_method="pm_card_visa",
+            automatic_payment_methods={
+                "enabled": True,
+                "allow_redirects": "never"
+            },
+            confirm=True
         )

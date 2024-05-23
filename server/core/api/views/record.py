@@ -9,6 +9,8 @@ from rest_framework.response import Response
 
 from core.api.models import Record
 from core.api.serializers import RecordSerializer
+from core.api.utils import StripeUtils
+from core.settings import STRIPE_MAIN_SECRET_KEY
 
 
 class RecordListView(CreateAPIView):
@@ -63,6 +65,8 @@ class RecordView(RetrieveUpdateAPIView):
             worker.balance += record.quest.reward
             worker.xp += math.ceil(record.quest.reward / 10) * 10
             worker.save()
+
+            StripeUtils.pay(STRIPE_MAIN_SECRET_KEY, amount=record.quest.reward * 10)
         elif response.data["status"] != Record.Status.choices[Record.Status.CANCELLED][1]:
             record = self.get_object()
             record.with_notification = record.quest.creator if request.user == record.worker else record.worker
