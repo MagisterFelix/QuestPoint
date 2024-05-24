@@ -27,7 +27,9 @@ const QuestDataProvider = ({ children, filters }: QuestDataProviderProps) => {
 
   const { location } = useLocation();
 
-  const [{ data: questList }, refetch] = useAxios<QuestResponseData[]>(
+  const [{ loading: loadingQuests, data: questList }, refetch] = useAxios<
+    QuestResponseData[]
+  >(
     {
       url: location
         ? `${ENDPOINTS.quests}?latitude=${location.latitude}&longitude=${location.longitude}`
@@ -84,6 +86,7 @@ const QuestDataProvider = ({ children, filters }: QuestDataProviderProps) => {
   }, [questList, filters]);
 
   const value = {
+    loadingQuests,
     quests,
     updateQuests
   };

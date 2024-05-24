@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { ScrollView, View } from 'react-native';
+import { RefreshControl, ScrollView, View } from 'react-native';
 
 import { styles } from '@/common/styles';
 import Loading from '@/components/Loading';
@@ -10,7 +10,7 @@ import { QuestResponseData } from '@/types/Quests/response';
 import { ScreenProps } from '@/types/props';
 
 const QuestListScreen = ({ route, navigation }: ScreenProps) => {
-  const { quests, updateQuests } = useQuestData();
+  const { loadingQuests, quests, updateQuests } = useQuestData();
 
   useEffect(() => {
     if (route.params?.updateQuests) {
@@ -29,7 +29,14 @@ const QuestListScreen = ({ route, navigation }: ScreenProps) => {
 
   return (
     <View style={styles.container}>
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={loadingQuests!}
+            onRefresh={updateQuests!}
+          />
+        }
+      >
         {quests.map((quest: QuestResponseData) => (
           <Quest key={quest.id} quest={quest} />
         ))}

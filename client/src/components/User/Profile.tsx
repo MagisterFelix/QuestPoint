@@ -1,6 +1,11 @@
 import * as Clipboard from 'expo-clipboard';
 import { useState } from 'react';
-import { ScrollView, TouchableOpacity, View } from 'react-native';
+import {
+  RefreshControl,
+  ScrollView,
+  TouchableOpacity,
+  View
+} from 'react-native';
 import { Avatar, Icon, Modal, Portal, Text } from 'react-native-paper';
 
 import { useAxios } from '@/api/axios';
@@ -19,12 +24,16 @@ import {
 } from '@/types/User/response';
 
 const Profile = ({ user }: ProfileProps) => {
-  const [{ loading: loadingFeedback, data: feedback }] = useAxios<
+  const [{ loading: loadingFeedback, data: feedback }, refetch] = useAxios<
     FeedbackResponseData[]
   >({
     url: `${ENDPOINTS.feedback}${user?.username}/`,
     method: 'GET'
   });
+
+  const updateFeedback = async () => {
+    await refetch();
+  };
 
   const [{ loading: loadingTrophies, data: trophies }] = useAxios<
     TrophyResponseData[]
@@ -39,6 +48,10 @@ const Profile = ({ user }: ProfileProps) => {
     url: `${ENDPOINTS.achievements}${user?.username}/`,
     method: 'GET'
   });
+
+  const updateAchievements = async () => {
+    await refetch();
+  };
 
   const [showAchievements, setShowAchievements] = useState<boolean>(false);
   const toggleAchievements = () => setShowAchievements(!showAchievements);
@@ -75,7 +88,15 @@ const Profile = ({ user }: ProfileProps) => {
       {loadingFeedback && !feedback ? (
         <Loading />
       ) : feedback?.length! > 0 ? (
-        <ScrollView style={styles.feedback}>
+        <ScrollView
+          refreshControl={
+            <RefreshControl
+              refreshing={loadingFeedback}
+              onRefresh={updateFeedback}
+            />
+          }
+          style={styles.feedback}
+        >
           {feedback?.map((review: FeedbackResponseData) => (
             <Review key={review.id} review={review} />
           ))}
@@ -93,15 +114,21 @@ const Profile = ({ user }: ProfileProps) => {
           ]}
           style={styles.container}
         >
+          <Text style={styles.title}>Achievements</Text>
           {(loadingTrophies && !trophies) ||
           (loadingAchievements && !achievements) ? (
             <ScrollView>
-              <Text style={styles.title}>Achievements</Text>
               <Loading />
             </ScrollView>
           ) : (
-            <ScrollView>
-              <Text style={styles.title}>Achievements</Text>
+            <ScrollView
+              refreshControl={
+                <RefreshControl
+                  refreshing={loadingAchievements}
+                  onRefresh={updateAchievements}
+                />
+              }
+            >
               {trophies?.map((trophy: TrophyResponseData) => (
                 <Trophy
                   key={trophy.id}
