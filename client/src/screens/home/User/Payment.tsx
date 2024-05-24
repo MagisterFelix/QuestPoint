@@ -43,10 +43,11 @@ const PaymentScreen = () => {
     Keyboard.dismiss();
     if (isPayout) {
       await payout!(data);
+      reset({ account: data.account, amount: '' });
     } else {
       await pay!(data);
+      reset({ amount: '' });
     }
-    reset({ amount: '' });
   };
 
   return (
