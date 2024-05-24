@@ -343,6 +343,7 @@ const HomeScreen = () => {
         tabBarInactiveTintColor: theme.colors.secondary,
         tabBarHideOnKeyboard: true
       }}
+      backBehavior="initialRoute"
     >
       <Tab.Screen
         name="QuestListTab"
