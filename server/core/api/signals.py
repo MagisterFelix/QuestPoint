@@ -7,4 +7,4 @@ def load_trophies_activation(sender, **kwargs):
     from core.api.models import Trophy
 
     for trophy in Trophy.objects.all():
-        exec(trophy.activation)
+        exec(trophy.activation.replace("trophy_title", trophy.title))
