@@ -3,7 +3,7 @@ from django.dispatch import receiver
 
 
 @receiver(request_started)
-def load_trophies_activation(sender, **kwargs):
+def load_trophies_activation(*args, **kwargs) -> None:
     from core.api.models import Trophy
 
     for trophy in Trophy.objects.all():
