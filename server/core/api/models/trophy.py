@@ -31,6 +31,7 @@ class Trophy(BaseModel):
         upload_to=upload_image_to,
         validators=[ImageUtils.validate_image_file_extension]
     )
+    activation = models.TextField()
 
     @property
     def short_description(self) -> str:

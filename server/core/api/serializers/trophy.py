@@ -9,7 +9,7 @@ class TrophySerializer(ModelSerializer):
 
     class Meta:
         model = Trophy
-        fields = "__all__"
+        exclude = ("activation",)
 
     def to_representation(self, trophy: Trophy) -> OrderedDict:
         data = OrderedDict(super().to_representation(trophy))
