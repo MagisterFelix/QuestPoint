@@ -30,7 +30,8 @@ class AuthorizationView(APIView):
         response = Response(data=data, status=status.HTTP_200_OK)
 
         if serializer.validated_data is not None and not isinstance(serializer.validated_data, empty):
-            AuthorizationUtils.add_refresh_cookie(response, token=serializer.validated_data["refresh"])
+            AuthorizationUtils.set_access_cookie(response, token=serializer.validated_data["access"], httponly=True)
+            AuthorizationUtils.set_refresh_cookie(response, token=serializer.validated_data["refresh"], httponly=True)
 
         return response
 

@@ -29,8 +29,10 @@ class AuthorizationMiddleware:
             "token": access
         }
 
+        serializer = TokenVerifySerializer(data=data)
+
         try:
-            TokenVerifySerializer(data=data).is_valid()
+            serializer.is_valid()
         except TokenError:
             data = {
                 "refresh": refresh
@@ -40,23 +42,21 @@ class AuthorizationMiddleware:
 
             try:
                 serializer.is_valid()
+
+                if isinstance(serializer.data, ReturnDict):
+                    request.META["HTTP_AUTHORIZATION"] = f"Bearer {serializer.data["access"]}"
+
+                    response = self.get_response(request)
+
+                    AuthorizationUtils.set_access_cookie(response, token=serializer.data["access"], httponly=False)
+
+                    return response
             except TokenError:
                 response = self.get_response(request)
+
+                AuthorizationUtils.remove_access_cookie(response)
                 AuthorizationUtils.remove_refresh_cookie(response)
 
                 return response
 
-            if isinstance(serializer.data, ReturnDict):
-                request.META["HTTP_AUTHORIZATION"] = f"Bearer {serializer.data["access"]}"
-
-                response = self.get_response(request)
-                AuthorizationUtils.add_access_cookie(response, token=serializer.data["access"])
-
-                return response
-
-        response = self.get_response(request)
-
-        if request.COOKIES.get("access_token") is not None:
-            AuthorizationUtils.remove_access_cookie(response)
-
-        return response
+        return self.get_response(request)

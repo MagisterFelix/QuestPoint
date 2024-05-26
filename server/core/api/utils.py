@@ -91,12 +91,12 @@ class AuthorizationUtils:
         return user_id
 
     @staticmethod
-    def add_access_cookie(response: HttpResponse, token: str) -> None:
+    def set_access_cookie(response: HttpResponse, token: str, httponly: bool) -> None:
         cookie = {
             "key": "access_token",
             "value": token,
             "expires": timezone.now() + settings.SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"],
-            "httponly": False,
+            "httponly": httponly,
         }
 
         response.set_cookie(**cookie)
@@ -106,12 +106,12 @@ class AuthorizationUtils:
         response.delete_cookie("access_token")
 
     @staticmethod
-    def add_refresh_cookie(response: HttpResponse, token: str) -> None:
+    def set_refresh_cookie(response: HttpResponse, token: str, httponly: bool) -> None:
         cookie = {
             "key": "refresh_token",
             "value": token,
             "expires": timezone.now() + settings.SIMPLE_JWT["REFRESH_TOKEN_LIFETIME"],
-            "httponly": True,
+            "httponly": httponly,
         }
 
         response.set_cookie(**cookie)
