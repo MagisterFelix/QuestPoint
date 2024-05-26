@@ -21,7 +21,7 @@ class QuestListView(ListCreateAPIView):
 
         if latitude is None and longitude is None:
             creator_with_records = Record.objects.filter(
-                Q(quest__creator=self.request.user) & ~Q(status__in=[Record.Status.CANCELLED, Record.Status.COMPLETED])
+                Q(quest__creator=self.request.user) & ~Q(status=Record.Status.COMPLETED)
             ).values_list("quest__pk", flat=True)
 
             creator_without_records = Quest.objects.filter(
