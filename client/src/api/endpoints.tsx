@@ -11,5 +11,6 @@ export enum ENDPOINTS {
   quest = '/api/quest/',
   records = '/api/records/',
   record = '/api/record/',
-  messages = '/api/messages/'
+  messages = '/api/messages/',
+  updater = '/ws/updater/'
 }

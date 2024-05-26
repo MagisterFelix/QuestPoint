@@ -15,6 +15,17 @@ export interface ScreenProps {
   navigation: NavigationProp<any>;
 }
 
+export interface UpdaterProps {
+  updating?: boolean;
+  toUpdate: Set<string>;
+  update?: (component: string, refetch: () => Promise<void>) => Promise<void>;
+}
+
+export interface UpdaterMessageProps {
+  type: string;
+  toUpdate: string;
+}
+
 export interface DialogWindowProps {
   title: string;
   type: 'success' | 'error' | 'info';

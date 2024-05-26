@@ -10,6 +10,7 @@ import Chat from '@/components/Quests/Chat';
 import Info from '@/components/Quests/Info';
 import Profile from '@/components/User/Profile';
 import { useQuestData } from '@/providers/QuestDataProvider';
+import { useUpdater } from '@/providers/UpdaterProvider';
 import {
   QuestResponseData,
   RecordResponseData,
@@ -100,6 +101,24 @@ const DetailsScreen = ({ route, navigation }: ScreenProps) => {
       quest.has_notification = false;
     }
   }, [quest, record, updateQuests]);
+
+  const { updating, toUpdate, update } = useUpdater();
+
+  useEffect(() => {
+    const updateComponent = async () => {
+      await refetch();
+    };
+    if (!updating && toUpdate.has(`Record-${quest.id}`)) {
+      if (
+        record?.status !== "Waiting for the creator's response" &&
+        record?.status !== "Waiting for the worker's response"
+      ) {
+        update!(`Record-${quest.id}`, updateComponent);
+      } else {
+        navigation.goBack();
+      }
+    }
+  }, [updating, toUpdate, update, quest, record, refetch, navigation]);
 
   if (loadingRecord && !record) {
     return <Loading />;

@@ -24,6 +24,7 @@ import AuthProvider, { useAuth } from '@/providers/AuthProvider';
 import LocationProvider from '@/providers/LocationProvider';
 import PaymentProvider from '@/providers/PaymentProvider';
 import QuestDataProvider from '@/providers/QuestDataProvider';
+import UpdaterProvider from '@/providers/UpdaterProvider';
 import AuthorizationScreen from '@/screens/auth/Authorization';
 import RegistrationScreen from '@/screens/auth/Registration';
 import MapScreen from '@/screens/home/Map/Map';
@@ -334,60 +335,62 @@ const ProfileTab = () => {
 
 const HomeScreen = () => {
   return (
-    <Tab.Navigator
-      initialRouteName="MapTab"
-      screenOptions={{
-        headerShown: false,
-        tabBarItemStyle: { paddingVertical: 5 },
-        tabBarActiveTintColor: theme.colors.primary,
-        tabBarInactiveTintColor: theme.colors.secondary,
-        tabBarHideOnKeyboard: true
-      }}
-      backBehavior="initialRoute"
-    >
-      <Tab.Screen
-        name="QuestListTab"
-        component={QuestListTab}
-        options={{
-          tabBarLabel: 'Quests',
-          tabBarIcon: ({ focused, color, size }) => (
-            <Icon
-              source={focused ? 'clipboard-list' : 'clipboard-list-outline'}
-              color={color}
-              size={size}
-            />
-          )
+    <UpdaterProvider>
+      <Tab.Navigator
+        initialRouteName="MapTab"
+        screenOptions={{
+          headerShown: false,
+          tabBarItemStyle: { paddingVertical: 5 },
+          tabBarActiveTintColor: theme.colors.primary,
+          tabBarInactiveTintColor: theme.colors.secondary,
+          tabBarHideOnKeyboard: true
         }}
-      />
-      <Tab.Screen
-        name="MapTab"
-        component={MapTab}
-        options={{
-          tabBarLabel: 'Map',
-          tabBarIcon: ({ focused, color, size }) => (
-            <Icon
-              source={focused ? 'map' : 'map-outline'}
-              color={color}
-              size={size}
-            />
-          )
-        }}
-      />
-      <Tab.Screen
-        name="ProfileTab"
-        component={ProfileTab}
-        options={{
-          tabBarLabel: 'Profile',
-          tabBarIcon: ({ focused, color, size }) => (
-            <Icon
-              source={focused ? 'badge-account' : 'badge-account-outline'}
-              color={color}
-              size={size}
-            />
-          )
-        }}
-      />
-    </Tab.Navigator>
+        backBehavior="initialRoute"
+      >
+        <Tab.Screen
+          name="QuestListTab"
+          component={QuestListTab}
+          options={{
+            tabBarLabel: 'Quests',
+            tabBarIcon: ({ focused, color, size }) => (
+              <Icon
+                source={focused ? 'clipboard-list' : 'clipboard-list-outline'}
+                color={color}
+                size={size}
+              />
+            )
+          }}
+        />
+        <Tab.Screen
+          name="MapTab"
+          component={MapTab}
+          options={{
+            tabBarLabel: 'Map',
+            tabBarIcon: ({ focused, color, size }) => (
+              <Icon
+                source={focused ? 'map' : 'map-outline'}
+                color={color}
+                size={size}
+              />
+            )
+          }}
+        />
+        <Tab.Screen
+          name="ProfileTab"
+          component={ProfileTab}
+          options={{
+            tabBarLabel: 'Profile',
+            tabBarIcon: ({ focused, color, size }) => (
+              <Icon
+                source={focused ? 'badge-account' : 'badge-account-outline'}
+                color={color}
+                size={size}
+              />
+            )
+          }}
+        />
+      </Tab.Navigator>
+    </UpdaterProvider>
   );
 };
 

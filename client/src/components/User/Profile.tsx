@@ -1,5 +1,5 @@
 import * as Clipboard from 'expo-clipboard';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   RefreshControl,
   ScrollView,
@@ -16,6 +16,7 @@ import Loading from '@/components/Loading';
 import NoData from '@/components/NoData';
 import Review from '@/components/User/Review';
 import Trophy from '@/components/User/Trophy';
+import { useUpdater } from '@/providers/UpdaterProvider';
 import { ProfileProps } from '@/types/User/props';
 import {
   AchievementResponseData,
@@ -24,15 +25,14 @@ import {
 } from '@/types/User/response';
 
 const Profile = ({ user }: ProfileProps) => {
-  const [{ loading: loadingFeedback, data: feedback }, refetch] = useAxios<
-    FeedbackResponseData[]
-  >({
-    url: `${ENDPOINTS.feedback}${user?.username}/`,
-    method: 'GET'
-  });
+  const [{ loading: loadingFeedback, data: feedback }, refetchFeedback] =
+    useAxios<FeedbackResponseData[]>({
+      url: `${ENDPOINTS.feedback}${user?.username}/`,
+      method: 'GET'
+    });
 
   const updateFeedback = async () => {
-    await refetch();
+    await refetchFeedback();
   };
 
   const [{ loading: loadingTrophies, data: trophies }] = useAxios<
@@ -42,19 +42,31 @@ const Profile = ({ user }: ProfileProps) => {
     method: 'GET'
   });
 
-  const [{ loading: loadingAchievements, data: achievements }] = useAxios<
-    AchievementResponseData[]
-  >({
+  const [
+    { loading: loadingAchievements, data: achievements },
+    refetchAchievements
+  ] = useAxios<AchievementResponseData[]>({
     url: `${ENDPOINTS.achievements}${user?.username}/`,
     method: 'GET'
   });
 
   const updateAchievements = async () => {
-    await refetch();
+    await refetchAchievements();
   };
 
   const [showAchievements, setShowAchievements] = useState<boolean>(false);
   const toggleAchievements = () => setShowAchievements(!showAchievements);
+
+  const { updating, toUpdate, update } = useUpdater();
+
+  useEffect(() => {
+    const updateComponent = async () => {
+      await refetchFeedback();
+    };
+    if (!updating && toUpdate.has(`Feedback-${user.id}`)) {
+      update!(`Feedback-${user.id}`, updateComponent);
+    }
+  }, [updating, toUpdate, update, user, refetchFeedback]);
 
   return (
     <View style={styles.containerInner}>
@@ -91,7 +103,7 @@ const Profile = ({ user }: ProfileProps) => {
         <ScrollView
           refreshControl={
             <RefreshControl
-              refreshing={loadingFeedback}
+              refreshing={loadingFeedback && !updating}
               onRefresh={updateFeedback}
             />
           }

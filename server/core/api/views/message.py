@@ -8,6 +8,7 @@ from rest_framework.response import Response
 
 from core.api.models import Message, Record
 from core.api.serializers import MessageSerializer
+from core.api.utils import WebSocketUtils
 
 
 class MessageListView(ListCreateAPIView):
@@ -34,7 +35,7 @@ class MessageListView(ListCreateAPIView):
         if record is None:
             return response
 
-        if record.with_notification == request.user.pk:
+        if record.with_notification == request.user:
             record.with_notification = None
             record.save()
 
@@ -56,5 +57,12 @@ class MessageListView(ListCreateAPIView):
 
         record.with_notification = record.quest.creator if request.user == record.worker else record.worker
         record.save()
+
+        if request.user == record.worker:
+            WebSocketUtils.update(user_id=record.quest.creator.pk, to_update=f"Messages-{self.kwargs["quest"]}")
+            WebSocketUtils.update(user_id=record.quest.creator.pk, to_update="QuestList")
+        else:
+            WebSocketUtils.update(user_id=record.worker.pk, to_update=f"Messages-{self.kwargs["quest"]}")
+            WebSocketUtils.update(user_id=record.worker.pk, to_update="QuestList")
 
         return response

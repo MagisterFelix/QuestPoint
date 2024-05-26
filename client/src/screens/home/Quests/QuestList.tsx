@@ -6,6 +6,7 @@ import Loading from '@/components/Loading';
 import NoData from '@/components/NoData';
 import Quest from '@/components/Quests/Quest';
 import { useQuestData } from '@/providers/QuestDataProvider';
+import { useUpdater } from '@/providers/UpdaterProvider';
 import { QuestResponseData } from '@/types/Quests/response';
 import { ScreenProps } from '@/types/props';
 
@@ -18,6 +19,14 @@ const QuestListScreen = ({ route, navigation }: ScreenProps) => {
       updateQuests!();
     }
   }, [route.params?.updateQuests, navigation, updateQuests]);
+
+  const { updating, toUpdate, update } = useUpdater();
+
+  useEffect(() => {
+    if (!updating && toUpdate.has('QuestList')) {
+      update!('QuestList', updateQuests!);
+    }
+  }, [updating, toUpdate, update, updateQuests]);
 
   if (!quests) {
     return <Loading />;
@@ -32,7 +41,7 @@ const QuestListScreen = ({ route, navigation }: ScreenProps) => {
       <ScrollView
         refreshControl={
           <RefreshControl
-            refreshing={loadingQuests!}
+            refreshing={loadingQuests! && !updating}
             onRefresh={updateQuests!}
           />
         }

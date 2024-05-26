@@ -2,6 +2,8 @@ import os
 
 import jwt
 import stripe
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db.models.expressions import RawSQL
@@ -119,3 +121,25 @@ class AuthorizationUtils:
     @staticmethod
     def remove_refresh_cookie(response: HttpResponse) -> None:
         response.delete_cookie("refresh_token")
+
+
+class WebSocketUtils:
+
+    @staticmethod
+    def _send_to_group(group: str, event: dict) -> None:
+        channel_layer = get_channel_layer()
+
+        if channel_layer is None:
+            return None
+
+        async_to_sync(channel_layer.group_send)(group, event)
+
+    @staticmethod
+    def update(user_id: int, to_update: str) -> None:
+        WebSocketUtils._send_to_group(
+            f"updater-{user_id}",
+            {
+                "type": "update",
+                "toUpdate": to_update
+            }
+        )

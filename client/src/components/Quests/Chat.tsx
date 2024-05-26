@@ -12,6 +12,7 @@ import { styles, theme } from '@/common/styles';
 import Loading from '@/components/Loading';
 import Message from '@/components/Quests/Message';
 import { useAuth } from '@/providers/AuthProvider';
+import { useUpdater } from '@/providers/UpdaterProvider';
 import { ChatProps } from '@/types/Quests/props';
 import { MessageRequestData } from '@/types/Quests/request';
 import {
@@ -114,6 +115,17 @@ const Chat = ({ record }: ChatProps) => {
     };
   }, []);
 
+  const { updating, toUpdate, update } = useUpdater();
+
+  useEffect(() => {
+    const updateComponent = async () => {
+      await refetch();
+    };
+    if (!updating && toUpdate.has(`Messages-${record.quest.id}`)) {
+      update!(`Messages-${record.quest.id}`, updateComponent);
+    }
+  }, [updating, toUpdate, update, record, refetch]);
+
   return (
     <Card
       style={[
@@ -134,6 +146,7 @@ const Chat = ({ record }: ChatProps) => {
       ) : (
         <ScrollView
           ref={scrollViewRef}
+          showsVerticalScrollIndicator={false}
           onLayout={() =>
             scrollViewRef.current?.scrollToEnd({ animated: false })
           }

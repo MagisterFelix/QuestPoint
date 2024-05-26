@@ -9,7 +9,7 @@ from rest_framework.response import Response
 
 from core.api.models import Record
 from core.api.serializers import RecordSerializer
-from core.api.utils import StripeUtils
+from core.api.utils import StripeUtils, WebSocketUtils
 from core.settings import STRIPE_MAIN_SECRET_KEY
 
 
@@ -18,6 +18,18 @@ class RecordListView(CreateAPIView):
     queryset = Record.objects.all()
     serializer_class = RecordSerializer
     permission_classes = (IsAuthenticated,)
+
+    def create(self, request: HttpRequest, *args, **kwargs) -> Response:
+        response = super().create(request, *args, **kwargs)
+
+        if response.status_code != status.HTTP_201_CREATED or response.data is None:
+            return response
+
+        creator = response.data["quest"]["creator"]["id"]
+
+        WebSocketUtils.update(user_id=creator, to_update="QuestList")
+
+        return response
 
 
 class RecordView(RetrieveUpdateAPIView):
@@ -67,9 +79,21 @@ class RecordView(RetrieveUpdateAPIView):
             worker.save()
 
             StripeUtils.pay(STRIPE_MAIN_SECRET_KEY, amount=record.quest.reward * 10)
+
+            if request.user == record.worker:
+                WebSocketUtils.update(user_id=record.quest.creator.pk, to_update="Profile")
+            else:
+                WebSocketUtils.update(user_id=record.worker.pk, to_update="Profile")
         elif response.data["status"] != Record.Status.choices[Record.Status.CANCELLED][1]:
             record = self.get_object()
             record.with_notification = record.quest.creator if request.user == record.worker else record.worker
             record.save()
+
+        if request.user == record.worker:
+            WebSocketUtils.update(user_id=record.quest.creator.pk, to_update=f"Record-{record.quest.pk}")
+            WebSocketUtils.update(user_id=record.quest.creator.pk, to_update="QuestList")
+        else:
+            WebSocketUtils.update(user_id=record.worker.pk, to_update=f"Record-{record.quest.pk}")
+            WebSocketUtils.update(user_id=record.worker.pk, to_update="QuestList")
 
         return response
