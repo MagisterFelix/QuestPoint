@@ -65,6 +65,7 @@ const UpdaterProvider = ({ children }: ProviderProps) => {
   const appState = useRef(AppState.currentState);
 
   useEffect(() => {
+    openSocket();
     const subscription = AppState.addEventListener('change', (nextAppState) => {
       if (
         appState.current.match(/inactive|background/) &&
