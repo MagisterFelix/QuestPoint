@@ -2,7 +2,14 @@ import { AxiosError } from 'axios';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Keyboard, View } from 'react-native';
-import { Button, HelperText, Text, TextInput } from 'react-native-paper';
+import {
+  Button,
+  Dialog,
+  HelperText,
+  Portal,
+  Text,
+  TextInput
+} from 'react-native-paper';
 import { PaperSelect } from 'react-native-paper-select';
 
 import { useAxios } from '@/api/axios';
@@ -83,6 +90,11 @@ const QuestFormScreen = ({ route, navigation }: ScreenProps) => {
     clearErrors,
     reset
   } = useForm();
+
+  const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
+  const [pendingQuestData, setPendingQuestData] =
+    useState<CreateQuestRequestData | null>(null);
+
   const handleOnSubmit = async (data: CreateQuestRequestData) => {
     Keyboard.dismiss();
     const errorHandler = {
@@ -102,6 +114,8 @@ const QuestFormScreen = ({ route, navigation }: ScreenProps) => {
     } catch (err) {
       const error = (err as AxiosError).response?.data as ErrorData;
       handleErrors(error.details, errorHandler);
+    } finally {
+      setPendingQuestData(null);
     }
   };
   const handleOnUpdate = async (data: UpdateQuestRequestData) => {
@@ -400,12 +414,39 @@ const QuestFormScreen = ({ route, navigation }: ScreenProps) => {
             data.category = data.category.selectedList[0]._id;
             data.latitude = location?.latitude;
             data.longitude = location?.longitude;
-            handleOnSubmit(data as CreateQuestRequestData);
+            setPendingQuestData(data as CreateQuestRequestData);
+            setShowConfirmationDialog(true);
           })}
         >
-          Add
+          Create
         </Button>
       )}
+      <Portal>
+        <Dialog
+          visible={showConfirmationDialog}
+          onDismiss={() => setShowConfirmationDialog(false)}
+        >
+          <Dialog.Title>Confirmation</Dialog.Title>
+          <Dialog.Content>
+            <Text>Are you sure you want to create this quest?</Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => setShowConfirmationDialog(false)}>
+              Cancel
+            </Button>
+            <Button
+              onPress={() => {
+                setShowConfirmationDialog(false);
+                if (pendingQuestData) {
+                  handleOnSubmit(pendingQuestData);
+                }
+              }}
+            >
+              Create
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
       <DialogWindow
         title="Congratulations!"
         type="success"
