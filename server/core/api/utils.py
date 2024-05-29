@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 from django.db.models.expressions import RawSQL
 from django.http import HttpResponse
 from django.utils import timezone
-from jwt.exceptions import DecodeError
+from jwt.exceptions import InvalidTokenError
 
 
 class ImageUtils:
@@ -87,7 +87,7 @@ class AuthorizationUtils:
                 key=settings.SIMPLE_JWT["SIGNING_KEY"],
                 algorithms=[settings.SIMPLE_JWT["ALGORITHM"]],
             )["user_id"]
-        except DecodeError:
+        except InvalidTokenError:
             return None
 
         return user_id

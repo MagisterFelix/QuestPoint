@@ -181,7 +181,8 @@ const QuestFormScreen = ({ route, navigation }: ScreenProps) => {
         control={control}
         defaultValue={quest ? quest.title : ''}
         rules={{
-          required: true
+          required: true,
+          maxLength: 64
         }}
         render={({
           field: { onChange, value },
@@ -216,7 +217,8 @@ const QuestFormScreen = ({ route, navigation }: ScreenProps) => {
         control={control}
         defaultValue={quest ? quest.description : ''}
         rules={{
-          required: true
+          required: true,
+          maxLength: 256
         }}
         render={({
           field: { onChange, value },

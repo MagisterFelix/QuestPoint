@@ -33,12 +33,15 @@ const Feedback = ({
   const validation = {
     rating: {
       min: 'Rating is required.'
+    },
+    text: {
+      maxLength: 'No more than 512 characters.'
     }
   };
 
   const [message, setMessage] = useState<string>('');
   const hideMessage = () => setMessage('');
-  const { control, handleSubmit } = useForm();
+  const { control, handleSubmit, clearErrors } = useForm();
   const handleOnSubmit = async (data: FeedbackRequestData) => {
     Keyboard.dismiss();
     await request({
@@ -91,16 +94,37 @@ const Feedback = ({
             name="text"
             control={control}
             defaultValue=""
-            render={({ field: { onChange, value } }) => (
-              <TextInput
-                label="Text"
-                mode="outlined"
-                multiline
-                numberOfLines={5}
-                value={value}
-                onChangeText={onChange}
-                right={<TextInput.Icon icon="file-document-edit" />}
-              />
+            rules={{
+              maxLength: 512
+            }}
+            render={({
+              field: { onChange, value },
+              fieldState: { error: fieldError }
+            }) => (
+              <View>
+                <TextInput
+                  label="Text"
+                  mode="outlined"
+                  multiline
+                  numberOfLines={5}
+                  value={value}
+                  onChangeText={onChange}
+                  onFocus={() => clearErrors()}
+                  error={fieldError !== undefined}
+                  style={styles.formField}
+                  right={<TextInput.Icon icon="file-document-edit" />}
+                />
+                {fieldError !== undefined && (
+                  <HelperText type="error" style={styles.formHelperText}>
+                    {fieldError
+                      ? fieldError.message ||
+                        validation.text[
+                          fieldError.type as keyof typeof validation.text
+                        ]
+                      : ''}
+                  </HelperText>
+                )}
+              </View>
             )}
           />
         </Dialog.Content>

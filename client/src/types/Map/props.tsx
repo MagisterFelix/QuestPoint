@@ -19,5 +19,6 @@ export interface QuestInfoProps {
   show: boolean;
   quest: QuestResponseData;
   toggle: () => void;
+  clear: () => void;
   onSend: () => void;
 }

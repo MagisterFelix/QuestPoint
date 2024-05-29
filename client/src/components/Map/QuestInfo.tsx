@@ -1,18 +1,29 @@
+import { AxiosError } from 'axios';
 import React, { useState } from 'react';
 import { Animated, ScrollView, View } from 'react-native';
 import { Button, Card, Icon, IconButton, Text } from 'react-native-paper';
 
 import { useAxios } from '@/api/axios';
 import { ENDPOINTS } from '@/api/endpoints';
+import { handleErrors } from '@/api/errors';
 import { styles } from '@/common/styles';
 import { getDistance } from '@/common/utils';
 import Coins from '@/components/Coins';
+import DialogWindow from '@/components/DialogWindow';
 import { useLocation } from '@/providers/LocationProvider';
 import { useQuestData } from '@/providers/QuestDataProvider';
 import { QuestInfoProps } from '@/types/Map/props';
 import { CreateRecordRequestData } from '@/types/Map/request';
+import { ErrorData } from '@/types/errors';
 
-const QuestInfo = ({ height, show, quest, toggle, onSend }: QuestInfoProps) => {
+const QuestInfo = ({
+  height,
+  show,
+  quest,
+  toggle,
+  clear,
+  onSend
+}: QuestInfoProps) => {
   const { location } = useLocation();
 
   const { updateQuests } = useQuestData();
@@ -26,15 +37,28 @@ const QuestInfo = ({ height, show, quest, toggle, onSend }: QuestInfoProps) => {
 
   const [processing, setProcessing] = useState<boolean>(false);
 
+  const [error, setError] = useState<string>('');
+  const hideError = () => setError('');
   const sendOffer = async (data: CreateRecordRequestData) => {
     setProcessing(true);
-    await request({
-      url: ENDPOINTS.records,
-      method: 'POST',
-      data
-    });
-    await updateQuests!();
-    onSend();
+    const errorHandler = {
+      validation: {},
+      setError,
+      setFieldError: setError
+    };
+    try {
+      await request({
+        url: ENDPOINTS.records,
+        method: 'POST',
+        data
+      });
+      await updateQuests!();
+      onSend();
+    } catch (err) {
+      const error = (err as AxiosError).response?.data as ErrorData;
+      handleErrors(error.details, errorHandler);
+      await updateQuests!();
+    }
     setProcessing(false);
   };
 
@@ -142,6 +166,20 @@ const QuestInfo = ({ height, show, quest, toggle, onSend }: QuestInfoProps) => {
           </View>
         )}
       </Animated.View>
+      <DialogWindow
+        title="Attention!"
+        type="error"
+        message={error}
+        button="OK"
+        onDismiss={() => {
+          clear();
+          hideError();
+        }}
+        onAgreePress={() => {
+          clear();
+          hideError();
+        }}
+      />
     </View>
   );
 };

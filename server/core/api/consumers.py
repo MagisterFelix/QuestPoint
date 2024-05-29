@@ -1,5 +1,8 @@
 from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
+from rest_framework.utils.serializer_helpers import ReturnDict
+from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 
 from core.api.models import User
 from core.api.utils import AuthorizationUtils
@@ -16,8 +19,26 @@ class UpdaterConsumer(AsyncJsonWebsocketConsumer):
         token = self.scope["cookies"].get("access_token")
 
         if token is None:
-            await self.close(code=403)
-            return None
+            refresh = self.scope["cookies"].get("refresh_token")
+
+            if refresh is None:
+                await self.close(code=403)
+                return None
+
+            data = {
+                "refresh": refresh
+            }
+
+            serializer = TokenRefreshSerializer(data=data)
+
+            try:
+                serializer.is_valid()
+
+                if isinstance(serializer.data, ReturnDict):
+                    token = serializer.data["access"]
+            except TokenError:
+                await self.close(code=403)
+                return None
 
         user_id = AuthorizationUtils.get_user_id(token=token)
 

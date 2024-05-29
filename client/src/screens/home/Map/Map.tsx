@@ -49,6 +49,10 @@ const MapScreen = ({ navigation }: ScreenProps) => {
     }).start();
     setShow(false);
   };
+  const clearInfo = () => {
+    hideInfo();
+    setTimeout(() => setSelectedQuest(null), 300);
+  };
 
   if (!location || !quests) {
     return <Loading />;
@@ -85,10 +89,7 @@ const MapScreen = ({ navigation }: ScreenProps) => {
             });
           }
         }}
-        onPress={() => {
-          hideInfo();
-          setTimeout(() => setSelectedQuest(null), 300);
-        }}
+        onPress={clearInfo}
       >
         <Marker
           tracksViewChanges={!hasTracked}
@@ -99,10 +100,7 @@ const MapScreen = ({ navigation }: ScreenProps) => {
           rotation={location.heading ? location.heading : undefined}
           anchor={{ x: 0.5, y: 0.5 }}
           zIndex={0}
-          onPress={() => {
-            hideInfo();
-            setTimeout(() => setSelectedQuest(null), 300);
-          }}
+          onPress={clearInfo}
         >
           <ImageBackground
             source={require('assets/player.png')}
@@ -144,10 +142,10 @@ const MapScreen = ({ navigation }: ScreenProps) => {
           show={show}
           quest={selectedQuest}
           toggle={() => (show ? hideInfo() : showInfo())}
+          clear={clearInfo}
           onSend={() => {
             setMessage('Offer has been sent successfully!');
-            hideInfo();
-            setTimeout(() => setSelectedQuest(null), 300);
+            clearInfo();
           }}
         />
       )}
