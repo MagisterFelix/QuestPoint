@@ -121,10 +121,10 @@ const Chat = ({ record }: ChatProps) => {
     const updateComponent = async () => {
       await refetch();
     };
-    if (!updating && toUpdate.has(`Messages-${record.quest.id}`)) {
+    if (!updating && toUpdate.has(`Messages-${record.quest.id}`) && messages) {
       update!(`Messages-${record.quest.id}`, updateComponent);
     }
-  }, [updating, toUpdate, update, record, refetch]);
+  }, [updating, toUpdate, update, record, refetch, messages]);
 
   return (
     <Card

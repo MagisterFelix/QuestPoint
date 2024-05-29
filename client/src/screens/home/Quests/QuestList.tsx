@@ -23,10 +23,10 @@ const QuestListScreen = ({ route, navigation }: ScreenProps) => {
   const { updating, toUpdate, update } = useUpdater();
 
   useEffect(() => {
-    if (!updating && toUpdate.has('QuestList')) {
+    if (!updating && toUpdate.has('QuestList') && quests) {
       update!('QuestList', updateQuests!);
     }
-  }, [updating, toUpdate, update, updateQuests]);
+  }, [updating, toUpdate, update, updateQuests, quests]);
 
   if (!quests) {
     return <Loading />;

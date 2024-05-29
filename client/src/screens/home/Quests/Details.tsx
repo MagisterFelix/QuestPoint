@@ -24,10 +24,13 @@ const DetailsScreen = ({ route, navigation }: ScreenProps) => {
   const quest: QuestResponseData = route.params?.quest;
 
   const [{ loading: loadingRecord, data: record }, refetch] =
-    useAxios<RecordResponseData>({
-      url: `${ENDPOINTS.record}${quest.id}/`,
-      method: 'GET'
-    });
+    useAxios<RecordResponseData>(
+      {
+        url: `${ENDPOINTS.record}${quest.id}/`,
+        method: 'GET'
+      },
+      { useCache: false }
+    );
 
   const updateRecord = async () => {
     await refetch();
@@ -108,7 +111,7 @@ const DetailsScreen = ({ route, navigation }: ScreenProps) => {
     const updateComponent = async () => {
       await refetch();
     };
-    if (!updating && toUpdate.has(`Record-${quest.id}`)) {
+    if (!updating && toUpdate.has(`Record-${quest.id}`) && record) {
       if (
         record?.status !== "Waiting for the creator's response" &&
         record?.status !== "Waiting for the worker's response"

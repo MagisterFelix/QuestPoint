@@ -63,10 +63,10 @@ const Profile = ({ user }: ProfileProps) => {
     const updateComponent = async () => {
       await refetchFeedback();
     };
-    if (!updating && toUpdate.has(`Feedback-${user.id}`)) {
+    if (!updating && toUpdate.has(`Feedback-${user.id}`) && feedback) {
       update!(`Feedback-${user.id}`, updateComponent);
     }
-  }, [updating, toUpdate, update, user, refetchFeedback]);
+  }, [updating, toUpdate, update, user, refetchFeedback, feedback]);
 
   return (
     <View style={styles.containerInner}>
