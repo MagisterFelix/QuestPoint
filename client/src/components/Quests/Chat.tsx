@@ -33,7 +33,7 @@ const Chat = ({ record }: ChatProps) => {
       url: `${ENDPOINTS.messages}${record.quest.id}/`,
       method: 'GET'
     },
-    { autoCancel: false }
+    { autoCancel: false, useCache: false }
   );
 
   const [choose, setChoose] = useState<MessageContentType | null>(null);
