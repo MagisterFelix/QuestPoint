@@ -1,6 +1,6 @@
 from collections import OrderedDict
 
-from django.db.models import Q
+from django.db.models import Count, Q
 from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 
@@ -77,6 +77,22 @@ class QuestSerializer(ModelSerializer):
             raise ValidationError("Quest cannot be updated if its status had been changed.")
 
         if latitude is not None and longitude is not None:
+            creator_with_records = Record.objects.filter(
+                Q(quest__creator=creator) & ~Q(status=Record.Status.COMPLETED)
+            ).values_list("quest__pk", flat=True)
+
+            creator_without_records = Quest.objects.filter(
+                creator=creator
+            ).annotate(
+                record_count=Count("record")
+            ).filter(
+                record_count=0
+            ).values_list("pk", flat=True)
+
+            creator_combined = Quest.objects.filter(
+                Q(pk__in=creator_with_records) | Q(pk__in=creator_without_records)
+            ).values_list("pk", flat=True)
+
             worker = Record.objects.filter(
                 Q(worker=creator) & ~Q(status__in=[Record.Status.CANCELLED, Record.Status.COMPLETED])
             ).values_list("quest__pk", flat=True)
@@ -87,7 +103,7 @@ class QuestSerializer(ModelSerializer):
 
             nearby_50_m = Quest.objects.annotate(
                 distance=QuestUtils.get_distance_sql(latitude, longitude)
-            ).filter(Q(distance__lte=0.05) & (Q(creator=creator) | Q(pk__in=worker) | ~Q(pk__in=taken)))
+            ).filter(Q(distance__lte=0.05) & (Q(pk__in=creator_combined) | Q(pk__in=worker) | ~Q(pk__in=taken)))
 
             if nearby_50_m:
                 raise ValidationError("There is already a quest nearby 50 m.")
