@@ -4,10 +4,18 @@ from django.utils import timezone
 
 from core.api.utils import ImageUtils
 
+from .base import BaseManager
 
-class UserManager(BaseUserManager):
 
-    def create_user(self, username: str, email: str, password: str, **extra_fields) -> models.Model:
+class UserManager(BaseUserManager, BaseManager):
+
+    def get_or_none(self, *args, **kwargs) -> AbstractUser | None:
+        try:
+            return self.get(*args, **kwargs)
+        except self.model.DoesNotExist:
+            return None
+
+    def create_user(self, username: str, email: str, password: str, **extra_fields) -> AbstractUser:
         if username is None or username == "":
             raise ValueError("User must have an username.")
 
@@ -27,7 +35,7 @@ class UserManager(BaseUserManager):
 
         return user
 
-    def create_superuser(self, username: str, email: str, password: str, **extra_fields) -> models.Model:
+    def create_superuser(self, username: str, email: str, password: str, **extra_fields) -> AbstractUser:
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
 
@@ -36,7 +44,7 @@ class UserManager(BaseUserManager):
 
 class User(AbstractUser, PermissionsMixin):
 
-    DEFAULT_AVATAR_PATH = "../static/avatar-default.svg"
+    DEFAULT_AVATAR_PATH = "../static/avatar-default.png"
 
     def upload_image_to(self, filename: str) -> str:
         name = self.username
@@ -63,7 +71,11 @@ class User(AbstractUser, PermissionsMixin):
     balance = models.PositiveIntegerField(default=0)
     xp = models.FloatField(default=0.0)
 
-    objects = UserManager()
+    objects: UserManager = UserManager()
+
+    @property
+    def level(self) -> float:
+        return self.xp // 100 + 1
 
     def delete(self, *args, **kwargs) -> tuple[int, dict]:
         self.remove_image()

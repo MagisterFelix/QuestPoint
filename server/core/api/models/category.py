@@ -3,8 +3,10 @@ from django.utils import timezone
 
 from core.api.utils import ImageUtils
 
+from .base import BaseModel
 
-class Category(models.Model):
+
+class Category(BaseModel):
 
     def upload_image_to(self, filename: str) -> str:
         name = self.title.lower().replace(" ", "_").replace("-", "_")

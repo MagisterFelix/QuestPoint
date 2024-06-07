@@ -19,7 +19,7 @@ class TrophyAdmin(admin.ModelAdmin):
         }),
         ("Information", {
             "fields": (
-                "description", "preview", "image",
+                "description", "activation", "preview", "image",
             )
         }),
     )

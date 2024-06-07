@@ -15,8 +15,8 @@ class RecordAdmin(admin.ModelAdmin):
         }),
         ("Information", {
             "fields": (
-                "worker", "status", "created_at",
+                "worker", "status", "with_notification", "created_at",
             )
         }),
     )
-    readonly_fields = ("created_at",)
+    readonly_fields = ("with_notification", "created_at",)

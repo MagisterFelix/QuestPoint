@@ -1,10 +1,11 @@
 from django.db import models
 
+from .base import BaseModel
 from .trophy import Trophy
 from .user import User
 
 
-class Achievement(models.Model):
+class Achievement(BaseModel):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     trophy = models.ForeignKey(Trophy, on_delete=models.CASCADE)
@@ -15,4 +16,4 @@ class Achievement(models.Model):
 
     class Meta:
         db_table = "achievements"
-        ordering = ["created_at"]
+        ordering = ["-created_at"]

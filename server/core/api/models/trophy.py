@@ -4,8 +4,10 @@ from django.utils import timezone
 
 from core.api.utils import ImageUtils
 
+from .base import BaseModel
 
-class Trophy(models.Model):
+
+class Trophy(BaseModel):
 
     def upload_image_to(self, filename: str) -> str:
         name = self.title.lower().replace(" ", "_").replace("-", "_")
@@ -29,6 +31,7 @@ class Trophy(models.Model):
         upload_to=upload_image_to,
         validators=[ImageUtils.validate_image_file_extension]
     )
+    activation = models.TextField()
 
     @property
     def short_description(self) -> str:
